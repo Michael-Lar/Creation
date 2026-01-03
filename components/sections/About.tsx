@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -108,7 +108,7 @@ export default function About() {
             {/* Logo Element - Centered and properly sized */}
             <div className="md:col-span-3 flex items-center justify-center">
               <img
-                src="/logos/logo.svg?v=3"
+                src={`/logos/logo.svg?t=${Date.now()}`}
                 alt="Creation Partners"
                 className="w-20 h-20 md:w-28 md:h-28 opacity-40"
                 style={{ display: 'block' }}

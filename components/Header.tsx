@@ -59,7 +59,7 @@ export default function Header() {
             </span>
             <div className="transition-transform duration-300 group-hover:scale-105 flex-shrink-0">
               <img
-                src="/logos/logo.svg?v=3"
+                src={`/logos/logo.svg?t=${Date.now()}`}
                 alt="Creation Partners"
                 className="h-7 md:h-8 w-auto"
                 style={{ display: 'block' }}

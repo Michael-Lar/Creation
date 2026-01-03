@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -79,22 +79,22 @@ export default function Divisions() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="divisions" className="py-20 md:py-24 px-6 md:px-8 lg:px-12">
+    <section ref={sectionRef} id="divisions" className="py-16 md:py-20 lg:py-24 px-6 md:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Section Label */}
-        <div ref={labelRef} className="mb-10 md:mb-12">
+        <div ref={labelRef} className="mb-8 md:mb-10 lg:mb-12">
           <span className="text-xs md:text-sm uppercase tracking-widest text-gray-500 font-semibold">
             Divisions
           </span>
           <div ref={dividerRef} className="mt-3 w-12 h-px bg-amber-400 origin-left"></div>
         </div>
 
-        {/* Divisions Grid - Large Cards (2x2) */}
-        <div ref={cardsRef} className="grid md:grid-cols-2 gap-6 md:gap-8">
+        {/* Divisions Grid - Responsive Cards (2x2) */}
+        <div ref={cardsRef} className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {divisions.map((division, index) => (
             <div
               key={index}
-              className="group relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer"
+              className="group relative min-h-[280px] md:min-h-[320px] lg:min-h-[360px] rounded-lg md:rounded-xl overflow-hidden cursor-pointer"
             >
               {/* Background Gradient - Different colors for each card */}
               <div 
@@ -109,10 +109,10 @@ export default function Divisions() {
               {/* Overlay Gradient for text readability */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
 
-              {/* Logo Icon - Top Left (using cropped logo) */}
-              <div className="absolute top-6 left-6 md:top-8 md:left-8 w-8 h-8 md:w-10 md:h-10 opacity-90">
+              {/* Logo Icon - Top Right (using cropped logo) */}
+              <div className="absolute top-4 right-4 md:top-6 md:right-6 w-7 h-7 md:w-9 md:h-9 lg:w-10 lg:h-10 opacity-90">
                 <img
-                  src="/logos/logo.svg?v=3"
+                  src={`/logos/logo.svg?t=${Date.now()}`}
                   alt=""
                   className="w-full h-full brightness-0 invert"
                   style={{ display: 'block' }}
@@ -120,12 +120,12 @@ export default function Divisions() {
               </div>
 
               {/* Content - Bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 lg:p-10">
-                <div className="space-y-3 md:space-y-4">
-                  <h3 className="text-3xl md:text-4xl lg:text-5xl font-light text-white tracking-tight group-hover:translate-x-2 transition-transform duration-300">
+              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 lg:p-8">
+                <div className="space-y-2 md:space-y-3">
+                  <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white tracking-tight group-hover:translate-x-2 transition-transform duration-300">
                     {division.name}
                   </h3>
-                  <p className="text-base md:text-lg lg:text-xl text-white/90 font-light leading-relaxed max-w-md">
+                  <p className="text-sm md:text-base lg:text-lg text-white/90 font-light leading-relaxed pr-8 md:pr-12">
                     {division.description}
                   </p>
                 </div>
