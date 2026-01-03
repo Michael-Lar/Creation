@@ -56,7 +56,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     <section
       ref={preloaderRef}
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: '#F5F1E8' }}
+      style={{ backgroundColor: 'var(--color-cream)' }}
     >
       <div ref={logoContainerRef} className="flex flex-col items-center justify-center">
         <img

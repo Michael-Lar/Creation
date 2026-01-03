@@ -1,29 +1,68 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["200", "300", "400", "500"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://creation-partners.com'),
   title: "Creation Partners | Commercial Real Estate Investment & Management",
   description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform. We work across acquisitions, advisory, capital formation, and asset management.",
   keywords: ["real estate", "commercial real estate", "investment", "Los Angeles", "property management", "advisory"],
   authors: [{ name: "Creation Partners" }],
+  creator: "Creation Partners",
+  publisher: "Creation Partners",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     title: "Creation Partners | Commercial Real Estate Investment & Management",
     description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    url: "https://creation-partners.com",
+    siteName: "Creation Partners",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/og-image.jpg", // Add this image to public folder
+        width: 1200,
+        height: 630,
+        alt: "Creation Partners - Commercial Real Estate Investment & Management",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Creation Partners | Commercial Real Estate Investment & Management",
     description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    images: ["/twitter-image.jpg"], // Add this image to public folder
+  },
+  alternates: {
+    canonical: "https://creation-partners.com",
+  },
+  other: {
+    'theme-color': '#FAF8F3',
   },
 };
 
@@ -32,6 +71,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -45,17 +85,69 @@ export default function RootLayout({
       "postalCode": "90025",
       "addressCountry": "US"
     },
-    "url": "https://creation-partners.com"
+    "url": "https://creation-partners.com",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+1-310-749-9628",
+      "contactType": "Sales",
+      "email": "ys@creation-partners.com"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/company/creation-partners",
+      "https://www.instagram.com/creationpartners"
+    ]
+  };
+
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Creation Partners",
+    "url": "https://creation-partners.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://creation-partners.com/?s={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://creation-partners.com"
+      }
+    ]
   };
 
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={inter.className}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <Script
-          id="structured-data"
+          id="organization-structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        <Script
+          id="website-structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
+        />
+        <Script
+          id="breadcrumb-structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+        />
+      </head>
+      <body className={inter.className}>
         {children}
       </body>
     </html>

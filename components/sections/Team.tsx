@@ -160,14 +160,14 @@ export default function Team() {
   };
 
   return (
-    <section ref={sectionRef} id="team" className="py-20 md:py-24 lg:py-32 px-6 md:px-8 lg:px-12">
+    <section ref={sectionRef} id="team" className="py-24 md:py-32 lg:py-40 px-6 md:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Section Label */}
         <div ref={labelRef} className="mb-12 md:mb-16">
           <span className="text-xs md:text-sm uppercase tracking-widest text-gray-500 font-semibold">
             Team
           </span>
-          <div ref={dividerRef} className="mt-3 w-12 h-px bg-amber-400 origin-left"></div>
+          <div ref={dividerRef} className="mt-3 w-12 h-px bg-bronze origin-left"></div>
         </div>
 
         {/* Team Grid - Ensure proper alignment */}
@@ -181,7 +181,7 @@ export default function Team() {
                 ref={(el) => {
                   if (el) cardRefs.current.set(member.id, el);
                 }}
-                className="group relative bg-white rounded-lg border border-gray-200/50 overflow-visible cursor-pointer transition-all duration-300 ease-out hover:shadow-md hover:border-gray-300"
+                className="group relative bg-white rounded-lg border border-gray-200/50 overflow-visible cursor-pointer transition-all duration-300 ease-out hover:shadow-lg hover:border-bronze/30 hover:-translate-y-1"
                 style={{ 
                   opacity: 1, // Ensure consistent opacity
                   transform: 'translateY(0)', // Ensure consistent position
@@ -193,7 +193,12 @@ export default function Team() {
                   onClick={(e) => handleCardClick(e, member.id)}
                 >
                   {/* Photo Placeholder */}
-                  <div className="aspect-square w-full max-w-[200px] mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full overflow-hidden relative">
+                  <div className="aspect-square w-full max-w-[200px] mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full overflow-hidden relative shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                    {/* Subtle pattern overlay */}
+                    <div className="absolute inset-0 opacity-5" style={{
+                      backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.15) 1px, transparent 0)',
+                      backgroundSize: '20px 20px'
+                    }}></div>
                     <div className="absolute inset-0 bg-gray-300/30 group-hover:bg-gray-300/20 transition-all duration-300"></div>
                     {/* Placeholder for photo - replace with actual image */}
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -215,7 +220,7 @@ export default function Team() {
 
                   {/* Expand Indicator */}
                   <div className="mt-6 flex items-center justify-center">
-                    <div className={`w-8 h-px bg-amber-400 transition-all duration-300 ${
+                    <div className={`w-8 h-px bg-bronze transition-all duration-300 ${
                       isExpanded ? 'rotate-90' : 'group-hover:w-12'
                     }`}></div>
                   </div>
@@ -246,7 +251,7 @@ export default function Team() {
                           <a
                             href={`mailto:${member.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="block text-sm text-gray-600 hover:text-amber-600 transition-colors duration-200"
+                            className="block text-sm text-gray-600 hover:text-bronze transition-colors duration-200"
                           >
                             {member.email}
                           </a>
@@ -255,7 +260,7 @@ export default function Team() {
                           <a
                             href={`tel:${member.phone}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="block text-sm text-gray-600 hover:text-amber-600 transition-colors duration-200"
+                            className="block text-sm text-gray-600 hover:text-bronze transition-colors duration-200"
                           >
                             {member.phone}
                           </a>
@@ -266,7 +271,7 @@ export default function Team() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="block text-sm text-gray-600 hover:text-amber-600 transition-colors duration-200"
+                            className="block text-sm text-gray-600 hover:text-bronze transition-colors duration-200"
                           >
                             LinkedIn →
                           </a>
@@ -277,7 +282,7 @@ export default function Team() {
                 </div>
 
                 {/* Hover Effect Overlay */}
-                <div className="absolute inset-0 bg-amber-400/0 group-hover:bg-amber-400/5 transition-all duration-300 pointer-events-none rounded-lg"></div>
+                <div className="absolute inset-0 bg-bronze/0 group-hover:bg-bronze/5 transition-all duration-300 pointer-events-none rounded-lg"></div>
               </div>
             );
           })}

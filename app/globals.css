@@ -3,8 +3,86 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Color Palette - Luxury Commercial Real Estate Aesthetic */
+    --color-cream: #FAF8F3; /* Slightly brighter, more refined cream */
+    --color-warm-white: #FDFCFA;
+    --color-charcoal: #1A1A1A; /* Deep, rich charcoal */
+    --color-charcoal-light: #2D2D2D;
+    --color-taupe: #8B7D6B; /* Sophisticated taupe accent */
+    --color-taupe-light: #A89B8A;
+    --color-taupe-dark: #6B5F4F;
+    --color-bronze: #C9A961; /* Warm bronze/gold accent - more refined than amber */
+    --color-bronze-light: #D4B877;
+    --color-bronze-dark: #A6894A;
+    --color-gray-100: #F5F3F0;
+    --color-gray-200: #E8E6E1;
+    --color-gray-300: #D4D1CA;
+    --color-gray-400: #B8B5AE;
+    --color-gray-500: #8B8880;
+    --color-gray-600: #5A5750;
+    --color-gray-700: #3D3B36;
+    --color-gray-800: #2A2824;
+    --color-gray-900: #1A1A1A;
+    
+    /* Spacing Scale */
+    --spacing-section-py: 6rem; /* py-24 */
+    --spacing-section-py-md: 8rem; /* md:py-32 */
+    --spacing-section-py-lg: 10rem; /* lg:py-40 */
+    
+    /* Typography Scale */
+    --font-size-xs: 0.75rem; /* 12px */
+    --font-size-sm: 0.875rem; /* 14px */
+    --font-size-base: 1rem; /* 16px */
+    --font-size-lg: 1.125rem; /* 18px */
+    --font-size-xl: 1.25rem; /* 20px */
+    --font-size-2xl: 1.5rem; /* 24px */
+    --font-size-3xl: 1.875rem; /* 30px */
+    --font-size-4xl: 2.25rem; /* 36px */
+    --font-size-5xl: 3rem; /* 48px */
+    --font-size-6xl: 3.75rem; /* 60px */
+    --font-size-7xl: 4.5rem; /* 72px */
+    
+    /* Animation Timing */
+    --duration-fast: 200ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --duration-slower: 700ms;
+    
+    /* Easing Functions */
+    --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-power2: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-power3: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
+  }
+  
+  html.lenis {
+    height: auto;
+  }
+  
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
   }
 
   body {
@@ -13,18 +91,99 @@
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #F5F1E8;
+    background-color: var(--color-cream);
+    color: var(--color-charcoal);
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 300;
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--color-charcoal);
+  }
+  
+  h1 {
+    font-weight: 400;
     letter-spacing: -0.02em;
+  }
+  
+  h2, h3 {
+    font-weight: 500;
+  }
+
+  /* Enhanced Focus Indicators */
+  *:focus-visible {
+    outline: 2px solid var(--color-bronze);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--color-bronze);
+    outline-offset: 2px;
+  }
+
+  /* Remove default focus outline for mouse users, keep for keyboard */
+  *:focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Animation Utilities */
+  .transition-fast {
+    transition-duration: var(--duration-fast);
+  }
+  
+  .transition-normal {
+    transition-duration: var(--duration-normal);
+  }
+  
+  .transition-slow {
+    transition-duration: var(--duration-slow);
+  }
+  
+  /* Hover Effect Utilities */
+  .hover-lift {
+    transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .sr-only:focus,
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 }
 

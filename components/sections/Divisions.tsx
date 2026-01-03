@@ -61,7 +61,8 @@ export default function Divisions() {
       });
 
       // Animate cards with stagger and scale
-      gsap.from(cardsRef.current?.children || [], {
+      const cards = Array.from(cardsRef.current?.children || []) as HTMLElement[];
+      gsap.from(cards, {
         opacity: 0,
         y: 80,
         scale: 0.9,
@@ -72,21 +73,44 @@ export default function Divisions() {
           trigger: cardsRef.current,
           start: 'top 75%',
         },
+        onComplete: () => {
+          // Ensure all cards are fully visible after animation
+          cards.forEach((card) => {
+            gsap.set(card, { opacity: 1, y: 0, scale: 1, clearProps: 'all' });
+          });
+        },
       });
+      
+      // Fallback: if cards are already in view, make them visible immediately
+      const checkVisibility = () => {
+        if (cardsRef.current) {
+          const rect = cardsRef.current.getBoundingClientRect();
+          const isVisible = rect.top < window.innerHeight * 0.9;
+          if (isVisible) {
+            cards.forEach((card) => {
+              gsap.set(card, { opacity: 1, y: 0, scale: 1 });
+            });
+          }
+        }
+      };
+      
+      // Check on mount and after a short delay
+      checkVisibility();
+      setTimeout(checkVisibility, 100);
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} id="divisions" className="py-16 md:py-20 lg:py-24 px-6 md:px-8 lg:px-12">
+    <section ref={sectionRef} id="divisions" className="py-24 md:py-32 lg:py-40 px-6 md:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Section Label */}
         <div ref={labelRef} className="mb-8 md:mb-10 lg:mb-12">
           <span className="text-xs md:text-sm uppercase tracking-widest text-gray-500 font-semibold">
             Divisions
           </span>
-          <div ref={dividerRef} className="mt-3 w-12 h-px bg-amber-400 origin-left"></div>
+          <div ref={dividerRef} className="mt-3 w-12 h-px bg-bronze origin-left"></div>
         </div>
 
         {/* Divisions Grid - Responsive Cards (2x2) */}
@@ -94,12 +118,16 @@ export default function Divisions() {
           {divisions.map((division, index) => (
             <div
               key={index}
-              className="group relative min-h-[280px] md:min-h-[320px] lg:min-h-[360px] rounded-lg md:rounded-xl overflow-hidden cursor-pointer"
+              className="group relative min-h-[280px] md:min-h-[320px] lg:min-h-[360px] rounded-lg md:rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-bronze/30 border border-transparent"
+              style={{ 
+                opacity: 1, // Ensure cards are visible by default
+                transform: 'translateY(0) scale(1)', // Ensure cards are in correct position
+              }}
             >
               {/* Background Gradient - Different colors for each card */}
               <div 
-                className={`absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105 ${
-                  index === 0 ? 'bg-gradient-to-br from-amber-400/20 via-amber-500/15 to-amber-600/20' :
+                className={`absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.02] ${
+                  index === 0 ? 'bg-gradient-to-br from-bronze/20 via-bronze-light/15 to-bronze-dark/20' :
                   index === 1 ? 'bg-gradient-to-br from-gray-400/30 via-gray-500/25 to-gray-600/30' :
                   index === 2 ? 'bg-gradient-to-br from-blue-400/20 via-blue-500/15 to-blue-600/20' :
                   'bg-gradient-to-br from-gray-500/25 via-gray-600/20 to-gray-700/25'

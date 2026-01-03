@@ -85,14 +85,14 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="py-20 md:py-24 px-6 md:px-8 lg:px-12">
+    <section ref={sectionRef} id="about" className="py-24 md:py-32 lg:py-40 px-6 md:px-8 lg:px-12">
       <div className="max-w-6xl mx-auto">
         {/* Section Label */}
         <div ref={labelRef} className="mb-10 md:mb-12">
           <span className="text-xs md:text-sm uppercase tracking-widest text-gray-500 font-semibold">
             About
           </span>
-          <div ref={dividerRef} className="mt-3 w-12 h-px bg-amber-400 origin-left"></div>
+          <div ref={dividerRef} className="mt-3 w-12 h-px bg-bronze origin-left"></div>
         </div>
 
         {/* Main Content with Creative Layout */}
@@ -107,12 +107,15 @@ export default function About() {
             
             {/* Logo Element - Centered and properly sized */}
             <div className="md:col-span-3 flex items-center justify-center">
-              <img
-                src={`/logos/logo.svg?t=${Date.now()}`}
-                alt="Creation Partners"
-                className="w-20 h-20 md:w-28 md:h-28 opacity-40"
-                style={{ display: 'block' }}
-              />
+              <div className="relative group">
+                <img
+                  src={`/logos/logo.svg?t=${Date.now()}`}
+                  alt="Creation Partners"
+                  className="w-20 h-20 md:w-28 md:h-28 opacity-40 transition-all duration-500 group-hover:opacity-50 group-hover:scale-105"
+                  style={{ display: 'block' }}
+                />
+                <div className="absolute inset-0 bg-bronze/0 group-hover:bg-bronze/5 rounded-full transition-all duration-500 -z-10"></div>
+              </div>
             </div>
           </div>
           
@@ -120,7 +123,7 @@ export default function About() {
           <div ref={gridRef} className="grid md:grid-cols-2 gap-8 md:gap-12 pt-8 border-t border-gray-300/20">
             <div className="space-y-3 group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-px bg-amber-400"></div>
+                <div className="w-8 h-px bg-bronze"></div>
                 <h3 className="text-xs uppercase tracking-widest text-gray-500 font-semibold">What We Do</h3>
               </div>
               <p className="text-base md:text-lg text-gray-700 leading-relaxed font-light pl-11">
@@ -129,7 +132,7 @@ export default function About() {
             </div>
             <div className="space-y-3 group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-px bg-amber-400"></div>
+                <div className="w-8 h-px bg-bronze"></div>
                 <h3 className="text-xs uppercase tracking-widest text-gray-500 font-semibold">How We Work</h3>
               </div>
               <p className="text-base md:text-lg text-gray-700 leading-relaxed font-light pl-11">
@@ -139,9 +142,9 @@ export default function About() {
           </div>
 
           {/* Final Statement with Creative Styling */}
-          <div className="pt-8 border-t border-amber-400/30">
+          <div className="pt-8 border-t border-bronze/30">
             <p ref={italicRef} className="text-xl md:text-2xl lg:text-3xl text-gray-900 leading-tight font-light italic max-w-4xl relative pl-8 md:pl-12">
-              <span className="absolute left-0 top-0 bottom-0 w-px bg-amber-400/40"></span>
+              <span className="absolute left-0 top-0 bottom-0 w-px bg-bronze/40"></span>
               Built around movement of ideas, capital, projects, and people.
             </p>
           </div>
