@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "clean": "rm -rf .next && echo 'Cleared .next build cache'",
-    "clean:all": "rm -rf .next node_modules/.cache && echo 'Cleared all build caches'"
+    "clean:all": "rm -rf .next node_modules/.cache && echo 'Cleared all build caches'",
+    "dev:clean": "npm run clean && npm run dev",
+    "dev:fresh": "npm run clean:all && npm run dev"
   },
   "dependencies": {
     "gsap": "^3.14.2",

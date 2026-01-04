@@ -12,8 +12,18 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   swcMinify: true,
-  // Optimize webpack for better chunk management
+  // Optimize webpack for better chunk management and prevent cache issues
   webpack: (config, { dev, isServer }) => {
+    // In development, use simpler chunking to prevent cache corruption
+    if (dev) {
+      // Use simpler module IDs in development to prevent chunk loading errors
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'named', // More stable than 'deterministic' in dev
+        chunkIds: 'named',
+      };
+    }
+    
     // Only optimize chunking in production builds
     if (!dev && !isServer) {
       config.optimization = {
