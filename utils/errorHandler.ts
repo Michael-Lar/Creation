@@ -31,11 +31,9 @@ export class ErrorHandler {
 
     if (process.env.NODE_ENV === 'development') {
       console.error('Error logged:', logData);
-    } else {
-      // In production, you would send this to an error tracking service
-      // Example: Sentry.captureException(error, { extra: logData });
-      console.error('Error logged:', logData);
     }
+    // In production, errors are silently handled
+    // Consider integrating an error tracking service like Sentry
 
     return errorId;
   }

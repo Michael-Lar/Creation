@@ -60,7 +60,32 @@ export default function Home() {
     <SmoothScroll>
       <SkipToContent />
       <KeyboardShortcuts />
-      <div id="primary">
+      <div id="primary" className="relative min-h-screen">
+        {/* Elegant Border Frame - Wraps entire page including header */}
+        <div 
+          className="fixed inset-0 pointer-events-none z-[100]"
+          style={{
+            border: '3px solid var(--color-cream)',
+            boxShadow: `
+              inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 0 0 1px rgba(0, 0, 0, 0.05)
+            `,
+          }}
+          aria-hidden="true"
+        />
+        {/* Inner accent line */}
+        <div 
+          className="fixed pointer-events-none z-[100]"
+          style={{
+            top: '3px',
+            left: '3px',
+            right: '3px',
+            bottom: '3px',
+            border: '1px solid rgba(184, 160, 104, 0.2)',
+          }}
+          aria-hidden="true"
+        />
+        
         <ScrollProgress />
         <Preloader onComplete={handlePreloaderComplete} />
         <Header />
@@ -74,7 +99,7 @@ export default function Home() {
           }}
         >
           <ErrorBoundary sectionName="Hero">
-            <Hero />
+            <Hero preloaderComplete={preloaderComplete} />
           </ErrorBoundary>
           <ErrorBoundary sectionName="About">
             <About />

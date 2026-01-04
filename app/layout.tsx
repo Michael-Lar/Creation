@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -43,27 +43,32 @@ export const metadata: Metadata = {
     siteName: "Creation Partners",
     type: "website",
     locale: "en_US",
-    images: [
-      {
-        url: "/og-image.jpg", // Add this image to public folder
-        width: 1200,
-        height: 630,
-        alt: "Creation Partners - Commercial Real Estate Investment & Management",
-      },
-    ],
+    // Images are automatically generated via app/opengraph-image.tsx
   },
   twitter: {
     card: "summary_large_image",
     title: "Creation Partners | Commercial Real Estate Investment & Management",
     description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
-    images: ["/twitter-image.jpg"], // Add this image to public folder
+    // Images are automatically generated via app/twitter-image.tsx
   },
   alternates: {
     canonical: "https://creation-partners.com",
   },
   other: {
     'theme-color': '#FAF8F3',
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover', // For iOS safe area
+  themeColor: '#FAF8F3',
 };
 
 export default function RootLayout({

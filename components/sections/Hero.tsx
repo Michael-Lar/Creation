@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 
 // Video file paths
@@ -21,34 +21,77 @@ const getVideoPath = (src: string): string => {
     }
     return src;
   } catch {
-    // If URL parsing fails, try to extract pathname manually
     const match = src.match(/\/videos\/[^/]+\.mp4/);
     return match ? match[0] : src;
   }
 };
 
-export default function Hero() {
+interface HeroProps {
+  preloaderComplete?: boolean;
+}
+
+export default function Hero({ preloaderComplete = false }: HeroProps) {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [activeVideo, setActiveVideo] = useState(0); // 0 or 1 to alternate between two video elements
+  const [activeVideo, setActiveVideo] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [failedVideos, setFailedVideos] = useState<Set<number>>(new Set());
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  
+  const sectionRef = useRef<HTMLElement>(null);
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const prepareTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const activeVideoRef = useRef(0); // Track activeVideo without triggering re-renders
-  const video1IndexRef = useRef<number | null>(null); // Track which video index is in video1
-  const video2IndexRef = useRef<number | null>(null); // Track which video index is in video2
-  const pauseListenerRef = useRef<((e: Event) => void) | null>(null); // Track pause listener for cleanup
-  const retryCountRef = useRef<number>(0);
+  const activeVideoRef = useRef(0);
+  const video1IndexRef = useRef<number | null>(null);
+  const video2IndexRef = useRef<number | null>(null);
+  const pauseListenerRef = useRef<((e: Event) => void) | null>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+
+  // Check for desktop and reduced motion
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    
+    setPrefersReducedMotion(motionQuery.matches);
+    checkDesktop();
+    
+    const handleMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    motionQuery.addEventListener('change', handleMotionChange);
+    window.addEventListener('resize', checkDesktop);
+    
+    return () => {
+      motionQuery.removeEventListener('change', handleMotionChange);
+      window.removeEventListener('resize', checkDesktop);
+    };
+  }, []);
+
+  // Cursor glow effect (desktop only, respects reduced motion)
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDesktop || prefersReducedMotion || !sectionRef.current) return;
+    
+    const rect = sectionRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setMousePosition({ x, y });
+  }, [isDesktop, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!isDesktop || prefersReducedMotion) return;
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [handleMouseMove, isDesktop, prefersReducedMotion]);
 
   const handleVideoError = (videoIndex: number, videoElement: HTMLVideoElement) => {
     setFailedVideos((prev) => new Set([...prev, videoIndex]));
     
-    // Try next video if current fails
     if (failedVideos.size < videoUrls.length - 1) {
       const nextIndex = (videoIndex + 1) % videoUrls.length;
       if (!failedVideos.has(nextIndex)) {
@@ -58,7 +101,6 @@ export default function Hero() {
         }, 500);
       }
     } else {
-      // All videos failed
       setHasError(true);
       setErrorMessage('Unable to load videos. Please refresh the page.');
       setIsLoading(false);
@@ -66,27 +108,20 @@ export default function Hero() {
   };
 
   useEffect(() => {
-    // This effect should ONLY run when currentVideoIndex changes, NOT when activeVideo changes
-    // We use refs to track which video element has which content
-    
     if (!video1Ref.current || !video2Ref.current) return;
+    // Don't start video rotation until preloader is complete
+    if (!preloaderComplete) return;
 
     const currentIndex = currentVideoIndex;
     const currentVideoSrc = videoUrls[currentIndex];
     
-    // Determine which video element should show the current video based on activeVideoRef
-    // But DON'T change this based on activeVideo state - use the ref
     const showingVideo = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
     const hiddenVideo = activeVideoRef.current === 0 ? video2Ref.current : video1Ref.current;
     
-    // Check which video element currently has the current video
     const showingVideoIndex = activeVideoRef.current === 0 ? video1IndexRef.current : video2IndexRef.current;
     const hiddenVideoIndex = activeVideoRef.current === 0 ? video2IndexRef.current : video1IndexRef.current;
 
-    // If the showing video doesn't have the current video, we need to load it
-    // But we should NEVER reset a video that's already playing the correct content
     if (showingVideoIndex !== currentIndex) {
-      // Load new video into the showing element
       const showingVideoPath = getVideoPath(showingVideo.src);
       if (showingVideoPath !== currentVideoSrc) {
         showingVideo.src = currentVideoSrc;
@@ -94,8 +129,7 @@ export default function Hero() {
         showingVideo.addEventListener('loadeddata', () => {
           setIsLoading(false);
           showingVideo.currentTime = 0;
-          showingVideo.play().catch((error) => {
-            console.error('Video play error:', error);
+          showingVideo.play().catch(() => {
             handleVideoError(currentIndex, showingVideo);
           });
         }, { once: true });
@@ -104,24 +138,19 @@ export default function Hero() {
           handleVideoError(currentIndex, showingVideo);
         }, { once: true });
       } else {
-        // Video src matches, just ensure it's playing from start
         showingVideo.currentTime = 0;
         showingVideo.play().catch(() => {});
       }
-      // Update tracking
       if (activeVideoRef.current === 0) {
         video1IndexRef.current = currentIndex;
       } else {
         video2IndexRef.current = currentIndex;
       }
     }
-    // If showing video already has the correct video, DON'T touch it - it's already playing
 
-    // Prepare next video in the hidden element
     const nextIndex = (currentIndex + 1) % videoUrls.length;
     const nextVideoSrc = videoUrls[nextIndex];
     
-    // Only load if the hidden video doesn't already have the next video
     if (hiddenVideoIndex !== nextIndex) {
       const hiddenVideoPath = getVideoPath(hiddenVideo.src);
       if (hiddenVideoPath !== nextVideoSrc) {
@@ -135,7 +164,6 @@ export default function Hero() {
           handleVideoError(nextIndex, hiddenVideo);
         }, { once: true });
       }
-      // Update tracking
       if (activeVideoRef.current === 0) {
         video2IndexRef.current = nextIndex;
       } else {
@@ -143,76 +171,88 @@ export default function Hero() {
       }
     }
 
-    // Start preparing next video early (at 2.0 seconds) to ensure it's fully buffered
-    prepareTimeoutRef.current = setTimeout(() => {
-      if (hiddenVideo.readyState >= 4) {
-        hiddenVideo.currentTime = 0;
-        const playPromise = hiddenVideo.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            // Keep video playing - add event listener to resume if browser pauses it
-            const handlePause = () => {
-              if (!hiddenVideo.paused) return;
-              hiddenVideo.play().catch(() => {});
-            };
-            // Clean up any existing listener first
-            if (pauseListenerRef.current) {
-              hiddenVideo.removeEventListener('pause', pauseListenerRef.current);
-            }
-            pauseListenerRef.current = handlePause;
-            hiddenVideo.addEventListener('pause', handlePause);
-          }).catch(() => {
-            // Silently handle play errors
-          });
+    // Only start video rotation timers if preloader is complete
+    if (preloaderComplete) {
+      prepareTimeoutRef.current = setTimeout(() => {
+        if (hiddenVideo.readyState >= 4) {
+          hiddenVideo.currentTime = 0;
+          const playPromise = hiddenVideo.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              const handlePause = () => {
+                if (!hiddenVideo.paused) return;
+                hiddenVideo.play().catch(() => {});
+              };
+              if (pauseListenerRef.current) {
+                hiddenVideo.removeEventListener('pause', pauseListenerRef.current);
+              }
+              pauseListenerRef.current = handlePause;
+              hiddenVideo.addEventListener('pause', handlePause);
+            }).catch(() => {});
+          }
         }
-      }
-    }, 2000);
+      }, 2000);
 
-    // Start crossfade transition at 2.5 seconds
-    fadeTimeoutRef.current = setTimeout(() => {
-      if (hiddenVideo && hiddenVideo.readyState >= 4 && !hiddenVideo.paused) {
-        const newActiveVideo = activeVideoRef.current === 0 ? 1 : 0;
-        activeVideoRef.current = newActiveVideo;
-        setActiveVideo(newActiveVideo);
-      }
-    }, 2500);
+      fadeTimeoutRef.current = setTimeout(() => {
+        if (hiddenVideo && hiddenVideo.readyState >= 4 && !hiddenVideo.paused) {
+          const newActiveVideo = activeVideoRef.current === 0 ? 1 : 0;
+          activeVideoRef.current = newActiveVideo;
+          setActiveVideo(newActiveVideo);
+        }
+      }, 2500);
 
-    // Complete the transition and update index at 3 seconds
-    timeoutRef.current = setTimeout(() => {
-      const oldShowingVideo = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
-      if (oldShowingVideo) {
-        oldShowingVideo.pause();
-      }
-      setCurrentVideoIndex(nextIndex);
-    }, 3000);
+      timeoutRef.current = setTimeout(() => {
+        const oldShowingVideo = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
+        if (oldShowingVideo) {
+          oldShowingVideo.pause();
+        }
+        setCurrentVideoIndex(nextIndex);
+      }, 3000);
+    }
+
+    // Store ref values for cleanup
+    const video1 = video1Ref.current;
+    const video2 = video2Ref.current;
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      if (prepareTimeoutRef.current) {
-        clearTimeout(prepareTimeoutRef.current);
-        prepareTimeoutRef.current = null;
-      }
-      if (fadeTimeoutRef.current) {
-        clearTimeout(fadeTimeoutRef.current);
-        fadeTimeoutRef.current = null;
-      }
-      // Clean up pause listener if it exists (check both videos)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (prepareTimeoutRef.current) clearTimeout(prepareTimeoutRef.current);
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
       if (pauseListenerRef.current) {
-        if (video1Ref.current) {
-          video1Ref.current.removeEventListener('pause', pauseListenerRef.current);
-        }
-        if (video2Ref.current) {
-          video2Ref.current.removeEventListener('pause', pauseListenerRef.current);
-        }
+        video1?.removeEventListener('pause', pauseListenerRef.current);
+        video2?.removeEventListener('pause', pauseListenerRef.current);
         pauseListenerRef.current = null;
       }
     };
-  }, [currentVideoIndex]); // ONLY depends on currentVideoIndex
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentVideoIndex, failedVideos, preloaderComplete]);
 
-  // Preload only first video on mount for better performance
+  // Reset video to index 0 when preloader completes (only once)
+  const preloaderCompleteRef = useRef(false);
+  useEffect(() => {
+    if (preloaderComplete && !preloaderCompleteRef.current && video1Ref.current) {
+      preloaderCompleteRef.current = true;
+      // Ensure we're on video 1 and reset state
+      setCurrentVideoIndex(0);
+      setActiveVideo(0);
+      activeVideoRef.current = 0;
+      video1IndexRef.current = null;
+      video2IndexRef.current = null;
+      
+      // Reset video1 to first video if needed
+      if (video1Ref.current) {
+        const currentPath = getVideoPath(video1Ref.current.src);
+        if (currentPath !== videoUrls[0]) {
+          video1Ref.current.src = videoUrls[0];
+          video1Ref.current.load();
+          video1Ref.current.currentTime = 0;
+          video1Ref.current.play().catch(() => {});
+        }
+      }
+    }
+  }, [preloaderComplete]);
+
+  // Preload first video on mount
   useEffect(() => {
     if (!video1Ref.current) return;
     
@@ -223,15 +263,12 @@ export default function Hero() {
     
     const handleCanPlay = () => {
       setIsLoading(false);
-      firstVideo.play().catch((error) => {
-        console.error('Initial video play error:', error);
+      firstVideo.play().catch(() => {
         handleVideoError(0, firstVideo);
       });
     };
 
-    const handleError = () => {
-      handleVideoError(0, firstVideo);
-    };
+    const handleError = () => handleVideoError(0, firstVideo);
 
     firstVideo.addEventListener('canplay', handleCanPlay, { once: true });
     firstVideo.addEventListener('error', handleError, { once: true });
@@ -241,12 +278,12 @@ export default function Hero() {
       firstVideo.removeEventListener('canplay', handleCanPlay);
       firstVideo.removeEventListener('error', handleError);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Keyboard controls for accessibility
+  // Keyboard controls
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Space bar to pause/play (when focused on the section)
       if (e.key === ' ' && e.target === document.body) {
         e.preventDefault();
         const activeVideoElement = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
@@ -264,17 +301,15 @@ export default function Hero() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  // Intersection Observer to pause videos when not visible
+  // Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) {
-            // Pause videos when section is not visible
             video1Ref.current?.pause();
             video2Ref.current?.pause();
           } else {
-            // Resume active video when section becomes visible
             const activeVideoElement = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
             if (activeVideoElement && !activeVideoElement.paused) {
               activeVideoElement.play().catch(() => {});
@@ -285,22 +320,17 @@ export default function Hero() {
       { threshold: 0.1 }
     );
 
-    const section = document.getElementById('primary')?.querySelector('section');
-    if (section) {
-      observer.observe(section);
-    }
+    const section = sectionRef.current;
+    if (section) observer.observe(section);
 
     return () => {
-      if (section) {
-        observer.unobserve(section);
-      }
+      if (section) observer.unobserve(section);
     };
   }, []);
 
-  // Scroll indicator animation
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  // Scroll indicator fade
   useEffect(() => {
-    if (!scrollIndicatorRef.current) return;
+    if (!scrollIndicatorRef.current || prefersReducedMotion) return;
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -318,33 +348,38 @@ export default function Hero() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [prefersReducedMotion]);
+
+  const scrollToAbout = () => {
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section 
+      ref={sectionRef}
       className="relative h-screen w-full overflow-hidden"
       role="region"
       aria-label="Hero section with video background"
       tabIndex={0}
     >
-      {/* Loading Skeleton */}
+      {/* Loading State */}
       {isLoading && !hasError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 z-[2] flex items-center justify-center">
+        <div className="absolute inset-0 bg-ink-800 z-[2] flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            <p className="text-white/80 text-sm font-light">Loading video...</p>
+            <div className="w-10 h-10 border border-white/20 border-t-white/60 rounded-full animate-spin" />
+            <p className="text-white/60 text-caption font-light tracking-wide">Loading</p>
           </div>
         </div>
       )}
 
       {/* Error State */}
       {hasError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 z-[2] flex items-center justify-center">
+        <div className="absolute inset-0 bg-ink-800 z-[2] flex items-center justify-center">
           <div className="text-center max-w-md px-6">
-            <p className="text-white/90 text-lg font-light mb-4">{errorMessage}</p>
+            <p className="text-white/80 text-body-lg font-light mb-6">{errorMessage}</p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-bronze hover:bg-bronze-dark text-charcoal font-light uppercase tracking-wider rounded-sm transition-all duration-300"
+              className="px-6 py-3 bg-accent hover:bg-accent-dark text-ink-900 text-caption font-medium uppercase tracking-widest transition-colors duration-300"
             >
               Refresh Page
             </button>
@@ -352,6 +387,7 @@ export default function Hero() {
         </div>
       )}
 
+      {/* Video Elements */}
       <video
         ref={video1Ref}
         muted
@@ -359,16 +395,22 @@ export default function Hero() {
         loop={false}
         preload={currentVideoIndex === 0 ? 'auto' : 'none'}
         className="absolute inset-0 h-full w-full object-cover"
-        aria-label="Creation Partners video background"
+        aria-hidden="true"
         style={{ 
           opacity: activeVideo === 0 && !isLoading && !hasError ? 1 : 0, 
           zIndex: activeVideo === 0 ? 1 : 0,
-          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)',
           pointerEvents: 'none'
         }}
-      >
-        Your browser does not support the video tag.
-      </video>
+        // Mobile optimizations - prevent fullscreen on iOS/Android
+        {...({
+          'webkit-playsinline': 'true',
+          'x5-playsinline': 'true',
+          'x5-video-player-type': 'h5',
+          'x5-video-player-fullscreen': 'true',
+          'x5-video-orientation': 'portraint',
+        } as React.VideoHTMLAttributes<HTMLVideoElement>)}
+      />
 
       <video
         ref={video2Ref}
@@ -377,34 +419,94 @@ export default function Hero() {
         loop={false}
         preload="none"
         className="absolute inset-0 h-full w-full object-cover"
-        aria-label="Creation Partners video background"
+        aria-hidden="true"
         style={{ 
           opacity: activeVideo === 1 && !isLoading && !hasError ? 1 : 0, 
           zIndex: activeVideo === 1 ? 1 : 0,
-          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)',
           pointerEvents: 'none'
         }}
-      >
-        Your browser does not support the video tag.
-      </video>
+        // Mobile optimizations - prevent fullscreen on iOS/Android
+        {...({
+          'webkit-playsinline': 'true',
+          'x5-playsinline': 'true',
+          'x5-video-player-type': 'h5',
+          'x5-video-player-fullscreen': 'true',
+          'x5-video-orientation': 'portraint',
+        } as React.VideoHTMLAttributes<HTMLVideoElement>)}
+      />
 
-      {/* Gradient Overlay for Text Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-[5] pointer-events-none"></div>
+      {/* Subtle Grid Texture Overlay */}
+      <div 
+        className="absolute inset-0 z-[3] pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.5) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.5) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+        }}
+      />
 
-      {/* Text Overlay - Positioned strategically in lower portion */}
-      <div className="absolute inset-0 flex flex-col justify-end z-10 pb-12 sm:pb-16 md:pb-20 lg:pb-24">
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="max-w-3xl relative">
-            {/* Text Container with Backdrop Blur for Better Readability */}
-            <div className="relative backdrop-blur-[2px] rounded-lg p-3 sm:p-4 md:p-6 -m-3 sm:-m-4 md:-m-6">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white mb-3 sm:mb-4 md:mb-6 tracking-tight leading-tight drop-shadow-lg">
-                Perpetual Movement x Value Creation
-              </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 max-w-2xl font-light leading-relaxed drop-shadow-md">
-                Creation Partners is a commercial real estate investment, advisory
-                and management company built for purpose and movement.
-              </p>
+      {/* Gradient Overlays - Refined layering */}
+      <div className="absolute inset-0 z-[4] pointer-events-none">
+        {/* Bottom gradient for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* Top vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent" />
+        {/* Side vignettes */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20" />
+      </div>
+
+      {/* Cursor Glow Effect (Desktop only, reduced motion aware) */}
+      {isDesktop && !prefersReducedMotion && (
+        <div 
+          className="absolute inset-0 z-[5] pointer-events-none transition-opacity duration-500"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(184, 160, 104, 0.06), transparent 50%)`,
+          }}
+        />
+      )}
+
+      {/* Text Content */}
+      <div className="absolute inset-0 flex flex-col justify-end z-10 pb-20 sm:pb-24 md:pb-28 lg:pb-32">
+        <div className="container-main">
+          <div className="max-w-3xl">
+            {/* Eyebrow text with accent line */}
+            <div className="mb-4 md:mb-6 flex items-center gap-3">
+              <span className="w-6 h-px bg-accent/60" aria-hidden="true" />
+              <span className="inline-block text-white/50 text-label tracking-[0.2em] uppercase">
+                Commercial Real Estate
+              </span>
             </div>
+            
+            {/* Main Headline with text shadow for depth */}
+            <h1 className="text-white mb-6 md:mb-8 text-shadow-subtle">
+              <span className="block text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-light">
+                Perpetual Movement
+              </span>
+              <span className="block text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-light mt-1">
+                <span className="text-accent drop-shadow-sm">×</span> Value Creation
+              </span>
+            </h1>
+            
+            {/* Subheadline */}
+            <p className="text-white/80 text-body-lg max-w-xl font-light leading-relaxed mb-8 md:mb-10">
+              A commercial real estate investment, advisory and management company 
+              built for purpose and movement.
+            </p>
+
+            {/* CTA Button with enhanced hover */}
+            <button
+              onClick={scrollToAbout}
+              className="group inline-flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300 focus-bronze"
+              aria-label="Scroll to learn more"
+            >
+              <span className="text-caption font-medium tracking-[0.15em] uppercase">
+                Explore
+              </span>
+              <span className="w-8 h-px bg-accent group-hover:w-14 transition-all duration-400" />
+            </button>
           </div>
         </div>
       </div>
@@ -412,10 +514,11 @@ export default function Hero() {
       {/* Scroll Indicator */}
       <div 
         ref={scrollIndicatorRef}
-        className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
+        aria-hidden="true"
       >
-        <div className="w-px h-8 sm:h-12 bg-white/60"></div>
-        <div className="w-1 h-1 rounded-full bg-white/60 animate-pulse"></div>
+        <div className="w-px h-12 bg-gradient-to-b from-white/0 via-white/40 to-white/60" />
+        <div className="w-1.5 h-1.5 rounded-full bg-white/60 mt-1 animate-pulse" />
       </div>
     </section>
   );

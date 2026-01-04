@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import Lenis from 'lenis';
 
 export default function ScrollProgress() {
   const progressRef = useRef<HTMLDivElement>(null);
@@ -9,12 +10,28 @@ export default function ScrollProgress() {
   useEffect(() => {
     if (!progressRef.current) return;
 
+    // Wait for Lenis to be available
+    const getLenis = (): Lenis | null => {
+      return (window as any).lenis || null;
+    };
+
     const updateProgress = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const scrollableHeight = documentHeight - windowHeight;
-      const progress = scrollableHeight > 0 ? scrollTop / scrollableHeight : 0;
+      const lenis = getLenis();
+      let progress = 0;
+
+      if (lenis) {
+        // Use Lenis scroll position
+        const scrollProgress = lenis.scroll;
+        const limit = lenis.limit;
+        progress = limit > 0 ? scrollProgress / limit : 0;
+      } else {
+        // Fallback to native scroll if Lenis not available
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.scrollY;
+        const scrollableHeight = documentHeight - windowHeight;
+        progress = scrollableHeight > 0 ? scrollTop / scrollableHeight : 0;
+      }
       
       if (progressRef.current) {
         gsap.to(progressRef.current, {
@@ -26,10 +43,20 @@ export default function ScrollProgress() {
       }
     };
 
-    window.addEventListener('scroll', updateProgress);
-    updateProgress(); // Initial update
-
-    return () => window.removeEventListener('scroll', updateProgress);
+    // Try to use Lenis scroll event
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.on('scroll', updateProgress);
+      updateProgress(); // Initial update
+      return () => {
+        lenis.off('scroll', updateProgress);
+      };
+    } else {
+      // Fallback to native scroll
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress(); // Initial update
+      return () => window.removeEventListener('scroll', updateProgress);
+    }
   }, []);
 
   return (

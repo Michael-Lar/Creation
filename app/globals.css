@@ -4,65 +4,75 @@
 
 @layer base {
   :root {
-    /* Color Palette - Luxury Commercial Real Estate Aesthetic */
-    --color-cream: #FAF8F3; /* Slightly brighter, more refined cream */
+    /* ========================================
+       Premium Color Palette
+       Restrained luxury: near-black, off-white, muted grays, subtle bronze accent
+    ======================================== */
+    
+    /* Primary - Off-white backgrounds */
+    --color-cream: #F9F7F3;
     --color-warm-white: #FDFCFA;
-    --color-charcoal: #1A1A1A; /* Deep, rich charcoal */
-    --color-charcoal-light: #2D2D2D;
-    --color-taupe: #8B7D6B; /* Sophisticated taupe accent */
+    
+    /* Primary - Near-black text */
+    --color-ink: #1A1918;
+    --color-charcoal: #1A1918;
+    --color-charcoal-light: #2D2C2A;
+    
+    /* Neutral grays - refined warm undertones */
+    --color-gray-50: #F7F6F4;
+    --color-gray-100: #EDECEA;
+    --color-gray-200: #E0DFDC;
+    --color-gray-300: #C8C7C4;
+    --color-gray-400: #9D9C99;
+    --color-gray-500: #6F6E6B;
+    --color-gray-600: #4A4947;
+    --color-gray-700: #333230;
+    --color-gray-800: #232221;
+    --color-gray-900: #1A1918;
+    
+    /* Accent - Warm bronze (use sparingly) */
+    --color-accent: #B8A068;
+    --color-accent-light: #D4C494;
+    --color-accent-dark: #9A854D;
+    
+    /* Legacy bronze support */
+    --color-bronze: #B8A068;
+    --color-bronze-light: #D4C494;
+    --color-bronze-dark: #9A854D;
+    
+    /* Taupe accents */
+    --color-taupe: #8B7D6B;
     --color-taupe-light: #A89B8A;
     --color-taupe-dark: #6B5F4F;
-    --color-bronze: #C9A961; /* Warm bronze/gold accent - more refined than amber */
-    --color-bronze-light: #D4B877;
-    --color-bronze-dark: #A6894A;
-    --color-gray-100: #F5F3F0;
-    --color-gray-200: #E8E6E1;
-    --color-gray-300: #D4D1CA;
-    --color-gray-400: #B8B5AE;
-    --color-gray-500: #8B8880;
-    --color-gray-600: #5A5750;
-    --color-gray-700: #3D3B36;
-    --color-gray-800: #2A2824;
-    --color-gray-900: #1A1A1A;
     
-    /* Spacing Scale */
-    --spacing-section-py: 6rem; /* py-24 */
-    --spacing-section-py-md: 8rem; /* md:py-32 */
-    --spacing-section-py-lg: 10rem; /* lg:py-40 */
-    
-    /* Typography Scale */
-    --font-size-xs: 0.75rem; /* 12px */
-    --font-size-sm: 0.875rem; /* 14px */
-    --font-size-base: 1rem; /* 16px */
-    --font-size-lg: 1.125rem; /* 18px */
-    --font-size-xl: 1.25rem; /* 20px */
-    --font-size-2xl: 1.5rem; /* 24px */
-    --font-size-3xl: 1.875rem; /* 30px */
-    --font-size-4xl: 2.25rem; /* 36px */
-    --font-size-5xl: 3rem; /* 48px */
-    --font-size-6xl: 3.75rem; /* 60px */
-    --font-size-7xl: 4.5rem; /* 72px */
-    
-    /* Animation Timing */
+    /* ========================================
+       Animation & Motion
+    ======================================== */
+    --duration-instant: 100ms;
     --duration-fast: 200ms;
-    --duration-normal: 300ms;
+    --duration-normal: 350ms;
     --duration-slow: 500ms;
     --duration-slower: 700ms;
     
-    /* Easing Functions */
-    --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-power2: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-power3: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* ========================================
+       Shadows - Subtle and refined
+    ======================================== */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px -8px rgba(0, 0, 0, 0.1);
+    --shadow-lift: 0 12px 40px -12px rgba(0, 0, 0, 0.12);
   }
 
+  /* ========================================
+     Smooth Scrolling (Lenis)
+  ======================================== */
   html {
-    scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
+    scroll-behavior: auto;
   }
   
   html.lenis {
@@ -85,36 +95,72 @@
     pointer-events: none;
   }
 
+  /* ========================================
+     Base Typography
+  ======================================== */
   body {
-    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+    font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-cream);
-    color: var(--color-charcoal);
+    color: var(--color-ink);
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+    /* iOS safe area support */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
   
+  /* Headings - Elegant serif with tight tracking */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
     font-weight: 400;
-    letter-spacing: -0.01em;
-    color: var(--color-charcoal);
+    color: var(--color-ink);
+    text-wrap: balance;
   }
   
   h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
     font-weight: 400;
-    letter-spacing: -0.02em;
   }
   
-  h2, h3 {
+  h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+  
+  h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  
+  /* Body text - Refined readability */
+  p {
+    line-height: 1.7;
+    letter-spacing: -0.005em;
+  }
+  
+  /* Small/Label text - Spaced uppercase */
+  .label-text {
+    font-size: 0.75rem;
     font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
   }
 
-  /* Enhanced Focus Indicators */
+  /* ========================================
+     Focus States - Accessibility
+  ======================================== */
   *:focus-visible {
-    outline: 2px solid var(--color-bronze);
-    outline-offset: 2px;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
     border-radius: 2px;
   }
 
@@ -123,22 +169,320 @@
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 2px solid var(--color-bronze);
-    outline-offset: 2px;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
   }
 
-  /* Remove default focus outline for mouse users, keep for keyboard */
   *:focus:not(:focus-visible) {
     outline: none;
+  }
+
+  /* ========================================
+     Reduced Motion Support
+  ======================================== */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .animate-on-scroll {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* Selection styling */
+  ::selection {
+    background-color: var(--color-accent);
+    color: white;
+  }
+}
+
+@layer components {
+  /* ========================================
+     Container - Consistent max-width and gutters
+  ======================================== */
+  .container-main {
+    width: 100%;
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1rem, 4vw, 3rem);
+    padding-right: clamp(1rem, 4vw, 3rem);
+    /* iOS safe area support */
+    padding-left: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-right));
+  }
+  
+  .container-content {
+    width: 100%;
+    max-width: 65rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1rem, 4vw, 3rem);
+    padding-right: clamp(1rem, 4vw, 3rem);
+    /* iOS safe area support */
+    padding-left: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-right));
+  }
+  
+  .container-prose {
+    width: 100%;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1rem, 4vw, 3rem);
+    padding-right: clamp(1rem, 4vw, 3rem);
+    /* iOS safe area support */
+    padding-left: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-right));
+  }
+
+  /* ========================================
+     Section Spacing
+  ======================================== */
+  .section-spacing {
+    padding-top: clamp(3rem, 8vw, 10rem);
+    padding-bottom: clamp(3rem, 8vw, 10rem);
+  }
+  
+  .section-spacing-sm {
+    padding-top: clamp(2rem, 6vw, 6rem);
+    padding-bottom: clamp(2rem, 6vw, 6rem);
+  }
+  
+  /* ========================================
+     Mobile Touch Targets - Minimum 44x44px
+  ======================================== */
+  @media (max-width: 768px) {
+    button,
+    a,
+    [role="button"],
+    input[type="button"],
+    input[type="submit"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Ensure touch targets are properly sized */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Improve tap highlight on mobile */
+    button,
+    a,
+    [role="button"] {
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Better text selection on mobile */
+    p, span, div {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    
+    /* Prevent text size adjustment on orientation change */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+  }
+  
+  /* ========================================
+     Mobile Performance Optimizations
+  ======================================== */
+  @media (max-width: 768px) {
+    /* Reduce motion on low-end devices */
+    @media (prefers-reduced-motion: no-preference) {
+      * {
+        will-change: auto;
+      }
+    }
+    
+    /* Optimize rendering */
+    img, video {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+  }
+  
+  /* ========================================
+     Tablet Optimizations (768px - 1024px)
+  ======================================== */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .container-main,
+    .container-content,
+    .container-prose {
+      padding-left: clamp(2rem, 5vw, 3rem);
+      padding-right: clamp(2rem, 5vw, 3rem);
+    }
+  }
+  
+  /* ========================================
+     Mobile Form Optimizations
+  ======================================== */
+  @media (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    textarea,
+    select {
+      font-size: 16px; /* Prevents zoom on iOS */
+      min-height: 44px;
+      padding: 0.75rem 1rem;
+    }
+    
+    /* Better form field spacing on mobile */
+    form {
+      gap: 1.25rem;
+    }
+    
+    /* Improve checkbox/radio touch targets */
+    input[type="checkbox"],
+    input[type="radio"] {
+      min-width: 44px;
+      min-height: 44px;
+      margin: 0;
+    }
+  }
+
+  /* ========================================
+     Premium Card Component
+  ======================================== */
+  .card-premium {
+    position: relative;
+    background: var(--color-cream);
+    border: 1px solid var(--color-gray-200);
+    border-radius: 0.375rem;
+    transition: 
+      transform var(--duration-normal) var(--ease-out),
+      box-shadow var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out);
+  }
+  
+  .card-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: var(--color-gray-300);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .card-premium:hover {
+      transform: none;
+    }
+  }
+
+  /* ========================================
+     Section Label Component
+  ======================================== */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .section-label-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+  }
+  
+  .section-label-line {
+    height: 1px;
+    width: 2rem;
+    background: var(--color-accent);
+    transform-origin: left;
+  }
+
+  /* ========================================
+     Subtle Link Underline
+  ======================================== */
+  .link-subtle {
+    position: relative;
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  .link-subtle::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+  
+  .link-subtle:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* ========================================
+     Scroll Reveal Animation Classes
+  ======================================== */
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: 
+      opacity var(--duration-slow) var(--ease-out),
+      transform var(--duration-slow) var(--ease-out);
+  }
+  
+  .reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ========================================
+     Index/Number Labels
+  ======================================== */
+  .index-label {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--color-gray-400);
   }
 }
 
 @layer utilities {
+  /* Text utilities */
   .text-balance {
     text-wrap: balance;
   }
   
-  /* Animation Utilities */
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  /* Animation duration utilities */
   .transition-fast {
     transition-duration: var(--duration-fast);
   }
@@ -151,17 +495,25 @@
     transition-duration: var(--duration-slow);
   }
   
-  /* Hover Effect Utilities */
+  /* Premium hover lift */
   .hover-lift {
-    transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+    transition: 
+      transform var(--duration-normal) var(--ease-out), 
+      box-shadow var(--duration-normal) var(--ease-out);
   }
   
   .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .hover-lift:hover {
+      transform: none;
+    }
   }
 
-  /* Screen reader only utility */
+  /* Screen reader only */
   .sr-only {
     position: absolute;
     width: 1px;
@@ -184,6 +536,230 @@
     overflow: visible;
     clip: auto;
     white-space: normal;
+  }
+
+  /* ========================================
+     Premium Texture Overlays
+  ======================================== */
+  
+  /* Subtle paper texture - adds organic warmth */
+  .bg-texture-paper {
+    background-image: 
+      radial-gradient(ellipse at 30% 20%, rgba(184, 160, 104, 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(184, 160, 104, 0.02) 0%, transparent 50%),
+      radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.015) 1px, transparent 0);
+    background-size: 100% 100%, 100% 100%, 32px 32px;
+  }
+  
+  /* Subtle noise texture */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  }
+  
+  /* Premium subtle grid */
+  .bg-grid-subtle {
+    background-image: 
+      linear-gradient(to right, var(--color-gray-200) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-gray-200) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  
+  /* Luxury gradient overlay */
+  .bg-luxury-gradient {
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(184, 160, 104, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(184, 160, 104, 0.03) 0%, transparent 50%);
+  }
+
+  /* ========================================
+     Bronze Accent Decorative Elements
+  ======================================== */
+  
+  /* Horizontal bronze divider */
+  .divider-bronze {
+    position: relative;
+    height: 1px;
+    background: linear-gradient(
+      90deg, 
+      transparent 0%, 
+      var(--color-gray-200) 15%,
+      var(--color-accent) 50%,
+      var(--color-gray-200) 85%,
+      transparent 100%
+    );
+    opacity: 0.6;
+  }
+  
+  /* Short accent line */
+  .accent-line {
+    width: 3rem;
+    height: 1px;
+    background: var(--color-accent);
+    opacity: 0.7;
+  }
+  
+  /* Decorative corner accent */
+  .corner-accent {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: var(--color-accent);
+    opacity: 0.3;
+  }
+  
+  .corner-accent-tl {
+    top: 0;
+    left: 0;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+  
+  .corner-accent-br {
+    bottom: 0;
+    right: 0;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+  }
+
+  /* ========================================
+     Enhanced Card Depth System
+  ======================================== */
+  
+  /* Multi-layer shadow for premium depth */
+  .shadow-premium {
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      0 4px 8px rgba(0, 0, 0, 0.03),
+      0 8px 16px rgba(0, 0, 0, 0.04);
+  }
+  
+  .shadow-premium-hover {
+    box-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.02),
+      0 8px 16px rgba(0, 0, 0, 0.05),
+      0 16px 32px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(184, 160, 104, 0.08);
+  }
+  
+  /* Inner shadow for depth */
+  .shadow-inner-subtle {
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Bronze glow effect */
+  .glow-bronze {
+    box-shadow: 
+      0 0 20px rgba(184, 160, 104, 0.1),
+      0 0 40px rgba(184, 160, 104, 0.05);
+  }
+
+  /* ========================================
+     Premium Hover States
+  ======================================== */
+  
+  /* Bronze tinted hover */
+  .hover-bronze {
+    transition: 
+      background-color var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out);
+  }
+  
+  .hover-bronze:hover {
+    background-color: rgba(184, 160, 104, 0.03);
+    border-color: rgba(184, 160, 104, 0.2);
+  }
+  
+  /* Underline reveal animation */
+  .underline-reveal {
+    position: relative;
+  }
+  
+  .underline-reveal::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+  
+  .underline-reveal:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .underline-reveal::after {
+      transition: none;
+    }
+    .underline-reveal:hover::after {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ========================================
+     Premium Focus States
+  ======================================== */
+  
+  .focus-bronze:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(184, 160, 104, 0.15);
+  }
+
+  /* ========================================
+     Typography Enhancements
+  ======================================== */
+  
+  /* Subtle text shadow for hero text */
+  .text-shadow-subtle {
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Letter-spacing refinements */
+  .tracking-luxury {
+    letter-spacing: 0.15em;
+  }
+  
+  .tracking-tight-luxury {
+    letter-spacing: -0.03em;
+  }
+
+  /* ========================================
+     Section Transitions
+  ======================================== */
+  
+  /* Staggered reveal for children */
+  .stagger-reveal > * {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: 
+      opacity var(--duration-slow) var(--ease-out),
+      transform var(--duration-slow) var(--ease-out);
+  }
+  
+  .stagger-reveal.revealed > *:nth-child(1) { transition-delay: 0ms; }
+  .stagger-reveal.revealed > *:nth-child(2) { transition-delay: 80ms; }
+  .stagger-reveal.revealed > *:nth-child(3) { transition-delay: 160ms; }
+  .stagger-reveal.revealed > *:nth-child(4) { transition-delay: 240ms; }
+  .stagger-reveal.revealed > *:nth-child(5) { transition-delay: 320ms; }
+  .stagger-reveal.revealed > *:nth-child(6) { transition-delay: 400ms; }
+  
+  .stagger-reveal.revealed > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-reveal > * {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
 }
 

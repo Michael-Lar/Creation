@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -11,141 +11,191 @@ if (typeof window !== 'undefined') {
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
-  const dividerRef = useRef<HTMLDivElement>(null);
-  const firstParaRef = useRef<HTMLParagraphElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const italicRef = useRef<HTMLParagraphElement>(null);
+  const quoteRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(motionQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    motionQuery.addEventListener('change', handleChange);
+    return () => motionQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!sectionRef.current || prefersReducedMotion) return;
 
     const ctx = gsap.context(() => {
       // Animate section label
       gsap.from(labelRef.current, {
         opacity: 0,
-        y: 30,
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-        },
-      });
-
-      // Animate divider
-      gsap.from(dividerRef.current, {
-        scaleX: 0,
-        duration: 1,
+        y: 15,
+        duration: 0.5,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 80%',
+          start: 'top 92%',
         },
       });
 
-      // Animate first paragraph
-      gsap.from(firstParaRef.current, {
+      // Animate logo
+      gsap.from(logoRef.current, {
         opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: 'power3.out',
+        scale: 0.95,
+        duration: 0.6,
+        ease: 'power2.out',
         scrollTrigger: {
-          trigger: firstParaRef.current,
-          start: 'top 85%',
+          trigger: headingRef.current,
+          start: 'top 92%',
         },
       });
 
-      // Animate grid columns
+      // Animate heading
+      gsap.from(headingRef.current, {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: 'top 92%',
+        },
+      });
+
+      // Animate grid columns with stagger
       gsap.from(gridRef.current?.children || [], {
         opacity: 0,
-        y: 50,
-        duration: 0.9,
-        ease: 'power3.out',
-        stagger: 0.15,
+        y: 20,
+        duration: 0.5,
+        ease: 'power2.out',
+        stagger: 0.06,
         scrollTrigger: {
           trigger: gridRef.current,
-          start: 'top 80%',
+          start: 'top 90%',
         },
       });
 
-      // Animate italic statement
-      gsap.from(italicRef.current, {
+      // Animate quote
+      gsap.from(quoteRef.current, {
         opacity: 0,
-        y: 40,
-        duration: 1.2,
-        ease: 'power3.out',
+        y: 20,
+        duration: 0.6,
+        ease: 'power2.out',
         scrollTrigger: {
-          trigger: italicRef.current,
-          start: 'top 85%',
+          trigger: quoteRef.current,
+          start: 'top 92%',
         },
       });
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
-    <section ref={sectionRef} id="about" className="py-24 md:py-32 lg:py-40 px-6 md:px-8 lg:px-12">
-      <div className="max-w-6xl mx-auto">
+    <section 
+      ref={sectionRef} 
+      id="about" 
+      className="section-spacing relative overflow-hidden bg-luxury-gradient"
+      style={{ backgroundColor: 'var(--color-cream)' }}
+    >
+      {/* Subtle decorative elements */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-ink-100 to-transparent" aria-hidden="true" />
+      
+      <div className="container-content relative">
         {/* Section Label */}
-        <div ref={labelRef} className="mb-10 md:mb-12">
-          <span className="text-xs md:text-sm uppercase tracking-widest text-gray-500 font-semibold">
-            About
-          </span>
-          <div ref={dividerRef} className="mt-3 w-12 h-px bg-bronze origin-left"></div>
+        <div ref={labelRef} className="section-label mb-12 md:mb-16">
+          <div className="section-label-line" />
+          <span className="section-label-text">About</span>
         </div>
 
-        {/* Main Content with Creative Layout */}
-        <div className="space-y-8 md:space-y-10">
-          <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-center">
-            {/* Large Opening Statement - Takes more space */}
-            <div className="md:col-span-9">
-              <p ref={firstParaRef} className="text-2xl md:text-3xl lg:text-4xl text-gray-900 leading-tight font-light tracking-tight">
-                A Los Angeles-based, vertically integrated real estate investment and operating platform.
-              </p>
-            </div>
-            
-            {/* Logo Element - Centered and properly sized */}
-            <div className="md:col-span-3 flex items-center justify-center">
-              <div className="relative group">
-                <img
-                  src={`/logos/logo.svg?t=${Date.now()}`}
-                  alt="Creation Partners"
-                  className="w-20 h-20 md:w-28 md:h-28 opacity-40 transition-all duration-500 group-hover:opacity-50 group-hover:scale-105"
-                  style={{ display: 'block' }}
-                />
-                <div className="absolute inset-0 bg-bronze/0 group-hover:bg-bronze/5 rounded-full transition-all duration-500 -z-10"></div>
-              </div>
-            </div>
+        {/* Main Heading with Logo */}
+        <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-start mb-16 md:mb-20">
+          {/* Heading */}
+          <div ref={headingRef} className="md:col-span-9">
+            <h2 className="text-headline text-ink-800 tracking-tight-luxury">
+              A Los Angeles-based, vertically integrated real estate investment and operating platform.
+            </h2>
           </div>
           
-          {/* Two Column Grid */}
-          <div ref={gridRef} className="grid md:grid-cols-2 gap-8 md:gap-12 pt-8 border-t border-gray-300/20">
-            <div className="space-y-3 group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-px bg-bronze"></div>
-                <h3 className="text-xs uppercase tracking-widest text-gray-500 font-semibold">What We Do</h3>
-              </div>
-              <p className="text-base md:text-lg text-gray-700 leading-relaxed font-light pl-11">
-                Acquisitions, advisory, capital formation, and asset management.
-              </p>
-            </div>
-            <div className="space-y-3 group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-px bg-bronze"></div>
-                <h3 className="text-xs uppercase tracking-widest text-gray-500 font-semibold">How We Work</h3>
-              </div>
-              <p className="text-base md:text-lg text-gray-700 leading-relaxed font-light pl-11">
-                Deep market knowledge, creative problem-solving, and hands-on execution.
-              </p>
+          {/* Logo Mark */}
+          <div 
+            ref={logoRef}
+            className="hidden md:flex md:col-span-3 items-center justify-center"
+          >
+            <div className="relative group">
+              {/* Subtle ring around logo */}
+              <div 
+                className="absolute inset-0 rounded-full border border-accent/10 scale-150 opacity-0 group-hover:opacity-100 transition-all duration-700"
+                aria-hidden="true"
+              />
+              <img
+                src="/logos/logo.svg"
+                alt=""
+                className="w-20 h-20 lg:w-24 lg:h-24 opacity-25 transition-all duration-500 group-hover:opacity-35 group-hover:scale-105"
+                style={{ filter: 'grayscale(30%)' }}
+              />
+              {/* Bronze glow on hover */}
+              <div 
+                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10"
+                style={{
+                  background: 'radial-gradient(circle, rgba(184, 160, 104, 0.12) 0%, transparent 70%)',
+                  transform: 'scale(2)',
+                }}
+                aria-hidden="true"
+              />
             </div>
           </div>
+        </div>
 
-          {/* Final Statement with Creative Styling */}
-          <div className="pt-8 border-t border-bronze/30">
-            <p ref={italicRef} className="text-xl md:text-2xl lg:text-3xl text-gray-900 leading-tight font-light italic max-w-4xl relative pl-8 md:pl-12">
-              <span className="absolute left-0 top-0 bottom-0 w-px bg-bronze/40"></span>
-              Built around movement of ideas, capital, projects, and people.
+        {/* Two Column Grid */}
+        <div 
+          ref={gridRef} 
+          className="grid md:grid-cols-2 gap-12 md:gap-16 lg:gap-24 pb-12 md:pb-16"
+        >
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-5">
+              <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
+              <span className="text-label text-ink-400 tracking-luxury">What We Do</span>
+            </div>
+            <p className="text-body-lg text-ink-600 font-light leading-relaxed">
+              Acquisitions, advisory, capital formation, and asset management—partnering with 
+              owners, investors, and operators to identify opportunities and create long-term value.
+            </p>
+          </div>
+          
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-5">
+              <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
+              <span className="text-label text-ink-400 tracking-luxury">How We Work</span>
+            </div>
+            <p className="text-body-lg text-ink-600 font-light leading-relaxed">
+              Deep market knowledge, creative problem-solving, and hands-on execution 
+              across a range of asset types with an emphasis on thoughtful growth and alignment.
+            </p>
+          </div>
+        </div>
+        
+        {/* Bronze divider */}
+        <div className="divider-bronze my-12 md:my-16" aria-hidden="true" />
+
+        {/* Pull Quote */}
+        <div ref={quoteRef}>
+          <div className="relative pl-6 md:pl-8">
+            {/* Decorative quote border with bronze accent */}
+            <div 
+              className="absolute left-0 top-0 bottom-0 w-px"
+              style={{
+                background: 'linear-gradient(to bottom, var(--color-accent) 0%, var(--color-accent) 30%, var(--color-gray-200) 100%)',
+              }}
+              aria-hidden="true"
+            />
+            <p className="text-title text-ink-700 font-light italic leading-snug max-w-3xl">
+              &ldquo;At our core, Creation Partners is built around movement—of ideas, capital, 
+              projects, and people—with the goal of building enduring businesses and places over time.&rdquo;
             </p>
           </div>
         </div>
