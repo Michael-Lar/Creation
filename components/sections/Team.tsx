@@ -16,6 +16,7 @@ interface TeamMember {
   email?: string;
   phone?: string;
   linkedin?: string;
+  image?: string; // Path to headshot image
 }
 
 // Placeholder team data - replace with actual data
@@ -28,6 +29,7 @@ const teamMembers: TeamMember[] = [
     email: 'ys@creation-partners.com',
     phone: '310.749.9628',
     linkedin: 'https://www.linkedin.com/in/yoav-sarraf',
+    image: '/team/yoav-sarraf.png', // Add headshot image path here
   },
   {
     id: 2,
@@ -203,20 +205,31 @@ export default function Team() {
                 className="group bg-white border border-ink-100 rounded-card overflow-hidden transition-all duration-400 ease-smooth hover:border-accent/25 shadow-premium hover:shadow-premium-hover cursor-pointer"
                 onClick={(e) => handleCardClick(e, member.id)}
               >
-                {/* Photo Container - 4:5 aspect ratio */}
-                <div className="aspect-[4/5] bg-gradient-to-br from-ink-50 to-ink-100 relative overflow-hidden">
-                  {/* Placeholder for photo */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-ink-200 text-5xl font-serif">
-                      {member.name.charAt(0)}
-                    </span>
-                  </div>
-                  
-                  {/* Subtle bronze tint on hover */}
-                  <div 
-                    className="absolute inset-0 bg-gradient-to-t from-accent/0 to-accent/0 group-hover:from-accent/[0.03] group-hover:to-transparent transition-all duration-500"
-                    aria-hidden="true"
-                  />
+                {/* Photo Container - Black & White Cutout with transparent background */}
+                <div className="aspect-[4/5] relative flex items-center justify-center bg-transparent overflow-hidden">
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={`${member.name} - ${member.title}`}
+                      className="w-full h-full object-contain object-center"
+                      style={{
+                        filter: 'grayscale(100%) contrast(1.2) brightness(0.9)',
+                        WebkitFilter: 'grayscale(100%) contrast(1.2) brightness(0.9)',
+                      }}
+                    />
+                  ) : (
+                    // Fallback placeholder - black and white initial
+                    <div className="w-full h-full flex items-center justify-center bg-ink-50/30">
+                      <span 
+                        className="text-ink-400 text-5xl font-serif"
+                        style={{
+                          filter: 'grayscale(100%)',
+                        }}
+                      >
+                        {member.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}

@@ -126,13 +126,15 @@ export default function Header() {
     { label: 'Contact', id: 'contact' },
   ];
 
+  // Elegant background - subtle and clean
   const headerBg = isOverHero
-    ? 'bg-ink-900/30 backdrop-blur-md'
+    ? 'bg-transparent'
     : isScrolled
-    ? 'bg-cream/95 backdrop-blur-sm shadow-soft'
+    ? 'bg-cream/98 backdrop-blur-sm border-b border-ink-100/50'
     : 'bg-transparent';
 
   const textColor = isOverHero ? 'text-white' : 'text-ink-800';
+  const logoFilter = isOverHero ? 'brightness(0) invert(1)' : 'none';
 
   return (
     <header
@@ -141,62 +143,77 @@ export default function Header() {
       style={{ opacity: 0 }}
     >
       <nav className="container-main">
-        <div className="flex items-center justify-between h-16 md:h-18">
-          {/* Logo with Icon */}
+        <div className="flex items-center justify-between h-20 md:h-24">
+          {/* Logo - Proud and Simplistic */}
           <Link 
             href="/" 
-            className="flex items-center gap-2.5 group transition-opacity duration-300 hover:opacity-70"
+            className="flex items-center gap-3 group transition-opacity duration-300 hover:opacity-80"
+            aria-label="Creation Partners - Home"
           >
-            {/* Logo Icon */}
-            <img
-              src="/logos/logo.svg"
-              alt=""
-              className="w-6 h-6 md:w-7 md:h-7 transition-transform duration-300 group-hover:scale-105"
-              style={{ 
-                filter: isOverHero ? 'brightness(0) invert(1)' : 'grayscale(20%)',
-              }}
-            />
-            {/* Company Name */}
-            <span className={`${textColor} text-body-lg font-sans font-light tracking-tight transition-colors duration-300`}>
+            {/* Prominent Logo Icon */}
+            <div className="relative">
+              <img
+                src="/logos/logo.svg"
+                alt="Creation Partners"
+                className="w-10 h-10 md:w-12 md:h-12 transition-all duration-300"
+                style={{ 
+                  filter: logoFilter,
+                }}
+              />
+              {/* Subtle glow on hover */}
+              <div 
+                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-md"
+                style={{
+                  background: isOverHero 
+                    ? 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)'
+                    : 'radial-gradient(circle, rgba(184, 160, 104, 0.15) 0%, transparent 70%)',
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            
+            {/* Company Name - Elegant Typography */}
+            <span className={`${textColor} text-lg md:text-xl font-serif font-normal tracking-[-0.02em] transition-colors duration-300`}>
               Creation Partners
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Clean and Minimal */}
+          <div className="hidden md:flex items-center gap-10">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`${textColor} text-caption font-sans tracking-[0.1em] uppercase font-light relative group transition-colors duration-300 hover:opacity-70`}
+                className={`${textColor} text-xs font-sans tracking-[0.15em] uppercase font-light relative group transition-all duration-300 hover:opacity-80`}
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-current transition-all duration-300 group-hover:w-full opacity-50" />
+                {/* Subtle underline on hover */}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all duration-400 group-hover:w-full" />
               </button>
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Minimal Design */}
           <button
             ref={menuButtonRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden ${textColor} p-3 -mr-2 touch-target`}
+            className={`md:hidden ${textColor} p-2 -mr-2 touch-target transition-opacity duration-300 hover:opacity-70`}
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMobileMenuOpen}
           >
             <div className="w-6 h-5 flex flex-col justify-center gap-1.5">
               <span
-                className={`block h-px bg-current transition-all duration-300 ${
+                className={`block h-[1.5px] bg-current transition-all duration-300 ${
                   isMobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
                 }`}
               />
               <span
-                className={`block h-px bg-current transition-all duration-300 ${
+                className={`block h-[1.5px] bg-current transition-all duration-300 ${
                   isMobileMenuOpen ? 'opacity-0' : ''
                 }`}
               />
               <span
-                className={`block h-px bg-current transition-all duration-300 ${
+                className={`block h-[1.5px] bg-current transition-all duration-300 ${
                   isMobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
                 }`}
               />
@@ -204,7 +221,7 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Clean Design */}
         <div
           ref={menuRef}
           className={`md:hidden overflow-hidden transition-all duration-300 ${
@@ -212,13 +229,13 @@ export default function Header() {
           }`}
           style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
         >
-          <div className="py-4 space-y-1">
+          <div className="py-6 space-y-2 border-t border-ink-100/30 mt-2">
             {navItems.map((item, index) => (
               <button
                 key={item.id}
                 ref={index === 0 ? firstMenuItemRef : null}
                 onClick={() => scrollToSection(item.id)}
-                className={`block w-full text-left ${textColor} py-4 px-4 text-body font-sans font-light tracking-wide transition-opacity duration-200 active:opacity-70 touch-target`}
+                className={`block w-full text-left ${textColor} py-3 px-4 text-sm font-sans font-light tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-80`}
               >
                 {item.label}
               </button>
