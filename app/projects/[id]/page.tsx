@@ -57,7 +57,20 @@ export default function ProjectDetailPage() {
     // Store flag to skip preloader and scroll to projects
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('scrollToProjects', 'true');
-      router.push('/');
+      // Disable scroll restoration to prevent jumping to top
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      
+      // Check if we can use browser back (if there's history)
+      // Otherwise use router navigation
+      if (window.history.length > 1) {
+        // Use browser back for smoother navigation
+        window.history.back();
+      } else {
+        // Fallback to router navigation
+        router.replace('/');
+      }
     }
   };
 

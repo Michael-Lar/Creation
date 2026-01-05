@@ -24,25 +24,32 @@ export default function Home() {
   const headerRef = useRef<HTMLElement>(null);
 
   const fadeInContent = useCallback(() => {
-    // Transition body background from preloader color to cream
-    gsap.to('body', {
+    // Start content fade-in immediately, overlapping with preloader fade-out
+    if (mainContentRef.current) {
+      // Set background first to prevent white flash
+      mainContentRef.current.style.backgroundColor = '#0F0E0D';
+      
+      // Fade in content while transitioning background
+      gsap.to(mainContentRef.current, {
+        opacity: 1,
+        backgroundColor: 'var(--color-cream)',
+        duration: 0.8,
+        ease: 'power2.out',
+      });
+    }
+    
+    // Transition body and html background simultaneously
+    gsap.to(['body', 'html'], {
       backgroundColor: 'var(--color-cream)',
       duration: 0.8,
       ease: 'power2.out',
     });
 
-    if (mainContentRef.current) {
-      gsap.to(mainContentRef.current, {
-        duration: 1,
-        opacity: 1,
-        ease: 'power3.easeIn',
-      });
-    }
     if (headerRef.current) {
       gsap.to(headerRef.current, {
-        duration: 1,
+        duration: 0.8,
         opacity: 1,
-        ease: 'power3.easeIn',
+        ease: 'power2.out',
       });
     }
   }, []);
@@ -52,11 +59,12 @@ export default function Home() {
     fadeInContent();
   };
 
-  // Set initial body background to match preloader
+  // Set initial body and html background to match preloader
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      // Set body background to preloader color initially
+      // Set body and html background to preloader color initially to prevent white flash
       document.body.style.backgroundColor = '#0F0E0D';
+      document.documentElement.style.backgroundColor = '#0F0E0D';
     }
   }, []);
 
@@ -64,13 +72,21 @@ export default function Home() {
   useEffect(() => {
     // Check sessionStorage only on client side
     if (typeof window !== 'undefined') {
+      // Disable automatic scroll restoration
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      
       const scrollToProjects = sessionStorage.getItem('scrollToProjects') === 'true';
       setShouldSkipPreloader(scrollToProjects);
       if (scrollToProjects) {
         setPreloaderComplete(true);
-        // Immediately set body background to cream when skipping preloader
+        // Immediately set body and html background to cream when skipping preloader
         if (typeof document !== 'undefined') {
           document.body.style.backgroundColor = 'var(--color-cream)';
+          document.documentElement.style.backgroundColor = 'var(--color-cream)';
+          // Prevent scroll to top on page load
+          window.scrollTo(0, 0);
         }
       }
     }
@@ -82,36 +98,60 @@ export default function Home() {
       // Content should already be visible since preloaderComplete starts as true
       fadeInContent();
       
-      // Scroll immediately - use Lenis if available, otherwise window scroll
-      const scrollToProjects = () => {
+      // Prevent default scroll to top
+      if (typeof window !== 'undefined') {
+        if ('scrollRestoration' in window.history) {
+          window.history.scrollRestoration = 'manual';
+        }
+        // Immediately prevent scroll to top
+        window.scrollTo(0, 0);
+      }
+      
+      // Wait for Lenis to be ready, then scroll
+      const waitForLenisAndScroll = () => {
         const projectsSection = document.getElementById('projects');
-        if (projectsSection) {
-          const lenis = (window as any).lenis;
-          if (lenis) {
-            // Use Lenis for instant scroll (immediate: true)
-            lenis.scrollTo(projectsSection, { 
-              offset: -100, 
-              immediate: true,
-              duration: 0
-            });
-          } else {
-            // Fallback to instant window scroll
-            window.scrollTo({
-              top: projectsSection.offsetTop - 100,
-              left: 0,
-              behavior: 'auto' as ScrollBehavior
-            });
-          }
+        if (!projectsSection) return false;
+        
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          // Use Lenis for instant scroll (immediate: true)
+          lenis.scrollTo(projectsSection, { 
+            offset: -100, 
+            immediate: true,
+            duration: 0
+          });
+          return true;
+        } else {
+          // Fallback to instant window scroll
+          window.scrollTo({
+            top: projectsSection.offsetTop - 100,
+            left: 0,
+            behavior: 'auto' as ScrollBehavior
+          });
+          return true;
         }
       };
       
-      // Try to scroll immediately, multiple times to catch DOM updates
-      scrollToProjects();
-      requestAnimationFrame(() => {
-        scrollToProjects();
-        // Try once more after a microtask to ensure Lenis is ready
-        setTimeout(scrollToProjects, 0);
-      });
+      // Try multiple times to ensure scroll happens
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      const tryScroll = () => {
+        attempts++;
+        if (waitForLenisAndScroll() || attempts >= maxAttempts) {
+          return;
+        }
+        requestAnimationFrame(tryScroll);
+      };
+      
+      // Start trying immediately
+      tryScroll();
+      // Also try after a short delay in case Lenis isn't ready yet
+      setTimeout(() => {
+        if (attempts < maxAttempts) {
+          tryScroll();
+        }
+      }, 100);
     }
   }, [shouldSkipPreloader, fadeInContent]);
 
@@ -166,10 +206,11 @@ export default function Home() {
           ref={mainContentRef} 
           className="main-content" 
           style={{ 
-            backgroundColor: preloaderComplete ? 'var(--color-cream)' : '#0F0E0D',
-            opacity: preloaderComplete ? 1 : 0,
+            backgroundColor: '#0F0E0D',
+            opacity: 0,
             minHeight: '100vh',
-            transition: 'background-color 0.8s ease-out, opacity 1s ease-in-out'
+            position: 'relative',
+            zIndex: 1
           }}
         >
           <ErrorBoundary sectionName="Hero">

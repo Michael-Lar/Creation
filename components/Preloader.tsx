@@ -156,18 +156,22 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         opacity: 0,
         ease: 'power2.in',
       })
-      // Fade out preloader
+      // Fade out preloader - start content fade-in slightly before preloader fully fades
       .to(preloaderRef.current, {
         duration: 0.6,
         opacity: 0,
         ease: 'power2.in',
+        onStart: () => {
+          // Start content fade-in when preloader starts fading out (overlap transition)
+          onComplete?.();
+        },
         onComplete: () => {
           if (preloaderRef.current) {
             preloaderRef.current.style.display = 'none';
+            preloaderRef.current.style.pointerEvents = 'none';
           }
-          onComplete?.();
         },
-      }, '-=0.3');
+      }, '-=0.4');
 
   }, [onComplete, prefersReducedMotion, mounted]);
 
