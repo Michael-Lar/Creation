@@ -9,18 +9,20 @@ interface PreloaderProps {
 
 export default function Preloader({ onComplete }: PreloaderProps) {
   const preloaderRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLImageElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const scanlineRef = useRef<HTMLDivElement>(null);
+  const staticRef = useRef<HTMLDivElement>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(motionQuery.matches);
   }, []);
 
   useEffect(() => {
-    if (!preloaderRef.current) return;
+    if (!mounted || !preloaderRef.current || !logoRef.current) return;
 
     // If user prefers reduced motion, skip animation
     if (prefersReducedMotion) {
@@ -31,46 +33,128 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       return;
     }
 
+    const logo = logoRef.current;
     const tl = gsap.timeline();
 
     // Initial state
     gsap.set(preloaderRef.current, { opacity: 1 });
-    gsap.set(logoRef.current, { opacity: 0, scale: 0.8, rotate: -10 });
-    gsap.set(textRef.current, { opacity: 0, y: 15 });
-    gsap.set(lineRef.current, { scaleX: 0 });
+    gsap.set(logo, { opacity: 0, scale: 0.95 });
+    gsap.set(scanlineRef.current, { opacity: 0 });
+    gsap.set(staticRef.current, { opacity: 0 });
 
-    // Animation sequence
+    // RGB glitch filter values
+    const glitchOn = 'brightness(0) invert(1) drop-shadow(-4px 0 0 rgba(255, 0, 0, 0.8)) drop-shadow(4px 0 0 rgba(0, 255, 255, 0.8)) drop-shadow(0 2px 0 rgba(0, 255, 0, 0.5))';
+    const glitchOff = 'brightness(0) invert(1) drop-shadow(0 0 0 transparent)';
+    const glitchMild = 'brightness(0) invert(1) drop-shadow(-2px 0 0 rgba(255, 0, 0, 0.5)) drop-shadow(2px 0 0 rgba(0, 255, 255, 0.5))';
+
+    // Animation sequence with old-school color TV glitch effect
     tl
-      // Logo fades in with subtle scale and rotation
-      .to(logoRef.current, {
-        duration: 0.8,
-        delay: 0.2,
-        opacity: 1,
-        scale: 1,
-        rotate: 0,
-        ease: 'power3.out',
+      // Initial glitch flicker with RGB separation
+      .to(logo, {
+        duration: 0.08,
+        opacity: 0.4,
+        scale: 0.98,
+        ease: 'power1.inOut',
+        onStart: () => {
+          logo.style.filter = glitchOn;
+        },
       })
-      // Text fades in
-      .to(textRef.current, {
+      .to(logo, {
+        duration: 0.05,
+        opacity: 0.8,
+        x: -3,
+        ease: 'power1.inOut',
+      })
+      .to(logo, {
+        duration: 0.05,
+        opacity: 0.3,
+        x: 2,
+        ease: 'power1.inOut',
+        onStart: () => {
+          logo.style.filter = glitchMild;
+        },
+      })
+      .to(logo, {
+        duration: 0.08,
+        opacity: 0.6,
+        x: -1,
+        scale: 1.01,
+        ease: 'power1.inOut',
+        onStart: () => {
+          logo.style.filter = glitchOn;
+        },
+      })
+      .to(logo, {
+        duration: 0.05,
+        opacity: 0.9,
+        x: 0,
+        ease: 'power1.inOut',
+      })
+      // Logo stabilizes
+      .to(logo, {
         duration: 0.6,
         opacity: 1,
-        y: 0,
+        scale: 1,
+        x: 0,
         ease: 'power3.out',
+        onStart: () => {
+          logo.style.filter = glitchOff;
+        },
+      })
+      // Scanlines appear
+      .to(scanlineRef.current, {
+        duration: 0.3,
+        opacity: 0.15,
+        ease: 'power2.out',
       }, '-=0.4')
-      // Line animates
-      .to(lineRef.current, {
-        duration: 0.8,
-        scaleX: 1,
-        ease: 'power2.inOut',
-      }, '-=0.3')
-      // Hold for a moment, then fade out
-      .to([logoRef.current, textRef.current, lineRef.current], {
-        duration: 0.5,
-        delay: 0.6,
+      // Static noise appears briefly
+      .to(staticRef.current, {
+        duration: 0.15,
+        opacity: 0.1,
+        ease: 'power1.inOut',
+      }, '-=0.2')
+      .to(staticRef.current, {
+        duration: 0.2,
         opacity: 0,
-        y: -10,
+        ease: 'power1.inOut',
+      })
+      // Hold for a moment
+      .to({}, { duration: 0.8 })
+      // Final glitch before fade out
+      .to(logo, {
+        duration: 0.04,
+        x: -2,
+        ease: 'power1.inOut',
+        onStart: () => {
+          logo.style.filter = glitchOn;
+        },
+      })
+      .to(logo, {
+        duration: 0.04,
+        x: 3,
+        ease: 'power1.inOut',
+      })
+      .to(logo, {
+        duration: 0.04,
+        x: -1,
+        ease: 'power1.inOut',
+        onStart: () => {
+          logo.style.filter = glitchMild;
+        },
+      })
+      .to(logo, {
+        duration: 0.04,
+        x: 0,
+        ease: 'power1.inOut',
+        onStart: () => {
+          logo.style.filter = glitchOff;
+        },
+      })
+      // Fade out everything
+      .to([logo, scanlineRef.current], {
+        duration: 0.5,
+        opacity: 0,
         ease: 'power2.in',
-        stagger: 0.05,
       })
       // Fade out preloader
       .to(preloaderRef.current, {
@@ -85,8 +169,14 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         },
       }, '-=0.3');
 
-  }, [onComplete, prefersReducedMotion]);
+  }, [onComplete, prefersReducedMotion, mounted]);
 
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return null;
+  }
+
+  // If user prefers reduced motion, render but hide immediately
   if (prefersReducedMotion) {
     return null;
   }
@@ -94,36 +184,73 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   return (
     <div
       ref={preloaderRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ backgroundColor: 'var(--color-cream)' }}
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
+      style={{ 
+        backgroundColor: '#0F0E0D',
+        backgroundImage: `
+          radial-gradient(ellipse at 50% 50%, rgba(184, 160, 104, 0.03) 0%, transparent 70%)
+        `
+      }}
       aria-hidden="true"
     >
-      <div className="flex flex-col items-center">
-        {/* Logo Mark */}
+      {/* Old-School Color TV Static Noise Overlay */}
+      <div
+        ref={staticRef}
+        className="absolute inset-0 opacity-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,0,0,0.05) 1px, rgba(255,0,0,0.05) 2px, transparent 2px, transparent 3px, rgba(0,255,0,0.05) 3px, rgba(0,255,0,0.05) 4px, transparent 4px, transparent 5px, rgba(0,0,255,0.05) 5px, rgba(0,0,255,0.05) 6px),
+            repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,0,0,0.05) 1px, rgba(255,0,0,0.05) 2px, transparent 2px, transparent 3px, rgba(0,255,0,0.05) 3px, rgba(0,255,0,0.05) 4px, transparent 4px, transparent 5px, rgba(0,0,255,0.05) 5px, rgba(0,0,255,0.05) 6px)
+          `,
+          backgroundSize: '6px 6px',
+          animation: 'tv-static 0.08s steps(1) infinite',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Scanlines Effect */}
+      <div
+        ref={scanlineRef}
+        className="absolute inset-0 opacity-0 pointer-events-none"
+        style={{
+          background: `
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(255, 255, 255, 0.03) 2px,
+              rgba(255, 255, 255, 0.03) 4px
+            )
+          `,
+          backgroundSize: '100% 4px',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Logo with RGB Chromatic Aberration via drop-shadow */}
+      <div 
+        ref={logoRef}
+        className="relative z-10"
+      >
         <img
-          ref={logoRef}
-          src="/logos/logo.svg"
-          alt=""
-          className="w-20 h-20 md:w-24 md:h-24 mb-6"
-          style={{ 
-            filter: 'grayscale(20%)',
+          src="/logos/logo-with-text.svg"
+          alt="Creation Partners"
+          className="w-64 md:w-80 lg:w-96 h-auto"
+          style={{
+            imageRendering: 'crisp-edges',
+            filter: 'brightness(0) invert(1)',
           }}
         />
-        
-        {/* Company Name */}
-        <div ref={textRef} className="text-center mb-4">
-          <span className="text-headline text-ink-800 tracking-[-0.03em] font-light">
-            Creation Partners
-          </span>
-        </div>
-        
-        {/* Animated line */}
-        <div 
-          ref={lineRef}
-          className="w-16 h-px bg-accent"
-          style={{ transformOrigin: 'center' }}
-        />
       </div>
+
+      {/* Subtle vignette */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)',
+        }}
+        aria-hidden="true"
+      />
     </div>
   );
 }

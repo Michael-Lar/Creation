@@ -31,10 +31,6 @@ const divisions = [
   },
 ];
 
-// Format number with leading zero
-const formatIndex = (index: number): string => {
-  return String(index + 1).padStart(2, '0');
-};
 
 export default function Divisions() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -104,83 +100,44 @@ export default function Divisions() {
         {/* Section Label */}
         <div ref={labelRef} className="section-label mb-12 md:mb-16">
           <div className="section-label-line" />
-          <span className="section-label-text">Our Divisions</span>
+          <span className="section-label-text">Divisions</span>
         </div>
 
         {/* Divisions Grid */}
         <div 
           ref={cardsRef} 
-          className="grid md:grid-cols-2 gap-5 md:gap-7"
+          className="grid md:grid-cols-2 gap-6 md:gap-8"
         >
           {divisions.map((division, index) => (
             <article
               key={index}
-              className="group relative bg-white border border-ink-100 rounded-card overflow-hidden transition-all duration-400 ease-smooth hover:border-accent/30 shadow-premium hover:shadow-premium-hover"
-              style={{ minHeight: '300px' }}
+              className="group relative bg-white border border-ink-100 rounded-card overflow-hidden transition-all duration-400 ease-smooth hover:border-accent/20 shadow-premium hover:shadow-premium-hover"
             >
-              {/* Corner accents */}
-              <div className="absolute top-3 left-3 w-4 h-4 border-t border-l border-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
-              <div className="absolute bottom-3 right-3 w-4 h-4 border-b border-r border-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
-              
               {/* Card Content */}
-              <div className="relative h-full p-7 md:p-9 flex flex-col">
-                {/* Top Row: Index and Tagline */}
-                <div className="flex items-start justify-between mb-auto">
-                  {/* Index Label with bronze accent */}
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-px bg-accent/50" aria-hidden="true" />
-                    <span className="index-label text-ink-300 font-medium">
-                      {formatIndex(index)}
-                    </span>
-                  </div>
-                  
-                  {/* Tagline */}
-                  <span className="text-label text-ink-400 tracking-[0.1em]">
+              <div className="relative h-full p-8 md:p-10 lg:p-12 flex flex-col">
+                {/* Tagline - Subtle and refined */}
+                <div className="mb-6">
+                  <span className="text-label text-ink-400 tracking-wide font-light">
                     {division.tagline}
                   </span>
                 </div>
 
                 {/* Main Content */}
-                <div className="mt-14 md:mt-16">
-                  <h3 className="text-title text-ink-800 mb-4 group-hover:text-ink-900 transition-colors duration-300">
+                <div className="flex-1">
+                  <h3 className="text-title text-ink-800 mb-4 group-hover:text-ink-900 transition-colors duration-300 font-serif">
                     {division.name}
                   </h3>
-                  <p className="text-body text-ink-500 font-light leading-relaxed max-w-sm">
+                  <p className="text-body text-ink-600 font-light leading-relaxed">
                     {division.description}
                   </p>
                 </div>
-
-                {/* Bottom: Elegant Arrow Indicator */}
-                <div className="mt-8 flex items-center">
-                  <div 
-                    className="flex items-center gap-3 text-ink-300 group-hover:text-accent transition-colors duration-400"
-                    aria-hidden="true"
-                  >
-                    <span className="w-8 h-px bg-current group-hover:w-12 transition-all duration-400" />
-                    <svg 
-                      className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-400" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </div>
-                </div>
               </div>
 
-              {/* Subtle hover background effect - bronze tinted */}
-              <div 
-                className="absolute inset-0 bg-gradient-to-br from-accent/0 via-transparent to-accent/0 group-hover:from-accent/[0.02] group-hover:to-accent/[0.05] transition-all duration-600 pointer-events-none"
-                aria-hidden="true"
-              />
-              
-              {/* Inner glow effect on hover */}
+              {/* Subtle hover background effect */}
               <div 
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-600 pointer-events-none"
                 style={{
-                  background: 'radial-gradient(ellipse at 50% 0%, rgba(184, 160, 104, 0.05) 0%, transparent 70%)',
+                  background: 'radial-gradient(ellipse at 50% 0%, rgba(184, 160, 104, 0.03) 0%, transparent 70%)',
                 }}
                 aria-hidden="true"
               />

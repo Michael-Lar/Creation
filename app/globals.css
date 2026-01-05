@@ -763,3 +763,19 @@
   }
 }
 
+/* ========================================
+   TV Glitch Effects for Preloader
+======================================== */
+@keyframes tv-static {
+  0% { background-position: 0 0; }
+  100% { background-position: 4px 4px; }
+}
+
+@keyframes tv-glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+

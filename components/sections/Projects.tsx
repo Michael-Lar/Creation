@@ -1,66 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { projects } from '@/data/projects';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
-
-interface Project {
-  id: number;
-  name: string;
-  location: string;
-  type: string;
-  year?: string;
-}
-
-// Placeholder project data - replace with actual data
-const projects: Project[] = [
-  {
-    id: 1,
-    name: 'Project Name',
-    location: 'Los Angeles, CA',
-    type: 'Commercial',
-    year: '2024',
-  },
-  {
-    id: 2,
-    name: 'Project Name',
-    location: 'Beverly Hills, CA',
-    type: 'Mixed Use',
-    year: '2024',
-  },
-  {
-    id: 3,
-    name: 'Project Name',
-    location: 'Santa Monica, CA',
-    type: 'Residential',
-    year: '2023',
-  },
-  {
-    id: 4,
-    name: 'Project Name',
-    location: 'West Hollywood, CA',
-    type: 'Commercial',
-    year: '2023',
-  },
-  {
-    id: 5,
-    name: 'Project Name',
-    location: 'Culver City, CA',
-    type: 'Mixed Use',
-    year: '2024',
-  },
-  {
-    id: 6,
-    name: 'Project Name',
-    location: 'Venice, CA',
-    type: 'Residential',
-    year: '2024',
-  },
-];
 
 // Get unique project types for filter
 const projectTypes = ['All', ...Array.from(new Set(projects.map(p => p.type)))];
@@ -183,74 +131,77 @@ export default function Projects() {
           role="tabpanel"
         >
           {filteredProjects.map((project) => (
-            <article 
-              key={project.id} 
-              className="group cursor-pointer"
+            <Link 
+              key={project.id}
+              href={`/projects/${project.id}`}
+              className="group block"
             >
-              {/* Project Image - 4:3 aspect ratio with premium shadow */}
-              <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all duration-400">
-                {/* Subtle pattern */}
-                <div 
-                  className="absolute inset-0 opacity-[0.04]"
-                  style={{
-                    backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
-                    backgroundSize: '20px 20px',
-                  }}
-                  aria-hidden="true"
-                />
-                
-                {/* Type Badge with bronze accent */}
-                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-sm border border-ink-100/50">
-                  <span className="text-label text-ink-600 tracking-wider">
-                    {project.type}
-                  </span>
+              <article>
+                {/* Project Image - 4:3 aspect ratio with premium shadow */}
+                <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all duration-400">
+                  {/* Subtle pattern */}
+                  <div 
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{
+                      backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
+                      backgroundSize: '20px 20px',
+                    }}
+                    aria-hidden="true"
+                  />
+                  
+                  {/* Type Badge with bronze accent */}
+                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-sm border border-ink-100/50">
+                    <span className="text-label text-ink-600 tracking-wider">
+                      {project.type}
+                    </span>
+                  </div>
+                  
+                  {/* Corner accents on hover */}
+                  <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
+                  <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
+                  
+                  {/* Hover Overlay with View indicator */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-center pb-6">
+                    <span className="text-white text-caption tracking-[0.15em] uppercase font-medium">
+                      View Project
+                    </span>
+                  </div>
                 </div>
                 
-                {/* Corner accents on hover */}
-                <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
-                <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
-                
-                {/* Hover Overlay with View indicator */}
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-center pb-6">
-                  <span className="text-white text-caption tracking-[0.15em] uppercase font-medium">
-                    View Project
-                  </span>
-                </div>
-              </div>
-              
-              {/* Project Info */}
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-body-lg text-ink-800 font-medium mb-1 group-hover:text-ink-900 transition-colors duration-300">
-                    {project.name}
-                    {project.year && (
-                      <span className="text-ink-400 font-light ml-2 text-caption">
-                        {project.year}
-                      </span>
-                    )}
-                  </h3>
-                  <p className="text-caption text-ink-500 font-light tracking-wide">
-                    {project.location}
-                  </p>
-                </div>
-                
-                {/* Arrow indicator with bronze hover */}
-                <div 
-                  className="mt-1.5 text-ink-300 group-hover:text-accent transition-colors duration-300"
-                  aria-hidden="true"
-                >
-                  <svg 
-                    className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                    strokeWidth={1.5}
+                {/* Project Info */}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-body-lg text-ink-800 font-medium mb-1 group-hover:text-ink-900 transition-colors duration-300">
+                      {project.name}
+                      {project.year && (
+                        <span className="text-ink-400 font-light ml-2 text-caption">
+                          {project.year}
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-caption text-ink-500 font-light tracking-wide">
+                      {project.location}
+                    </p>
+                  </div>
+                  
+                  {/* Arrow indicator with bronze hover */}
+                  <div 
+                    className="mt-1.5 text-ink-300 group-hover:text-accent transition-colors duration-300"
+                    aria-hidden="true"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                  </svg>
+                    <svg 
+                      className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
       </div>

@@ -8,12 +8,14 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOverHero, setIsOverHero] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     // Get Lenis instance if available
     const getLenis = (): any => {
       return (window as any).lenis || null;
@@ -35,18 +37,19 @@ export default function Header() {
       setIsOverHero(scrollY < window.innerHeight * 0.8);
     };
 
+    // Initial check after mount
+    handleScroll();
+
     // Try to use Lenis scroll event
     const lenis = getLenis();
     if (lenis) {
       lenis.on('scroll', handleScroll);
-      handleScroll(); // Initial update
       return () => {
         lenis.off('scroll', handleScroll);
       };
     } else {
       // Fallback to native scroll
       window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll();
       return () => window.removeEventListener('scroll', handleScroll);
     }
   }, []);
@@ -127,14 +130,15 @@ export default function Header() {
   ];
 
   // Elegant background - subtle and clean
-  const headerBg = isOverHero
+  // Use initial state until mounted to avoid hydration mismatch
+  const headerBg = !mounted || isOverHero
     ? 'bg-transparent'
     : isScrolled
     ? 'bg-cream/98 backdrop-blur-sm border-b border-ink-100/50'
     : 'bg-transparent';
 
-  const textColor = isOverHero ? 'text-white' : 'text-ink-800';
-  const logoFilter = isOverHero ? 'brightness(0) invert(1)' : 'none';
+  const textColor = !mounted || isOverHero ? 'text-white' : 'text-ink-800';
+  const logoFilter = !mounted || isOverHero ? 'brightness(0) invert(1)' : 'none';
 
   return (
     <header
@@ -164,7 +168,7 @@ export default function Header() {
               <div 
                 className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-md"
                 style={{
-                  background: isOverHero 
+                  background: (!mounted || isOverHero)
                     ? 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)'
                     : 'radial-gradient(circle, rgba(184, 160, 104, 0.15) 0%, transparent 70%)',
                 }}

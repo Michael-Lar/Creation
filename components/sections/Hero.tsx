@@ -89,23 +89,27 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [handleMouseMove, isDesktop, prefersReducedMotion]);
 
-  const handleVideoError = (videoIndex: number, videoElement: HTMLVideoElement) => {
-    setFailedVideos((prev) => new Set([...prev, videoIndex]));
-    
-    if (failedVideos.size < videoUrls.length - 1) {
-      const nextIndex = (videoIndex + 1) % videoUrls.length;
-      if (!failedVideos.has(nextIndex)) {
-        setTimeout(() => {
-          videoElement.src = videoUrls[nextIndex];
-          videoElement.load();
-        }, 500);
+  const handleVideoError = useCallback((videoIndex: number, videoElement: HTMLVideoElement) => {
+    setFailedVideos((prev) => {
+      const updated = new Set([...prev, videoIndex]);
+      
+      if (updated.size < videoUrls.length - 1) {
+        const nextIndex = (videoIndex + 1) % videoUrls.length;
+        if (!updated.has(nextIndex)) {
+          setTimeout(() => {
+            videoElement.src = videoUrls[nextIndex];
+            videoElement.load();
+          }, 500);
+        }
+      } else {
+        setHasError(true);
+        setErrorMessage('Unable to load videos. Please refresh the page.');
+        setIsLoading(false);
       }
-    } else {
-      setHasError(true);
-      setErrorMessage('Unable to load videos. Please refresh the page.');
-      setIsLoading(false);
-    }
-  };
+      
+      return updated;
+    });
+  }, []);
 
   useEffect(() => {
     if (!video1Ref.current || !video2Ref.current) return;
@@ -224,8 +228,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         pauseListenerRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentVideoIndex, failedVideos, preloaderComplete]);
+  }, [currentVideoIndex, preloaderComplete, handleVideoError]);
 
   // Reset video to index 0 when preloader completes (only once)
   const preloaderCompleteRef = useRef(false);
@@ -278,8 +281,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       firstVideo.removeEventListener('canplay', handleCanPlay);
       firstVideo.removeEventListener('error', handleError);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleVideoError]);
 
   // Keyboard controls
   useEffect(() => {
@@ -472,21 +474,10 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       <div className="absolute inset-0 flex flex-col justify-end z-10 pb-20 sm:pb-24 md:pb-28 lg:pb-32">
         <div className="container-main">
           <div className="max-w-3xl">
-            {/* Eyebrow text with accent line */}
-            <div className="mb-4 md:mb-6 flex items-center gap-3">
-              <span className="w-6 h-px bg-accent/60" aria-hidden="true" />
-              <span className="inline-block text-white/50 text-label tracking-[0.2em] uppercase">
-                Commercial Real Estate
-              </span>
-            </div>
-            
             {/* Main Headline with text shadow for depth */}
             <h1 className="text-white mb-6 md:mb-8 text-shadow-subtle">
               <span className="block text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-light">
-                Perpetual Movement
-              </span>
-              <span className="block text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-light mt-1">
-                <span className="text-accent drop-shadow-sm">×</span> Value Creation
+                We Never Stop Moving
               </span>
             </h1>
             
