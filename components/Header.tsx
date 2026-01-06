@@ -126,7 +126,7 @@ export default function Header() {
     { label: 'Divisions', id: 'divisions' },
     { label: 'Team', id: 'team' },
     { label: 'Projects', id: 'projects' },
-    { label: 'Contact', id: 'contact' },
+    { label: 'Connect', id: 'contact', boxed: true },
   ];
 
   // Elegant background - subtle and clean
@@ -134,98 +134,107 @@ export default function Header() {
   const headerBg = !mounted || isOverHero
     ? 'bg-transparent'
     : isScrolled
-    ? 'bg-cream/98 backdrop-blur-sm border-b border-ink-100/50'
+    ? 'bg-cream/95 backdrop-blur-md'
     : 'bg-transparent';
 
   const textColor = !mounted || isOverHero ? 'text-white' : 'text-ink-800';
   const logoFilter = !mounted || isOverHero ? 'brightness(0) invert(1)' : 'none';
+  
+  // Border frame is 20px - header sits inside it
+  const borderWidth = 20;
+  const headerPaddingX = 12; // Horizontal padding stays consistent
+  const headerPaddingY = !mounted || isOverHero ? 12 : 8; // Vertical padding shrinks when scrolled
 
   return (
     <header
       ref={headerRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${headerBg}`}
-      style={{ opacity: 0 }}
+      className={`fixed z-50 transition-all duration-500 ${headerBg}`}
+      style={{ 
+        opacity: 0,
+        top: borderWidth,
+        left: borderWidth,
+        right: borderWidth,
+      }}
     >
-      <nav className="container-main">
-        <div className="flex items-center justify-between h-20 md:h-24">
-          {/* Logo - Proud and Simplistic */}
-          <Link 
-            href="/" 
-            className="flex items-center gap-3 group transition-opacity duration-300 hover:opacity-80"
-            aria-label="Creation Partners - Home"
-          >
-            {/* Prominent Logo Icon */}
-            <div className="relative">
-              <img
-                src="/logos/logo.svg"
-                alt="Creation Partners"
-                className="w-10 h-10 md:w-12 md:h-12 transition-all duration-300"
-                style={{ 
-                  filter: logoFilter,
-                }}
-              />
-              {/* Subtle glow on hover */}
-              <div 
-                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-md"
-                style={{
-                  background: (!mounted || isOverHero)
-                    ? 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)'
-                    : 'radial-gradient(circle, rgba(184, 160, 104, 0.15) 0%, transparent 70%)',
-                }}
-                aria-hidden="true"
-              />
-            </div>
-            
-            {/* Company Name - Elegant Typography */}
-            <span className={`${textColor} text-lg md:text-xl font-serif font-normal tracking-[-0.02em] transition-colors duration-300`}>
-              Creation Partners
-            </span>
-          </Link>
+      <nav 
+        className="relative flex items-start justify-between transition-all duration-500"
+        style={{ 
+          paddingTop: headerPaddingY,
+          paddingBottom: headerPaddingY,
+          paddingLeft: headerPaddingX,
+          paddingRight: headerPaddingX,
+        }}
+      >
+        {/* Logo - Bigger on hero, scales down when scrolled */}
+        <Link 
+          href="/" 
+          className="group transition-all duration-500 hover:opacity-80 flex-shrink-0"
+          aria-label="Creation Partners - Home"
+        >
+          <img
+            src="/logos/logo-with-text.svg"
+            alt="Creation Partners"
+            className={`w-auto transition-all duration-500 ${
+              !mounted || isOverHero 
+                ? 'h-20 md:h-28 lg:h-32' 
+                : 'h-9 md:h-11 lg:h-[52px]'
+            }`}
+            style={{ 
+              filter: logoFilter,
+              display: 'block',
+            }}
+          />
+        </Link>
 
-          {/* Desktop Navigation - Clean and Minimal */}
-          <div className="hidden md:flex items-center gap-10">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`${textColor} text-xs font-sans tracking-[0.15em] uppercase font-light relative group transition-all duration-300 hover:opacity-80`}
-              >
-                {item.label}
-                {/* Subtle underline on hover */}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-current transition-all duration-400 group-hover:w-full" />
-              </button>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button - Minimal Design */}
-          <button
-            ref={menuButtonRef}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden ${textColor} p-2 -mr-2 touch-target transition-opacity duration-300 hover:opacity-70`}
-            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMobileMenuOpen}
-          >
-            <div className="w-6 h-5 flex flex-col justify-center gap-1.5">
-              <span
-                className={`block h-[1.5px] bg-current transition-all duration-300 ${
-                  isMobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
-                }`}
-              />
-              <span
-                className={`block h-[1.5px] bg-current transition-all duration-300 ${
-                  isMobileMenuOpen ? 'opacity-0' : ''
-                }`}
-              />
-              <span
-                className={`block h-[1.5px] bg-current transition-all duration-300 ${
-                  isMobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
-                }`}
-              />
-            </div>
-          </button>
+        {/* Desktop Navigation - Fixed vertical position */}
+        <div className="hidden md:flex items-center gap-5 lg:gap-7" style={{ marginTop: '6px' }}>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => scrollToSection(item.id)}
+              className={`${textColor} text-[10px] lg:text-[11px] font-sans tracking-[0.14em] uppercase relative group transition-all duration-300 hover:opacity-70 font-bold ${
+                item.boxed 
+                  ? 'px-3 lg:px-4 py-1.5 border border-current rounded-sm' 
+                  : ''
+              }`}
+            >
+              {item.label}
+              {!item.boxed && (
+                <span className="absolute -bottom-0.5 left-0 w-0 h-[1px] bg-current transition-all duration-400 group-hover:w-full" />
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Mobile Menu - Clean Design */}
+        {/* Mobile Menu Button - Fixed vertical position */}
+        <button
+          ref={menuButtonRef}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`md:hidden ${textColor} p-2 touch-target transition-opacity duration-300 hover:opacity-70`}
+          style={{ marginTop: '2px' }}
+          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMobileMenuOpen}
+        >
+          <div className="w-5 h-4 flex flex-col justify-center gap-1">
+            <span
+              className={`block h-[1.5px] bg-current transition-all duration-300 ${
+                isMobileMenuOpen ? 'rotate-45 translate-y-[5px]' : ''
+              }`}
+            />
+            <span
+              className={`block h-[1.5px] bg-current transition-all duration-300 ${
+                isMobileMenuOpen ? 'opacity-0' : ''
+              }`}
+            />
+            <span
+              className={`block h-[1.5px] bg-current transition-all duration-300 ${
+                isMobileMenuOpen ? '-rotate-45 -translate-y-[5px]' : ''
+              }`}
+            />
+          </div>
+        </button>
+
+        {/* Mobile Menu */}
         <div
           ref={menuRef}
           className={`md:hidden overflow-hidden transition-all duration-300 ${
@@ -233,13 +242,17 @@ export default function Header() {
           }`}
           style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
         >
-          <div className="py-6 space-y-2 border-t border-ink-100/30 mt-2">
+          <div className="pt-4 pb-2 space-y-1">
             {navItems.map((item, index) => (
               <button
                 key={item.id}
                 ref={index === 0 ? firstMenuItemRef : null}
                 onClick={() => scrollToSection(item.id)}
-                className={`block w-full text-left ${textColor} py-3 px-4 text-sm font-sans font-light tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-80`}
+                className={`block w-full text-left ${textColor} py-2.5 text-sm font-sans tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-70 ${
+                  item.boxed 
+                    ? 'border border-current rounded-sm font-bold mt-2 text-center px-3' 
+                    : 'font-bold'
+                }`}
               >
                 {item.label}
               </button>

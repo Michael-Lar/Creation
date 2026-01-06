@@ -178,7 +178,7 @@ export default function Home() {
         <div 
           className="fixed inset-0 pointer-events-none z-[100]"
           style={{
-            border: '3px solid var(--color-cream)',
+            border: '20px solid var(--color-cream)',
             boxShadow: `
               inset 0 0 0 1px rgba(255, 255, 255, 0.1),
               0 0 0 1px rgba(0, 0, 0, 0.05)
@@ -190,10 +190,10 @@ export default function Home() {
         <div 
           className="fixed pointer-events-none z-[100]"
           style={{
-            top: '3px',
-            left: '3px',
-            right: '3px',
-            bottom: '3px',
+            top: '20px',
+            left: '20px',
+            right: '20px',
+            bottom: '20px',
             border: '1px solid rgba(184, 160, 104, 0.2)',
           }}
           aria-hidden="true"

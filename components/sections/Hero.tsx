@@ -52,6 +52,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
   const video2IndexRef = useRef<number | null>(null);
   const pauseListenerRef = useRef<((e: Event) => void) | null>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const creationTextRef = useRef<HTMLSpanElement>(null);
 
   // Check for desktop and reduced motion
   useEffect(() => {
@@ -254,6 +255,36 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       }
     }
   }, [preloaderComplete]);
+
+  // Shimmer effect for "creation" text when it loads
+  useEffect(() => {
+    if (!preloaderComplete || !creationTextRef.current || prefersReducedMotion) return;
+
+    const creationText = creationTextRef.current;
+    
+    // Set initial state
+    creationText.style.display = 'inline-block';
+    creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,1) 45%, rgba(255,255,255,1) 55%, rgba(255,255,255,0.6) 100%)';
+    creationText.style.backgroundSize = '200% 100%';
+    creationText.style.webkitBackgroundClip = 'text';
+    creationText.style.backgroundClip = 'text';
+    creationText.style.webkitTextFillColor = 'transparent';
+    creationText.style.color = 'transparent';
+    creationText.style.backgroundPosition = '-200% center';
+    
+    // Add shimmer class after a short delay to trigger animation
+    const timer = setTimeout(() => {
+      creationText.classList.add('shimmer-text');
+      // Animate the background position
+      gsap.to(creationText, {
+        backgroundPosition: '200% center',
+        duration: 2,
+        ease: 'power2.out',
+      });
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [preloaderComplete, prefersReducedMotion]);
 
   // Preload first video on mount
   useEffect(() => {
@@ -471,20 +502,20 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       )}
 
       {/* Text Content */}
-      <div className="absolute inset-0 flex flex-col justify-end z-10 pb-20 sm:pb-24 md:pb-28 lg:pb-32">
+      <div className="absolute inset-0 flex flex-col justify-end z-10 pb-12 sm:pb-16 md:pb-20 lg:pb-24">
         <div className="container-main">
           <div className="max-w-3xl">
             {/* Main Headline with text shadow for depth */}
-            <h1 className="text-white mb-6 md:mb-8 text-shadow-subtle">
-              <span className="block text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-light">
-                We Never Stop Moving
+            <h1 className="text-white mb-4 md:mb-6 text-shadow-subtle">
+              <span className="block text-[clamp(3rem,8vw,6rem)] leading-[1.1] tracking-[-0.03em] font-light">
+                We Never Stop Moving.
               </span>
             </h1>
             
             {/* Subheadline */}
-            <p className="text-white/80 text-body-lg max-w-xl font-light leading-relaxed mb-8 md:mb-10">
-              A commercial real estate investment, advisory and management company 
-              built for purpose and movement.
+            <p className="text-white/80 text-body-lg max-w-xl font-light leading-relaxed mb-6 md:mb-8">
+              A commercial real estate investment, advisory, and management company 
+              guided by passion, purpose, and the relentless pursuit of value <span ref={creationTextRef} className="font-bold">creation</span>.
             </p>
 
             {/* CTA Button with enhanced hover */}

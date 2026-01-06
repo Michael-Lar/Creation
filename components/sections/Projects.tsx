@@ -87,9 +87,9 @@ export default function Projects() {
       {/* Section top divider - with spacing from content */}
       <div className="absolute top-0 left-0 right-0 divider-bronze" aria-hidden="true" />
       
-      <div className="container-main pt-4 md:pt-6">
+      <div className="container-main pt-2 md:pt-4">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 md:mb-10">
           {/* Section Label */}
           <div ref={labelRef}>
             <div className="section-label mb-0">

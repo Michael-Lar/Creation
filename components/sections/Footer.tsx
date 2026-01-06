@@ -64,8 +64,15 @@ export default function Footer() {
     <footer 
       ref={sectionRef} 
       id="contact" 
-      className="relative section-spacing-sm overflow-hidden"
-      style={{ backgroundColor: 'var(--color-ink)', color: 'var(--color-cream)' }}
+      className="relative overflow-hidden"
+      style={{ 
+        backgroundColor: 'var(--color-ink)', 
+        color: 'var(--color-cream)',
+        paddingTop: 'clamp(4rem, 8vw, 8rem)',
+        paddingBottom: 'clamp(4rem, 8vw, 8rem)',
+        paddingLeft: '0',
+        paddingRight: '0',
+      }}
     >
       {/* Premium texture overlay */}
       <div 

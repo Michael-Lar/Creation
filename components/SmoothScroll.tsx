@@ -102,7 +102,7 @@ export default function SmoothScroll({ children, options }: SmoothScrollProps) {
       <div 
         className="fixed inset-0 pointer-events-none z-[10000]"
         style={{
-          border: '1px solid rgba(26, 26, 26, 0.5)',
+          border: '2px solid rgba(26, 26, 26, 0.5)',
           boxSizing: 'border-box',
           margin: 0,
           padding: 0
