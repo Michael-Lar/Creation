@@ -187,7 +187,7 @@ export default function Team() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-8 md:mb-10">
+        <div ref={labelRef} className="section-label mb-6 md:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">Team</span>
         </div>
@@ -195,7 +195,7 @@ export default function Team() {
         {/* Team Grid */}
         <div 
           ref={gridRef} 
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
         >
           {teamMembers.map((member) => {
             const isExpanded = expandedId === member.id;
@@ -203,7 +203,7 @@ export default function Team() {
             return (
               <article
                 key={member.id}
-                className="group bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all duration-500 hover:bg-white hover:border-accent/30 hover:shadow-lg cursor-pointer"
+                className="group bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all duration-500 hover:bg-white hover:border-accent/30 hover:shadow-lg cursor-pointer touch-target"
                 onClick={(e) => handleCardClick(e, member.id)}
               >
                 {/* Photo Container - Clean B&W Cutout */}
@@ -240,9 +240,9 @@ export default function Team() {
                       </p>
                     </div>
                     
-                    {/* Expand/Collapse Indicator */}
+                    {/* Expand/Collapse Indicator - Touch-friendly */}
                     <button
-                      className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-ink-200 text-ink-400 hover:border-accent hover:text-accent transition-all duration-300 ${
+                      className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-ink-200 text-ink-400 hover:border-accent hover:text-accent transition-all duration-300 touch-target ${
                         isExpanded ? 'rotate-180 border-accent text-accent' : ''
                       }`}
                       aria-label={isExpanded ? 'Collapse bio' : 'Expand bio'}

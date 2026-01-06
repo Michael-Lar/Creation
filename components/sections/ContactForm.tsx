@@ -75,17 +75,17 @@ export default function ContactForm() {
         {/* Contact Content */}
         <div ref={contentRef} className="text-center">
           {/* Main Tagline */}
-          <p className="text-lg md:text-xl text-ink/50 mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed tracking-wide">
+          <p className="text-lg md:text-xl text-ink/50 mb-8 md:mb-12 max-w-xl mx-auto leading-relaxed tracking-wide">
             We would love to connect.
           </p>
 
           {/* Primary Contact */}
-          <div className="mb-10 md:mb-12">
+          <div className="mb-8 md:mb-12">
             <a 
               href="mailto:hello@creation-partners.com"
-              className="group inline-block"
+              className="group inline-block py-2 touch-target"
             >
-              <span className="text-2xl md:text-3xl lg:text-4xl font-playfair text-ink tracking-wide group-hover:text-accent transition-colors duration-300">
+              <span className="text-xl md:text-3xl lg:text-4xl font-playfair text-ink tracking-wide group-hover:text-accent transition-colors duration-300">
                 hello@creation-partners.com
               </span>
               <div className="h-px w-0 group-hover:w-full bg-accent/40 mt-2 transition-all duration-500 ease-out mx-auto" />
@@ -93,12 +93,12 @@ export default function ContactForm() {
           </div>
 
           {/* Phone */}
-          <div className="mb-10 md:mb-12">
+          <div className="mb-8 md:mb-12">
             <a 
               href="tel:+13102732846"
-              className="group inline-block"
+              className="group inline-block py-2 touch-target"
             >
-              <span className="text-xl md:text-2xl font-playfair text-ink/80 tracking-wide group-hover:text-accent transition-colors duration-300">
+              <span className="text-lg md:text-2xl font-playfair text-ink/80 tracking-wide group-hover:text-accent transition-colors duration-300">
                 (310) CREATION
               </span>
               <span className="block text-sm text-ink/50 mt-1 tracking-wider group-hover:text-accent/70 transition-colors duration-300">
@@ -108,7 +108,7 @@ export default function ContactForm() {
           </div>
 
           {/* Social Links */}
-          <div className="flex items-center justify-center gap-8 mb-10 md:mb-12">
+          <div className="flex items-center justify-center gap-6 md:gap-8 mb-8 md:mb-12">
             <a 
               href="https://instagram.com/creationpartners"
               target="_blank"

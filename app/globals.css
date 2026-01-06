@@ -247,13 +247,13 @@
      Section Spacing
   ======================================== */
   .section-spacing {
-    padding-top: clamp(2rem, 5vw, 5rem);
-    padding-bottom: clamp(2rem, 5vw, 5rem);
+    padding-top: clamp(1.5rem, 5vw, 5rem);
+    padding-bottom: clamp(1.5rem, 5vw, 5rem);
   }
   
   .section-spacing-sm {
-    padding-top: clamp(1.5rem, 4vw, 4rem);
-    padding-bottom: clamp(1.5rem, 4vw, 4rem);
+    padding-top: clamp(1.25rem, 4vw, 4rem);
+    padding-bottom: clamp(1.25rem, 4vw, 4rem);
   }
   
   /* ========================================
@@ -802,5 +802,47 @@
   color: transparent;
   animation: shimmer 2s ease-out;
   position: relative;
+}
+
+/* ========================================
+   Responsive Border Frame
+======================================== */
+@media (min-width: 768px) {
+  .border-frame {
+    border-width: 20px !important;
+  }
+  
+  .border-accent {
+    top: 20px !important;
+    left: 20px !important;
+    right: 20px !important;
+    bottom: 20px !important;
+  }
+  
+  header {
+    top: 20px !important;
+    left: 20px !important;
+    right: 20px !important;
+  }
+}
+
+/* Hide border on non-hero sections for mobile */
+@media (max-width: 767px) {
+  .border-frame.hide-on-scroll,
+  .border-accent.hide-on-scroll {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+  
+  /* Reduce container padding on mobile when border is hidden */
+  .container-main {
+    padding-left: clamp(1rem, 3vw, 2rem);
+    padding-right: clamp(1rem, 3vw, 2rem);
+  }
+  
+  /* Ensure hero headline is readable on small screens */
+  .text-shadow-subtle {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  }
 }
 

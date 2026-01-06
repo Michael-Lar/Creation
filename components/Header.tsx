@@ -140,8 +140,7 @@ export default function Header() {
   const textColor = !mounted || isOverHero ? 'text-white' : 'text-ink-800';
   const logoFilter = !mounted || isOverHero ? 'brightness(0) invert(1)' : 'none';
   
-  // Border frame is 20px - header sits inside it
-  const borderWidth = 20;
+  // Responsive border: 8px mobile, 20px desktop - header must respect this
   const headerPaddingX = 12; // Horizontal padding stays consistent
   const headerPaddingY = !mounted || isOverHero ? 12 : 8; // Vertical padding shrinks when scrolled
 
@@ -151,9 +150,9 @@ export default function Header() {
       className={`fixed z-50 transition-all duration-500 ${headerBg}`}
       style={{ 
         opacity: 0,
-        top: borderWidth,
-        left: borderWidth,
-        right: borderWidth,
+        top: '8px',
+        left: '8px',
+        right: '8px',
       }}
     >
       <nav 
@@ -210,12 +209,12 @@ export default function Header() {
         <button
           ref={menuButtonRef}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`md:hidden ${textColor} p-2 touch-target transition-opacity duration-300 hover:opacity-70`}
+          className={`md:hidden ${textColor} p-3 touch-target transition-opacity duration-300 hover:opacity-70`}
           style={{ marginTop: '2px' }}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
         >
-          <div className="w-5 h-4 flex flex-col justify-center gap-1">
+          <div className="w-6 h-5 flex flex-col justify-center gap-1.5">
             <span
               className={`block h-[1.5px] bg-current transition-all duration-300 ${
                 isMobileMenuOpen ? 'rotate-45 translate-y-[5px]' : ''
@@ -248,9 +247,9 @@ export default function Header() {
                 key={item.id}
                 ref={index === 0 ? firstMenuItemRef : null}
                 onClick={() => scrollToSection(item.id)}
-                className={`block w-full text-left ${textColor} py-2.5 text-sm font-sans tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-70 ${
+                className={`block w-full text-left ${textColor} py-3 px-4 text-sm font-sans tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-70 ${
                   item.boxed 
-                    ? 'border border-current rounded-sm font-bold mt-2 text-center px-3' 
+                    ? 'border border-current rounded-sm font-bold mt-2 text-center' 
                     : 'font-bold'
                 }`}
               >

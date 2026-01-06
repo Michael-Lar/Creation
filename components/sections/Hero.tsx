@@ -507,21 +507,21 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
           <div className="max-w-3xl">
             {/* Main Headline with text shadow for depth */}
             <h1 className="text-white mb-4 md:mb-6 text-shadow-subtle">
-              <span className="block text-[clamp(3rem,8vw,6rem)] leading-[1.1] tracking-[-0.03em] font-light">
+              <span className="block text-[clamp(2.5rem,8vw,6rem)] leading-[1.1] tracking-[-0.03em] font-light">
                 We Never Stop Moving.
               </span>
             </h1>
             
             {/* Subheadline */}
-            <p className="text-white/80 text-body-lg max-w-xl font-light leading-relaxed mb-6 md:mb-8">
+            <p className="text-white/80 text-base md:text-lg max-w-xl font-light leading-relaxed mb-6 md:mb-8">
               A commercial real estate investment, advisory, and management company 
               guided by passion, purpose, and the relentless pursuit of value <span ref={creationTextRef} className="font-bold">creation</span>.
             </p>
 
-            {/* CTA Button with enhanced hover */}
+            {/* CTA Button with enhanced hover - Touch-friendly */}
             <button
               onClick={scrollToAbout}
-              className="group inline-flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300 focus-bronze"
+              className="group inline-flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300 focus-bronze py-3 px-1 touch-target"
               aria-label="Scroll to learn more"
             >
               <span className="text-caption font-medium tracking-[0.15em] uppercase">

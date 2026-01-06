@@ -89,7 +89,7 @@ export default function Projects() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 md:mb-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-4 mb-6 md:mb-10">
           {/* Section Label */}
           <div ref={labelRef}>
             <div className="section-label mb-0">
@@ -127,7 +127,7 @@ export default function Projects() {
         {/* Projects Grid */}
         <div 
           ref={gridRef} 
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
           role="tabpanel"
         >
           {filteredProjects.map((project) => (

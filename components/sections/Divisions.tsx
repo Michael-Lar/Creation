@@ -121,7 +121,7 @@ export default function Divisions() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-8 md:mb-10">
+        <div ref={labelRef} className="section-label mb-6 md:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">Divisions</span>
         </div>
@@ -129,7 +129,7 @@ export default function Divisions() {
         {/* Divisions Grid - Image Card Layout */}
         <div 
           ref={cardsRef} 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
           style={{ perspective: '1200px' }}
         >
           {divisions.map((division, index) => (

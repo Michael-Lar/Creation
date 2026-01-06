@@ -107,13 +107,13 @@ export default function About() {
       
       <div className="container-content relative">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-8 md:mb-10">
+        <div ref={labelRef} className="section-label mb-6 md:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">About</span>
         </div>
 
         {/* Main Heading with Logo */}
-        <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-start mb-10 md:mb-12">
+        <div className="grid md:grid-cols-12 gap-5 md:gap-8 items-start mb-8 md:mb-12">
           {/* Heading */}
           <div ref={headingRef} className="md:col-span-9">
             <h2 className="text-headline text-ink-800 tracking-tight-luxury">
