@@ -89,7 +89,7 @@ export default function Projects() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-4 mb-6 md:mb-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8 lg:mb-10">
           {/* Section Label */}
           <div ref={labelRef}>
             <div className="section-label mb-0">
@@ -111,7 +111,7 @@ export default function Projects() {
                 role="tab"
                 aria-selected={activeFilter === type}
                 className={`
-                  px-4 py-2.5 md:py-2 text-caption tracking-wide transition-all duration-300 touch-target rounded-full border
+                  px-3 sm:px-4 py-2 text-[0.65rem] sm:text-caption tracking-wide transition-all duration-300 touch-target rounded-full border
                   ${activeFilter === type 
                     ? 'bg-ink-800 text-white border-ink-800' 
                     : 'bg-transparent text-ink-500 border-ink-200 active:text-ink-700 active:bg-ink-50 hover:text-ink-700 hover:bg-ink-50 hover:border-accent/30'
@@ -127,7 +127,7 @@ export default function Projects() {
         {/* Projects Grid */}
         <div 
           ref={gridRef} 
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-7 lg:gap-8"
           role="tabpanel"
         >
           {filteredProjects.map((project) => (
@@ -138,7 +138,7 @@ export default function Projects() {
             >
               <article>
                 {/* Project Image - 4:3 aspect ratio with premium shadow */}
-                <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all duration-400">
+                <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-3 sm:mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all duration-400">
                   {/* Subtle pattern */}
                   <div 
                     className="absolute inset-0 opacity-[0.04]"
@@ -150,8 +150,8 @@ export default function Projects() {
                   />
                   
                   {/* Type Badge with bronze accent */}
-                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-sm border border-ink-100/50">
-                    <span className="text-label text-ink-600 tracking-wider">
+                  <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-white/95 backdrop-blur-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-sm border border-ink-100/50">
+                    <span className="text-[0.625rem] sm:text-label text-ink-600 tracking-wider">
                       {project.type}
                     </span>
                   </div>
@@ -161,25 +161,25 @@ export default function Projects() {
                   <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
                   
                   {/* Hover Overlay with View indicator */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-center pb-6">
-                    <span className="text-white text-caption tracking-[0.15em] uppercase font-medium">
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-center pb-5 sm:pb-6">
+                    <span className="text-white text-[0.65rem] sm:text-caption tracking-[0.15em] uppercase font-medium">
                       View Project
                     </span>
                   </div>
                 </div>
                 
                 {/* Project Info */}
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-3 sm:gap-4">
                   <div>
-                    <h3 className="text-body-lg text-ink-800 font-medium mb-1 group-hover:text-ink-900 transition-colors duration-300">
+                    <h3 className="text-base sm:text-body-lg text-ink-800 font-medium mb-0.5 sm:mb-1 group-hover:text-ink-900 transition-colors duration-300">
                       {project.name}
                       {project.year && (
-                        <span className="text-ink-400 font-light ml-2 text-caption">
+                        <span className="text-ink-400 font-light ml-1.5 sm:ml-2 text-[0.65rem] sm:text-caption">
                           {project.year}
                         </span>
                       )}
                     </h3>
-                    <p className="text-caption text-ink-500 font-light tracking-wide">
+                    <p className="text-[0.65rem] sm:text-caption text-ink-500 font-light tracking-wide">
                       {project.location}
                     </p>
                   </div>

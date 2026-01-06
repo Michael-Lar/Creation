@@ -262,26 +262,39 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
 
     const creationText = creationTextRef.current;
     
-    // Set initial state
+    // Set initial state with more dramatic gradient
     creationText.style.display = 'inline-block';
-    creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,1) 45%, rgba(255,255,255,1) 55%, rgba(255,255,255,0.6) 100%)';
+    creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.5) 30%, rgba(184,160,104,1) 45%, rgba(255,255,255,1) 50%, rgba(184,160,104,1) 55%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,0.3) 100%)';
     creationText.style.backgroundSize = '200% 100%';
     creationText.style.webkitBackgroundClip = 'text';
     creationText.style.backgroundClip = 'text';
     creationText.style.webkitTextFillColor = 'transparent';
     creationText.style.color = 'transparent';
     creationText.style.backgroundPosition = '-200% center';
+    creationText.style.filter = 'drop-shadow(0 0 8px rgba(184, 160, 104, 0.3))';
     
     // Add shimmer class after a short delay to trigger animation
     const timer = setTimeout(() => {
       creationText.classList.add('shimmer-text');
-      // Animate the background position
+      // Animate the background position - slower and more dramatic
       gsap.to(creationText, {
         backgroundPosition: '200% center',
-        duration: 2,
-        ease: 'power2.out',
+        duration: 2.5,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          // Return to normal white text after shimmer
+          gsap.to(creationText, {
+            duration: 0.5,
+            ease: 'power2.out',
+            onStart: () => {
+              creationText.style.background = 'white';
+              creationText.style.webkitTextFillColor = 'white';
+              creationText.style.filter = 'none';
+            },
+          });
+        },
       });
-    }, 1000);
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, [preloaderComplete, prefersReducedMotion]);
@@ -502,29 +515,29 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       )}
 
       {/* Text Content */}
-      <div className="absolute inset-0 flex flex-col justify-end z-10 pb-12 sm:pb-16 md:pb-20 lg:pb-24">
+      <div className="absolute inset-0 flex flex-col justify-end z-10 pb-16 sm:pb-20 md:pb-24 lg:pb-28">
         <div className="container-main">
           <div className="max-w-3xl">
             {/* Main Headline with text shadow for depth */}
-            <h1 className="text-white mb-4 md:mb-6 text-shadow-subtle">
-              <span className="block text-[clamp(2.5rem,8vw,6rem)] leading-[1.1] tracking-[-0.03em] font-light">
+            <h1 className="text-white mb-3 sm:mb-4 md:mb-6 text-shadow-subtle">
+              <span className="block text-[clamp(2.25rem,7vw,6rem)] leading-[1.1] tracking-[-0.03em] font-light">
                 We Never Stop Moving.
               </span>
             </h1>
             
             {/* Subheadline */}
-            <p className="text-white/80 text-base md:text-lg max-w-xl font-light leading-relaxed mb-6 md:mb-8">
+            <p className="text-white/80 text-[clamp(0.9rem,2.5vw,1.125rem)] max-w-xl font-light leading-relaxed mb-5 sm:mb-6 md:mb-8">
               A commercial real estate investment, advisory, and management company 
               guided by passion, purpose, and the relentless pursuit of value <span ref={creationTextRef} className="font-bold">creation</span>.
             </p>
 
-            {/* CTA Button with enhanced hover - Touch-friendly */}
+            {/* CTA Button with enhanced hover */}
             <button
               onClick={scrollToAbout}
-              className="group inline-flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300 focus-bronze py-3 px-1 touch-target"
+              className="group inline-flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300 focus-bronze touch-target"
               aria-label="Scroll to learn more"
             >
-              <span className="text-caption font-medium tracking-[0.15em] uppercase">
+              <span className="text-[0.65rem] sm:text-caption font-medium tracking-[0.15em] uppercase">
                 Explore
               </span>
               <span className="w-8 h-px bg-accent group-hover:w-14 transition-all duration-400" />
@@ -536,10 +549,10 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       {/* Scroll Indicator */}
       <div 
         ref={scrollIndicatorRef}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
+        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
         aria-hidden="true"
       >
-        <div className="w-px h-12 bg-gradient-to-b from-white/0 via-white/40 to-white/60" />
+        <div className="w-px h-10 sm:h-12 bg-gradient-to-b from-white/0 via-white/40 to-white/60" />
         <div className="w-1.5 h-1.5 rounded-full bg-white/60 mt-1 animate-pulse" />
       </div>
     </section>

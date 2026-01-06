@@ -107,16 +107,16 @@ export default function About() {
       
       <div className="container-content relative">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-6 md:mb-10">
+        <div ref={labelRef} className="section-label mb-6 md:mb-8 lg:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">About</span>
         </div>
 
         {/* Main Heading with Logo */}
-        <div className="grid md:grid-cols-12 gap-5 md:gap-8 items-start mb-8 md:mb-12">
+        <div className="grid md:grid-cols-12 gap-5 md:gap-6 lg:gap-8 items-start mb-8 md:mb-10 lg:mb-12">
           {/* Heading */}
           <div ref={headingRef} className="md:col-span-9">
-            <h2 className="text-headline text-ink-800 tracking-tight-luxury">
+            <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] leading-[1.15] text-ink-800 tracking-tight-luxury">
               A Los Angeles-based, vertically integrated real estate investment and operating platform.
             </h2>
           </div>
@@ -154,25 +154,25 @@ export default function About() {
         {/* Two Column Grid */}
         <div 
           ref={gridRef} 
-          className="grid md:grid-cols-2 gap-12 md:gap-16 lg:gap-24 pb-12 md:pb-16"
+          className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-24 pb-10 md:pb-12 lg:pb-16"
         >
           <div className="relative">
-            <div className="flex items-center gap-3 mb-5">
-              <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
-              <span className="text-label text-ink-400 tracking-luxury">What We Do</span>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
+              <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">What We Do</span>
             </div>
-            <p className="text-body-lg text-ink-600 font-light leading-relaxed">
+            <p className="text-[0.95rem] sm:text-base md:text-body-lg text-ink-600 font-light leading-relaxed">
               Acquisitions, advisory, capital formation, and asset management—partnering with 
               owners, investors, and operators to identify opportunities and create long-term value.
             </p>
           </div>
           
           <div className="relative">
-            <div className="flex items-center gap-3 mb-5">
-              <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
-              <span className="text-label text-ink-400 tracking-luxury">How We Work</span>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
+              <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">How We Work</span>
             </div>
-            <p className="text-body-lg text-ink-600 font-light leading-relaxed">
+            <p className="text-[0.95rem] sm:text-base md:text-body-lg text-ink-600 font-light leading-relaxed">
               Deep market knowledge, creative problem-solving, and hands-on execution 
               across a range of asset types with an emphasis on thoughtful growth and alignment.
             </p>
@@ -180,11 +180,11 @@ export default function About() {
         </div>
         
         {/* Bronze divider */}
-        <div className="divider-bronze my-12 md:my-16" aria-hidden="true" />
+        <div className="divider-bronze my-10 md:my-12 lg:my-16" aria-hidden="true" />
 
         {/* Pull Quote */}
         <div ref={quoteRef}>
-          <div className="relative pl-6 md:pl-8">
+          <div className="relative pl-4 sm:pl-6 md:pl-8">
             {/* Decorative quote border with bronze accent */}
             <div 
               className="absolute left-0 top-0 bottom-0 w-px"
@@ -193,7 +193,7 @@ export default function About() {
               }}
               aria-hidden="true"
             />
-            <p className="text-title text-ink-700 font-light italic leading-snug max-w-3xl">
+            <p className="text-[1.05rem] sm:text-[1.15rem] md:text-title text-ink-700 font-light italic leading-snug max-w-3xl">
               &ldquo;At our core, Creation Partners is built around movement—of ideas, capital, 
               projects, and people—with the goal of building enduring businesses and places over time.&rdquo;
             </p>

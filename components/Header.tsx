@@ -140,9 +140,9 @@ export default function Header() {
   const textColor = !mounted || isOverHero ? 'text-white' : 'text-ink-800';
   const logoFilter = !mounted || isOverHero ? 'brightness(0) invert(1)' : 'none';
   
-  // Responsive border: 8px mobile, 20px desktop - header must respect this
-  const headerPaddingX = 12; // Horizontal padding stays consistent
-  const headerPaddingY = !mounted || isOverHero ? 12 : 8; // Vertical padding shrinks when scrolled
+  // Border frame is responsive - header sits inside it
+  const headerPaddingX = 'clamp(0.75rem, 2vw, 0.75rem)'; // Horizontal padding
+  const headerPaddingY = !mounted || isOverHero ? 'clamp(0.75rem, 2vw, 0.75rem)' : 'clamp(0.5rem, 1.5vw, 0.5rem)'; // Vertical padding shrinks when scrolled
 
   return (
     <header
@@ -150,9 +150,9 @@ export default function Header() {
       className={`fixed z-50 transition-all duration-500 ${headerBg}`}
       style={{ 
         opacity: 0,
-        top: '8px',
-        left: '8px',
-        right: '8px',
+        top: 'clamp(8px, 2vw, 20px)',
+        left: 'clamp(8px, 2vw, 20px)',
+        right: 'clamp(8px, 2vw, 20px)',
       }}
     >
       <nav 
@@ -175,8 +175,8 @@ export default function Header() {
             alt="Creation Partners"
             className={`w-auto transition-all duration-500 ${
               !mounted || isOverHero 
-                ? 'h-20 md:h-28 lg:h-32' 
-                : 'h-9 md:h-11 lg:h-[52px]'
+                ? 'h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32' 
+                : 'h-8 sm:h-9 md:h-10 lg:h-11 xl:h-[52px]'
             }`}
             style={{ 
               filter: logoFilter,
@@ -186,14 +186,14 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation - Fixed vertical position */}
-        <div className="hidden md:flex items-center gap-5 lg:gap-7" style={{ marginTop: '6px' }}>
+        <div className="hidden md:flex items-center gap-4 lg:gap-5 xl:gap-7" style={{ marginTop: '6px' }}>
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className={`${textColor} text-[10px] lg:text-[11px] font-sans tracking-[0.14em] uppercase relative group transition-all duration-300 hover:opacity-70 font-bold ${
+              className={`${textColor} text-[9px] md:text-[10px] lg:text-[11px] font-sans tracking-[0.14em] uppercase relative group transition-all duration-300 hover:opacity-70 font-bold ${
                 item.boxed 
-                  ? 'px-3 lg:px-4 py-1.5 border border-current rounded-sm' 
+                  ? 'px-2.5 md:px-3 lg:px-4 py-1.5 border border-current rounded-sm' 
                   : ''
               }`}
             >
@@ -209,12 +209,12 @@ export default function Header() {
         <button
           ref={menuButtonRef}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`md:hidden ${textColor} p-3 touch-target transition-opacity duration-300 hover:opacity-70`}
+          className={`md:hidden ${textColor} p-2 touch-target transition-opacity duration-300 hover:opacity-70`}
           style={{ marginTop: '2px' }}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
         >
-          <div className="w-6 h-5 flex flex-col justify-center gap-1.5">
+          <div className="w-5 h-4 flex flex-col justify-center gap-1">
             <span
               className={`block h-[1.5px] bg-current transition-all duration-300 ${
                 isMobileMenuOpen ? 'rotate-45 translate-y-[5px]' : ''
@@ -247,9 +247,9 @@ export default function Header() {
                 key={item.id}
                 ref={index === 0 ? firstMenuItemRef : null}
                 onClick={() => scrollToSection(item.id)}
-                className={`block w-full text-left ${textColor} py-3 px-4 text-sm font-sans tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-70 ${
+                className={`block w-full text-left ${textColor} py-2.5 text-sm font-sans tracking-wide transition-opacity duration-200 active:opacity-70 touch-target hover:opacity-70 ${
                   item.boxed 
-                    ? 'border border-current rounded-sm font-bold mt-2 text-center' 
+                    ? 'border border-current rounded-sm font-bold mt-2 text-center px-3' 
                     : 'font-bold'
                 }`}
               >

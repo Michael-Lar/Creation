@@ -187,7 +187,7 @@ export default function Team() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-6 md:mb-10">
+        <div ref={labelRef} className="section-label mb-6 md:mb-8 lg:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">Team</span>
         </div>
@@ -195,7 +195,7 @@ export default function Team() {
         {/* Team Grid */}
         <div 
           ref={gridRef} 
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6"
         >
           {teamMembers.map((member) => {
             const isExpanded = expandedId === member.id;
@@ -203,7 +203,7 @@ export default function Team() {
             return (
               <article
                 key={member.id}
-                className="group bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all duration-500 hover:bg-white hover:border-accent/30 hover:shadow-lg cursor-pointer touch-target"
+                className="group bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all duration-500 hover:bg-white hover:border-accent/30 hover:shadow-lg cursor-pointer"
                 onClick={(e) => handleCardClick(e, member.id)}
               >
                 {/* Photo Container - Clean B&W Cutout */}
@@ -229,27 +229,27 @@ export default function Team() {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 md:p-7">
-                  <div className="flex items-start justify-between gap-3">
+                <div className="p-4 sm:p-5 md:p-6 lg:p-7">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg md:text-xl font-playfair text-ink-800 mb-1 leading-tight group-hover:text-accent transition-colors duration-400">
+                      <h3 className="text-base sm:text-lg md:text-xl font-playfair text-ink-800 mb-1 leading-tight group-hover:text-accent transition-colors duration-400">
                         {member.name}
                       </h3>
-                      <p className="text-xs uppercase tracking-wider text-ink-400 font-light">
+                      <p className="text-[0.65rem] sm:text-xs uppercase tracking-wider text-ink-400 font-light">
                         {member.title}
                       </p>
                     </div>
                     
-                    {/* Expand/Collapse Indicator - Touch-friendly */}
+                    {/* Expand/Collapse Indicator */}
                     <button
-                      className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-ink-200 text-ink-400 hover:border-accent hover:text-accent transition-all duration-300 touch-target ${
+                      className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-ink-200 text-ink-400 hover:border-accent hover:text-accent transition-all duration-300 touch-target ${
                         isExpanded ? 'rotate-180 border-accent text-accent' : ''
                       }`}
                       aria-label={isExpanded ? 'Collapse bio' : 'Expand bio'}
                       aria-expanded={isExpanded}
                     >
                       <svg 
-                        className="w-4 h-4" 
+                        className="w-3.5 h-3.5 sm:w-4 sm:h-4" 
                         fill="none" 
                         viewBox="0 0 24 24" 
                         stroke="currentColor"
@@ -268,10 +268,10 @@ export default function Team() {
                     className="overflow-hidden"
                     style={{ height: 0, opacity: 0 }}
                   >
-                    <div className="pt-5 mt-5 border-t border-ink-100/50 space-y-5">
+                    <div className="pt-4 mt-4 sm:pt-5 sm:mt-5 border-t border-ink-100/50 space-y-4 sm:space-y-5">
                       {/* Bio */}
                       {member.bio && (
-                        <p className="text-sm md:text-base text-ink/70 font-light leading-relaxed">
+                        <p className="text-xs sm:text-sm md:text-base text-ink/70 font-light leading-relaxed">
                           {member.bio}
                         </p>
                       )}

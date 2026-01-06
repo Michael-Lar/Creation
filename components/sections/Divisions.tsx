@@ -121,7 +121,7 @@ export default function Divisions() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-6 md:mb-10">
+        <div ref={labelRef} className="section-label mb-6 md:mb-8 lg:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">Divisions</span>
         </div>
@@ -129,7 +129,7 @@ export default function Divisions() {
         {/* Divisions Grid - Image Card Layout */}
         <div 
           ref={cardsRef} 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6"
           style={{ perspective: '1200px' }}
         >
           {divisions.map((division, index) => (
@@ -151,18 +151,18 @@ export default function Divisions() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
               {/* Icon in top-left */}
-              <div className="absolute top-6 left-6 z-10">
-                <div className="w-12 h-12 flex items-center justify-center text-white/90 text-2xl">
+              <div className="absolute top-4 sm:top-5 md:top-6 left-4 sm:left-5 md:left-6 z-10">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center text-white/90 text-xl sm:text-2xl">
                   {division.icon}
                 </div>
               </div>
 
               {/* Text Content at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10 transition-transform duration-500 group-hover:translate-y-[-8px]">
-                <h3 className="text-xl md:text-2xl font-serif text-white mb-2 leading-tight transition-all duration-500 group-hover:text-accent group-hover:scale-105 origin-bottom-left">
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform duration-500 group-hover:translate-y-[-8px]">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all duration-500 group-hover:text-accent group-hover:scale-105 origin-bottom-left">
                   {division.name}
                 </h3>
-                <p className="text-sm md:text-base text-white/80 font-light leading-relaxed transition-all duration-500 group-hover:text-white">
+                <p className="text-xs sm:text-sm md:text-base text-white/80 font-light leading-relaxed transition-all duration-500 group-hover:text-white">
                   {division.description}
                 </p>
               </div>

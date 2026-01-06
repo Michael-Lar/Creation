@@ -20,7 +20,6 @@ import gsap from 'gsap';
 export default function Home() {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
-  const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -170,46 +169,16 @@ export default function Home() {
     return () => clearTimeout(fallbackTimer);
   }, [preloaderComplete, shouldSkipPreloader, fadeInContent]);
 
-  // Hide border on mobile when scrolled past hero
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleScroll = () => {
-      const heroHeight = window.innerHeight;
-      const scrollY = window.scrollY;
-      const isMobile = window.innerWidth < 768;
-      
-      if (isMobile) {
-        setIsScrolledPastHero(scrollY > heroHeight * 0.3);
-      } else {
-        setIsScrolledPastHero(false);
-      }
-    };
-
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, []);
-
   return (
     <SmoothScroll>
       <SkipToContent />
       <KeyboardShortcuts />
       <div id="primary" className="relative min-h-screen">
-        {/* Elegant Border Frame - Responsive: 8px mobile, 20px desktop. Hidden on mobile after hero */}
+        {/* Elegant Border Frame - Wraps entire page including header */}
         <div 
-          className={`fixed inset-0 pointer-events-none z-[100] border-frame transition-opacity duration-300 ${
-            isScrolledPastHero ? 'hide-on-scroll' : ''
-          }`}
+          className="fixed inset-0 pointer-events-none z-[100]"
           style={{
-            borderWidth: '8px',
-            borderStyle: 'solid',
-            borderColor: 'var(--color-cream)',
+            border: 'clamp(8px, 2vw, 20px) solid var(--color-cream)',
             boxShadow: `
               inset 0 0 0 1px rgba(255, 255, 255, 0.1),
               0 0 0 1px rgba(0, 0, 0, 0.05)
@@ -217,16 +186,14 @@ export default function Home() {
           }}
           aria-hidden="true"
         />
-        {/* Inner accent line - Responsive positioning. Hidden on mobile after hero */}
+        {/* Inner accent line */}
         <div 
-          className={`fixed pointer-events-none z-[100] border-accent transition-opacity duration-300 ${
-            isScrolledPastHero ? 'hide-on-scroll' : ''
-          }`}
+          className="fixed pointer-events-none z-[100]"
           style={{
-            top: '8px',
-            left: '8px',
-            right: '8px',
-            bottom: '8px',
+            top: 'clamp(8px, 2vw, 20px)',
+            left: 'clamp(8px, 2vw, 20px)',
+            right: 'clamp(8px, 2vw, 20px)',
+            bottom: 'clamp(8px, 2vw, 20px)',
             border: '1px solid rgba(184, 160, 104, 0.2)',
           }}
           aria-hidden="true"

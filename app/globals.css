@@ -212,11 +212,11 @@
     max-width: 80rem;
     margin-left: auto;
     margin-right: auto;
-    padding-left: clamp(1rem, 4vw, 3rem);
-    padding-right: clamp(1rem, 4vw, 3rem);
+    padding-left: clamp(1rem, 3vw, 3rem);
+    padding-right: clamp(1rem, 3vw, 3rem);
     /* iOS safe area support */
-    padding-left: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-left));
-    padding-right: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-right));
+    padding-left: max(clamp(1rem, 3vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1rem, 3vw, 3rem), env(safe-area-inset-right));
   }
   
   .container-content {
@@ -224,11 +224,11 @@
     max-width: 65rem;
     margin-left: auto;
     margin-right: auto;
-    padding-left: clamp(1rem, 4vw, 3rem);
-    padding-right: clamp(1rem, 4vw, 3rem);
+    padding-left: clamp(1rem, 3vw, 3rem);
+    padding-right: clamp(1rem, 3vw, 3rem);
     /* iOS safe area support */
-    padding-left: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-left));
-    padding-right: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-right));
+    padding-left: max(clamp(1rem, 3vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1rem, 3vw, 3rem), env(safe-area-inset-right));
   }
   
   .container-prose {
@@ -236,24 +236,24 @@
     max-width: 42rem;
     margin-left: auto;
     margin-right: auto;
-    padding-left: clamp(1rem, 4vw, 3rem);
-    padding-right: clamp(1rem, 4vw, 3rem);
+    padding-left: clamp(1rem, 3vw, 3rem);
+    padding-right: clamp(1rem, 3vw, 3rem);
     /* iOS safe area support */
-    padding-left: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-left));
-    padding-right: max(clamp(1rem, 4vw, 3rem), env(safe-area-inset-right));
+    padding-left: max(clamp(1rem, 3vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1rem, 3vw, 3rem), env(safe-area-inset-right));
   }
 
   /* ========================================
      Section Spacing
   ======================================== */
   .section-spacing {
-    padding-top: clamp(1.5rem, 5vw, 5rem);
-    padding-bottom: clamp(1.5rem, 5vw, 5rem);
+    padding-top: clamp(3rem, 8vw, 5rem);
+    padding-bottom: clamp(3rem, 8vw, 5rem);
   }
   
   .section-spacing-sm {
-    padding-top: clamp(1.25rem, 4vw, 4rem);
-    padding-bottom: clamp(1.25rem, 4vw, 4rem);
+    padding-top: clamp(2rem, 6vw, 4rem);
+    padding-bottom: clamp(2rem, 6vw, 4rem);
   }
   
   /* ========================================
@@ -390,23 +390,42 @@
   .section-label {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 3rem;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    .section-label {
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
   }
   
   .section-label-text {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-gray-500);
   }
   
+  @media (min-width: 640px) {
+    .section-label-text {
+      font-size: 0.75rem;
+    }
+  }
+  
   .section-label-line {
     height: 1px;
-    width: 2rem;
+    width: 1.5rem;
     background: var(--color-accent);
     transform-origin: left;
+  }
+  
+  @media (min-width: 640px) {
+    .section-label-line {
+      width: 2rem;
+    }
   }
 
   /* ========================================
@@ -764,21 +783,8 @@
 }
 
 /* ========================================
-   TV Glitch Effects for Preloader
+   Shimmer Animation
 ======================================== */
-@keyframes tv-static {
-  0% { background-position: 0 0; }
-  100% { background-position: 4px 4px; }
-}
-
-@keyframes tv-glitch {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-}
-
 @keyframes shimmer {
   0% {
     background-position: -200% center;
@@ -802,47 +808,5 @@
   color: transparent;
   animation: shimmer 2s ease-out;
   position: relative;
-}
-
-/* ========================================
-   Responsive Border Frame
-======================================== */
-@media (min-width: 768px) {
-  .border-frame {
-    border-width: 20px !important;
-  }
-  
-  .border-accent {
-    top: 20px !important;
-    left: 20px !important;
-    right: 20px !important;
-    bottom: 20px !important;
-  }
-  
-  header {
-    top: 20px !important;
-    left: 20px !important;
-    right: 20px !important;
-  }
-}
-
-/* Hide border on non-hero sections for mobile */
-@media (max-width: 767px) {
-  .border-frame.hide-on-scroll,
-  .border-accent.hide-on-scroll {
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
-  }
-  
-  /* Reduce container padding on mobile when border is hidden */
-  .container-main {
-    padding-left: clamp(1rem, 3vw, 2rem);
-    padding-right: clamp(1rem, 3vw, 2rem);
-  }
-  
-  /* Ensure hero headline is readable on small screens */
-  .text-shadow-subtle {
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-  }
 }
 
