@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -98,14 +99,17 @@ export default function Footer() {
         className="absolute bottom-0 right-0 pointer-events-none select-none"
         aria-hidden="true"
       >
-        <img
+        <Image
           src="/logos/logo.svg"
           alt=""
+          width={500}
+          height={500}
           className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] opacity-[0.04]"
           style={{ 
             filter: 'brightness(0) invert(1)',
             transform: 'translate(25%, 25%)',
           }}
+          unoptimized
         />
       </div>
 
@@ -124,11 +128,14 @@ export default function Footer() {
           <div className="lg:col-span-2">
             {/* Logo with text */}
             <div className="flex items-center gap-3 mb-4">
-              <img
+              <Image
                 src="/logos/logo.svg"
                 alt=""
+                width={32}
+                height={32}
                 className="w-8 h-8 opacity-60"
                 style={{ filter: 'brightness(0) invert(1)' }}
+                unoptimized
               />
               <h2 className="text-title text-cream-100">
                 Creation Partners

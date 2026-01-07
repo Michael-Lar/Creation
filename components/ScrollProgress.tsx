@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import Lenis from 'lenis';
 
 export default function ScrollProgress() {
   const progressRef = useRef<HTMLDivElement>(null);
@@ -11,8 +10,8 @@ export default function ScrollProgress() {
     if (!progressRef.current) return;
 
     // Wait for Lenis to be available
-    const getLenis = (): Lenis | null => {
-      return (window as any).lenis || null;
+    const getLenis = () => {
+      return window.lenis || null;
     };
 
     const updateProgress = () => {

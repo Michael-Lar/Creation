@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -132,11 +133,14 @@ export default function About() {
                 className="absolute inset-0 rounded-full border border-accent/10 scale-150 opacity-0 group-hover:opacity-100 transition-all duration-700"
                 aria-hidden="true"
               />
-              <img
+              <Image
                 src="/logos/logo.svg"
                 alt=""
+                width={96}
+                height={96}
                 className="w-20 h-20 lg:w-24 lg:h-24 opacity-25 transition-all duration-500 group-hover:opacity-35 group-hover:scale-105"
                 style={{ filter: 'grayscale(30%)' }}
+                unoptimized
               />
               {/* Bronze glow on hover */}
               <div 

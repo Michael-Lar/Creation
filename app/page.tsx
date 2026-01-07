@@ -112,7 +112,7 @@ export default function Home() {
         const projectsSection = document.getElementById('projects');
         if (!projectsSection) return false;
         
-        const lenis = (window as any).lenis;
+        const lenis = window.lenis;
         if (lenis) {
           // Use Lenis for instant scroll (immediate: true)
           lenis.scrollTo(projectsSection, { 
@@ -200,7 +200,7 @@ export default function Home() {
         />
         
         <ScrollProgress />
-        {!shouldSkipPreloader && <Preloader onComplete={handlePreloaderComplete} />}
+        {!shouldSkipPreloader && <Preloader onComplete={handlePreloaderComplete} shouldSkip={shouldSkipPreloader} />}
         <Header />
         <main 
           ref={mainContentRef} 

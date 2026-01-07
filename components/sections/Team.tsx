@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -209,10 +210,11 @@ export default function Team() {
                 {/* Photo Container - Clean B&W Cutout */}
                 <div className="aspect-[4/5] relative flex items-center justify-center bg-gradient-to-b from-gray-50 to-white overflow-hidden group-hover:from-white group-hover:to-gray-50 transition-all duration-500">
                   {member.image ? (
-                    <img
+                    <Image
                       src={member.image}
                       alt={`${member.name} - ${member.title}`}
-                      className="w-full h-full object-contain object-center transition-all duration-500 group-hover:scale-105"
+                      fill
+                      className="object-contain object-center transition-all duration-500 group-hover:scale-105"
                       style={{
                         filter: 'grayscale(100%) contrast(1.15)',
                         WebkitFilter: 'grayscale(100%) contrast(1.15)',
@@ -232,10 +234,10 @@ export default function Team() {
                 <div className="p-4 sm:p-5 md:p-6 lg:p-7">
                   <div className="flex items-start justify-between gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base sm:text-lg md:text-xl font-playfair text-ink-800 mb-1 leading-tight group-hover:text-accent transition-colors duration-400">
+                      <h3 className="text-[clamp(1.125rem,3vw,1.5rem)] sm:text-lg md:text-xl font-playfair text-ink-800 mb-1 leading-tight group-hover:text-accent transition-colors duration-400">
                         {member.name}
                       </h3>
-                      <p className="text-[0.65rem] sm:text-xs uppercase tracking-wider text-ink-400 font-light">
+                      <p className="text-[clamp(0.75rem,2vw,0.875rem)] sm:text-xs uppercase tracking-wider text-ink-400 font-light">
                         {member.title}
                       </p>
                     </div>
@@ -271,7 +273,7 @@ export default function Team() {
                     <div className="pt-4 mt-4 sm:pt-5 sm:mt-5 border-t border-ink-100/50 space-y-4 sm:space-y-5">
                       {/* Bio */}
                       {member.bio && (
-                        <p className="text-xs sm:text-sm md:text-base text-ink/70 font-light leading-relaxed">
+                        <p className="text-[clamp(0.875rem,2.5vw,1rem)] sm:text-sm md:text-base text-ink/70 font-light leading-relaxed">
                           {member.bio}
                         </p>
                       )}
@@ -282,7 +284,7 @@ export default function Team() {
                           <a
                             href={`mailto:${member.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-2.5 text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
+                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
                           >
                             <span className="w-5 h-5 flex items-center justify-center">
                               <svg 
@@ -303,7 +305,7 @@ export default function Team() {
                           <a
                             href={`tel:${member.phone}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-2.5 text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
+                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
                           >
                             <span className="w-5 h-5 flex items-center justify-center">
                               <svg 
@@ -326,7 +328,7 @@ export default function Team() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-2.5 text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
+                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
                           >
                             <span className="w-5 h-5 flex items-center justify-center">
                               <svg 

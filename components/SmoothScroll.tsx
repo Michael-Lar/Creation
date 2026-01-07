@@ -1,120 +1,51 @@
 'use client';
 
-import { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import Lenis from 'lenis';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 interface SmoothScrollProps {
   children: ReactNode;
-  options?: {
-    duration?: number;
-    easing?: (t: number) => number;
-    orientation?: 'vertical' | 'horizontal';
-    gestureOrientation?: 'vertical' | 'horizontal';
-    smoothWheel?: boolean;
-    wheelMultiplier?: number;
-    smoothTouch?: boolean;
-    touchMultiplier?: number;
-    infinite?: boolean;
-  };
 }
 
-// Singleton to prevent multiple Lenis instances
-let lenisInstance: Lenis | null = null;
-let rafId: number | null = null;
-
-export default function SmoothScroll({ children, options }: SmoothScrollProps) {
-  const smoothWrapperRef = useRef<HTMLDivElement>(null);
-  const smoothContentRef = useRef<HTMLDivElement>(null);
-  const isInitializedRef = useRef(false);
-
+export default function SmoothScroll({ children }: SmoothScrollProps) {
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    // Check if user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     
-    // Prevent double initialization (React Strict Mode)
-    if (isInitializedRef.current || lenisInstance) {
-      return;
+    if (prefersReducedMotion) {
+      return; // Don't initialize Lenis if user prefers reduced motion
     }
-    
-    isInitializedRef.current = true;
 
-    // Initialize Lenis with optimized settings
+    // Initialize Lenis
     const lenis = new Lenis({
-      duration: 0.8,
-      easing: (t) => 1 - Math.pow(1 - t, 3), // Cubic ease-out
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
-      smoothTouch: false,
       touchMultiplier: 2,
       infinite: false,
-      ...options,
     });
 
-    lenisInstance = lenis;
+    // Store Lenis instance globally for other components to access
+    window.lenis = lenis;
 
-    // ScrollTrigger integration - only update when scroll changes
-    let lastScroll = 0;
-    lenis.on('scroll', () => {
-      const currentScroll = lenis.scroll;
-      if (Math.abs(currentScroll - lastScroll) > 0.5) {
-        lastScroll = currentScroll;
-        ScrollTrigger.update();
-      }
-    });
-
-    // RAF loop
+    // Animation frame loop
     function raf(time: number) {
       lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
+      requestAnimationFrame(raf);
     }
 
-    rafId = requestAnimationFrame(raf);
-
-    // Make Lenis instance available globally
-    (window as any).lenis = lenis;
-
-    // Refresh ScrollTrigger after DOM is ready
-    setTimeout(() => ScrollTrigger.refresh(), 100);
+    requestAnimationFrame(raf);
 
     // Cleanup
     return () => {
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
       lenis.destroy();
-      lenisInstance = null;
-      delete (window as any).lenis;
-      isInitializedRef.current = false;
+      delete window.lenis;
     };
-  }, [options]);
+  }, []);
 
-  return (
-    <div id="page" className="relative">
-      {/* Thin Border Frame - Clean and Elegant (Edge-style) */}
-      <div 
-        className="fixed inset-0 pointer-events-none z-[10000]"
-        style={{
-          border: '2px solid rgba(26, 26, 26, 0.5)',
-          boxSizing: 'border-box',
-          margin: 0,
-          padding: 0
-        }}
-      ></div>
-      
-      <div id="smooth-wrapper" ref={smoothWrapperRef} className="overflow-hidden">
-        <div id="smooth-content" ref={smoothContentRef}>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
+  return <>{children}</>;
 }
 

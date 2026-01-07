@@ -5,24 +5,38 @@ import gsap from 'gsap';
 
 interface PreloaderProps {
   onComplete?: () => void;
+  shouldSkip?: boolean;
 }
 
-export default function Preloader({ onComplete }: PreloaderProps) {
+// Persistent flags outside component to survive re-renders
+let globalVideoPlayed = false;
+let globalAnimationComplete = false;
+
+export default function Preloader({ onComplete, shouldSkip = false }: PreloaderProps) {
   const preloaderRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const forwardVideoRef = useRef<HTMLVideoElement>(null);
+  const reverseVideoRef = useRef<HTMLVideoElement>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [shouldShow, setShouldShow] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(motionQuery.matches);
-  }, []);
+    
+    if (typeof window !== 'undefined') {
+      const skipPreloader = sessionStorage.getItem('scrollToProjects') === 'true' || shouldSkip;
+      if (skipPreloader) {
+        setShouldShow(false);
+        onComplete?.();
+      }
+    }
+  }, [onComplete, shouldSkip]);
 
   useEffect(() => {
-    if (!mounted || !preloaderRef.current || !videoRef.current) return;
+    if (!mounted || !preloaderRef.current || !forwardVideoRef.current || !reverseVideoRef.current || !shouldShow) return;
 
-    // If user prefers reduced motion, skip animation
     if (prefersReducedMotion) {
       if (preloaderRef.current) {
         preloaderRef.current.style.display = 'none';
@@ -31,74 +45,126 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       return;
     }
 
-    const video = videoRef.current;
+    const forwardVideo = forwardVideoRef.current;
+    const reverseVideo = reverseVideoRef.current;
     const preloader = preloaderRef.current;
 
-    // Initial state
-    gsap.set(preloader, { opacity: 1 });
-    gsap.set(video, { opacity: 0 });
+    if (globalAnimationComplete) {
+      preloader.style.display = 'none';
+      preloader.style.pointerEvents = 'none';
+      onComplete?.();
+      return;
+    }
 
-    // Simple fade in for video
-    gsap.to(video, {
-      opacity: 1,
-      duration: 0.4,
-      ease: 'power2.out',
-      delay: 0.2,
-    });
+    if (globalVideoPlayed) {
+      return;
+    }
+    
+    globalVideoPlayed = true;
 
-    // Play the video
-    video.play().catch((err) => {
-      console.log('Video autoplay prevented:', err);
-    });
+    // Speed up videos for snappier feel
+    const playbackSpeed = 1.3;
+    forwardVideo.playbackRate = playbackSpeed;
+    reverseVideo.playbackRate = playbackSpeed;
+    
+    // Preload reverse video immediately
+    reverseVideo.load();
+    
+    let reverseTriggered = false;
 
-    // Listen for video end or use a timer as fallback
-    const handleVideoEnd = () => {
-      // Fade out video
-      gsap.to(video, {
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
+    const playForward = () => {
+      gsap.set(preloader, { opacity: 1 });
+      gsap.set(forwardVideo, { opacity: 1 });
+      gsap.set(reverseVideo, { opacity: 0 });
+
+      forwardVideo.play().catch(() => {
+        finishAnimation();
       });
+    };
 
-      // Fade out preloader - start content fade-in slightly before preloader fully fades
+    const playReverse = () => {
+      if (reverseTriggered) return;
+      reverseTriggered = true;
+      
+      // Instant swap
+      forwardVideo.style.opacity = '0';
+      reverseVideo.style.opacity = '1';
+      
+      reverseVideo.play().catch(() => {
+        finishAnimation();
+      });
+    };
+
+    const finishAnimation = () => {
+      if (globalAnimationComplete) return;
+      globalAnimationComplete = true;
+      
+      // Instant fade out
       gsap.to(preloader, {
         opacity: 0,
-        duration: 0.6,
-        delay: 0.3,
+        duration: 0.15,
         ease: 'power2.in',
         onStart: () => {
-          // Start content fade-in when preloader starts fading out (overlap transition)
           onComplete?.();
         },
         onComplete: () => {
-          if (preloader) {
-            preloader.style.display = 'none';
-            preloader.style.pointerEvents = 'none';
-          }
+          preloader.style.display = 'none';
+          preloader.style.pointerEvents = 'none';
         },
       });
     };
 
-    video.addEventListener('ended', handleVideoEnd);
+    // Trigger reverse slightly before forward ends for snappier transition
+    forwardVideo.ontimeupdate = () => {
+      if (!reverseTriggered && forwardVideo.duration - forwardVideo.currentTime < 0.05) {
+        playReverse();
+      }
+    };
+    
+    // Backup: also listen for ended event
+    forwardVideo.onended = playReverse;
+    
+    // When reverse video ends, finish animation
+    reverseVideo.onended = finishAnimation;
 
-    // Fallback timeout in case video doesn't play or end event doesn't fire
-    const fallbackTimeout = setTimeout(handleVideoEnd, 3500);
+    // Start playing when forward video is ready
+    if (forwardVideo.readyState >= 3) {
+      playForward();
+    } else {
+      forwardVideo.addEventListener('canplay', playForward, { once: true });
+      forwardVideo.load();
+    }
+
+    // Fallback timeout
+    const fallbackTimeout = setTimeout(() => {
+      if (!globalAnimationComplete) {
+        if (forwardVideo.readyState >= 2) {
+          playForward();
+        } else {
+          finishAnimation();
+        }
+      }
+    }, 500);
 
     return () => {
-      video.removeEventListener('ended', handleVideoEnd);
+      forwardVideo.removeEventListener('canplay', playForward);
       clearTimeout(fallbackTimeout);
     };
-  }, [onComplete, prefersReducedMotion, mounted]);
+  }, [onComplete, prefersReducedMotion, mounted, shouldShow]);
 
-  // Don't render until mounted to avoid hydration mismatch
-  if (!mounted) {
+  if (!mounted || !shouldShow) {
     return null;
   }
 
-  // If user prefers reduced motion, render but hide immediately
   if (prefersReducedMotion) {
     return null;
   }
+
+  const videoStyles = {
+    opacity: 0,
+    mixBlendMode: 'screen' as const,
+    filter: 'brightness(1.2) contrast(1.15)',
+  };
 
   return (
     <div
@@ -106,30 +172,34 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
       style={{ 
         backgroundColor: '#0F0E0D',
-        backgroundImage: `
-          radial-gradient(ellipse at 50% 50%, rgba(184, 160, 104, 0.03) 0%, transparent 70%)
-        `
+        backgroundImage: `radial-gradient(ellipse at 50% 50%, rgba(184, 160, 104, 0.03) 0%, transparent 70%)`
       }}
       aria-hidden="true"
     >
-      {/* Animated Logo Video */}
+      {/* Forward animation */}
       <video
-        ref={videoRef}
+        ref={forwardVideoRef}
         muted
         playsInline
         preload="auto"
-        className="w-64 sm:w-72 md:w-80 lg:w-96 h-auto relative z-10"
-        style={{
-          opacity: 0,
-          mixBlendMode: 'screen',
-          filter: 'contrast(1.1) brightness(1.05)',
-        }}
-        aria-label="Creation Partners logo animation"
+        className="absolute w-64 sm:w-72 md:w-80 lg:w-96 h-auto z-10"
+        style={videoStyles}
       >
         <source src="/logos/animation.mp4" type="video/mp4" />
       </video>
 
-      {/* Subtle vignette */}
+      {/* Reverse animation */}
+      <video
+        ref={reverseVideoRef}
+        muted
+        playsInline
+        preload="auto"
+        className="absolute w-64 sm:w-72 md:w-80 lg:w-96 h-auto z-10"
+        style={videoStyles}
+      >
+        <source src="/logos/reverse.mp4" type="video/mp4" />
+      </video>
+
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{

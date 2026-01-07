@@ -256,47 +256,105 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     }
   }, [preloaderComplete]);
 
-  // Shimmer effect for "creation" text when it loads
+  // Shimmer effect for "creation" text when it loads - loops until scroll
   useEffect(() => {
     if (!preloaderComplete || !creationTextRef.current || prefersReducedMotion) return;
 
     const creationText = creationTextRef.current;
+    let shimmerTween: gsap.core.Tween | null = null;
+    let isScrolled = false;
     
-    // Set initial state with more dramatic gradient
+    // Set initial state - start with normal white text
     creationText.style.display = 'inline-block';
-    creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.5) 30%, rgba(184,160,104,1) 45%, rgba(255,255,255,1) 50%, rgba(184,160,104,1) 55%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,0.3) 100%)';
-    creationText.style.backgroundSize = '200% 100%';
-    creationText.style.webkitBackgroundClip = 'text';
-    creationText.style.backgroundClip = 'text';
-    creationText.style.webkitTextFillColor = 'transparent';
-    creationText.style.color = 'transparent';
-    creationText.style.backgroundPosition = '-200% center';
-    creationText.style.filter = 'drop-shadow(0 0 8px rgba(184, 160, 104, 0.3))';
+    creationText.style.color = 'white';
+    creationText.style.webkitTextFillColor = 'white';
     
-    // Add shimmer class after a short delay to trigger animation
-    const timer = setTimeout(() => {
+    // Function to start shimmer animation
+    const startShimmer = () => {
+      if (isScrolled || !creationTextRef.current) return;
+      
+      // Apply shimmer gradient
+      creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.5) 30%, rgba(184,160,104,1) 45%, rgba(255,255,255,1) 50%, rgba(184,160,104,1) 55%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,0.3) 100%)';
+      creationText.style.backgroundSize = '200% 100%';
+      creationText.style.webkitBackgroundClip = 'text';
+      creationText.style.backgroundClip = 'text';
+      creationText.style.webkitTextFillColor = 'transparent';
+      creationText.style.color = 'transparent';
+      creationText.style.backgroundPosition = '-200% center';
+      creationText.style.filter = 'drop-shadow(0 0 8px rgba(184, 160, 104, 0.3))';
+      
       creationText.classList.add('shimmer-text');
-      // Animate the background position - slower and more dramatic
-      gsap.to(creationText, {
+      
+      // Animate the background position - loop continuously
+      shimmerTween = gsap.to(creationText, {
         backgroundPosition: '200% center',
         duration: 2.5,
         ease: 'power2.inOut',
-        onComplete: () => {
-          // Return to normal white text after shimmer
-          gsap.to(creationText, {
-            duration: 0.5,
-            ease: 'power2.out',
-            onStart: () => {
-              creationText.style.background = 'white';
-              creationText.style.webkitTextFillColor = 'white';
-              creationText.style.filter = 'none';
-            },
-          });
+        repeat: -1, // Infinite loop
+        repeatDelay: 1, // Pause 1 second between loops
+        onRepeat: () => {
+          // Reset position for next loop
+          if (!isScrolled && creationTextRef.current) {
+            creationText.style.backgroundPosition = '-200% center';
+          }
         },
       });
+    };
+    
+    // Function to stop shimmer and restore normal text
+    const stopShimmer = () => {
+      if (shimmerTween) {
+        shimmerTween.kill();
+        shimmerTween = null;
+      }
+      
+      // Remove gradient and restore normal text
+      creationText.style.background = 'none';
+      creationText.style.webkitBackgroundClip = 'unset';
+      creationText.style.backgroundClip = 'unset';
+      creationText.style.webkitTextFillColor = 'white';
+      creationText.style.color = 'white';
+      creationText.style.filter = 'none';
+      creationText.style.backgroundPosition = 'unset';
+      creationText.style.backgroundSize = 'unset';
+    };
+    
+    // Start shimmer after initial delay
+    const startTimer = setTimeout(() => {
+      startShimmer();
     }, 1200);
-
-    return () => clearTimeout(timer);
+    
+    // Listen for scroll to stop shimmer
+    const handleScroll = () => {
+      if (!isScrolled) {
+        isScrolled = true;
+        stopShimmer();
+      }
+    };
+    
+    // Use Lenis scroll if available, otherwise native scroll
+    const getLenis = () => {
+      return window.lenis || null;
+    };
+    
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.on('scroll', handleScroll);
+    } else {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    
+    return () => {
+      clearTimeout(startTimer);
+      if (shimmerTween) {
+        shimmerTween.kill();
+      }
+      if (lenis) {
+        lenis.off('scroll', handleScroll);
+      } else {
+        window.removeEventListener('scroll', handleScroll);
+      }
+    };
   }, [preloaderComplete, prefersReducedMotion]);
 
   // Preload first video on mount

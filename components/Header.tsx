@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import gsap from 'gsap';
 
 export default function Header() {
@@ -17,8 +18,8 @@ export default function Header() {
   useEffect(() => {
     setMounted(true);
     // Get Lenis instance if available
-    const getLenis = (): any => {
-      return (window as any).lenis || null;
+    const getLenis = () => {
+      return window.lenis || null;
     };
 
     const handleScroll = () => {
@@ -170,9 +171,11 @@ export default function Header() {
           className="group transition-all duration-500 hover:opacity-80 flex-shrink-0"
           aria-label="Creation Partners - Home"
         >
-          <img
+          <Image
             src="/logos/logo-with-text.svg"
             alt="Creation Partners"
+            width={200}
+            height={80}
             className={`w-auto transition-all duration-500 ${
               !mounted || isOverHero 
                 ? 'h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32' 
@@ -182,6 +185,8 @@ export default function Header() {
               filter: logoFilter,
               display: 'block',
             }}
+            priority
+            unoptimized
           />
         </Link>
 

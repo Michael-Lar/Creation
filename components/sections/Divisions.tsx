@@ -140,7 +140,7 @@ export default function Divisions() {
               {/* Background Image */}
               <Image
                 src={division.image}
-                alt={division.name}
+                alt={`${division.name} division - ${division.description}`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -159,10 +159,10 @@ export default function Divisions() {
 
               {/* Text Content at bottom */}
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform duration-500 group-hover:translate-y-[-8px]">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all duration-500 group-hover:text-accent group-hover:scale-105 origin-bottom-left">
+                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all duration-500 group-hover:text-accent group-hover:scale-105 origin-bottom-left">
                   {division.name}
                 </h3>
-                <p className="text-xs sm:text-sm md:text-base text-white/80 font-light leading-relaxed transition-all duration-500 group-hover:text-white">
+                <p className="text-[clamp(1rem,2.5vw,1.125rem)] sm:text-base md:text-lg lg:text-base text-white/80 font-light leading-relaxed transition-all duration-500 group-hover:text-white">
                   {division.description}
                 </p>
               </div>
