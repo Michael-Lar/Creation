@@ -102,10 +102,36 @@ export const projects: Project[] = [
 ];
 
 export function getProjectById(id: number): Project | undefined {
-  return projects.find(project => project.id === id);
+  // Validate input
+  if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
+    return undefined;
+  }
+  
+  const project = projects.find(project => project && project.id === id);
+  
+  // Validate project data integrity
+  if (project && (!project.name || !project.location || !project.type)) {
+    console.warn(`Project ${id} has missing required fields`);
+    return undefined;
+  }
+  
+  return project;
 }
 
 export function getProjectBySlug(slug: string): Project | undefined {
-  return projects.find(project => project.slug === slug);
+  // Validate input
+  if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+    return undefined;
+  }
+  
+  const project = projects.find(project => project && project.slug === slug);
+  
+  // Validate project data integrity
+  if (project && (!project.name || !project.location || !project.type)) {
+    console.warn(`Project with slug "${slug}" has missing required fields`);
+    return undefined;
+  }
+  
+  return project;
 }
 

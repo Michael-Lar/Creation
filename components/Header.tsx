@@ -151,9 +151,9 @@ export default function Header() {
       className={`fixed z-50 transition-all duration-500 ${headerBg}`}
       style={{ 
         opacity: 0,
-        top: 'clamp(8px, 2vw, 20px)',
-        left: 'clamp(8px, 2vw, 20px)',
-        right: 'clamp(8px, 2vw, 20px)',
+        top: 'clamp(4px, 1.5vw, 20px)',
+        left: 'clamp(4px, 1.5vw, 20px)',
+        right: 'clamp(4px, 1.5vw, 20px)',
       }}
     >
       <nav 
@@ -178,7 +178,7 @@ export default function Header() {
             height={80}
             className={`w-auto transition-all duration-500 ${
               !mounted || isOverHero 
-                ? 'h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32' 
+                ? 'h-12 sm:h-16 md:h-20 lg:h-24 xl:h-28' 
                 : 'h-8 sm:h-9 md:h-10 lg:h-11 xl:h-[52px]'
             }`}
             style={{ 
@@ -242,7 +242,7 @@ export default function Header() {
         <div
           ref={menuRef}
           className={`md:hidden overflow-hidden transition-all duration-300 ${
-            isMobileMenuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+            isMobileMenuOpen ? 'max-h-[80vh] opacity-100' : 'max-h-0 opacity-0'
           }`}
           style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
         >

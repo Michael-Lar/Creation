@@ -1,13 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { createScrollReveal, createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -16,85 +13,50 @@ export default function About() {
   const gridRef = useRef<HTMLDivElement>(null);
   const quoteRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleChange);
-    return () => motionQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      // Animate section label
-      gsap.from(labelRef.current, {
-        opacity: 0,
-        y: 15,
-        duration: 0.5,
-        ease: 'power2.out',
-        scrollTrigger: {
+  // Standardized scroll-triggered animations
+  useScrollAnimation(
+    sectionRef,
+    () => {
+      if (labelRef.current) {
+        createScrollReveal(labelRef.current, {
+          y: ANIMATIONS.transform.slideUp.small,
           trigger: sectionRef.current,
-          start: 'top 92%',
-        },
-      });
+        });
+      }
 
-      // Animate logo
-      gsap.from(logoRef.current, {
-        opacity: 0,
-        scale: 0.95,
-        duration: 0.6,
-        ease: 'power2.out',
-        scrollTrigger: {
+      if (logoRef.current && headingRef.current) {
+        createScrollReveal(logoRef.current, {
+          scale: ANIMATIONS.transform.scale.subtle,
+          duration: ANIMATIONS.duration.medium,
           trigger: headingRef.current,
-          start: 'top 92%',
-        },
-      });
+        });
+      }
 
-      // Animate heading
-      gsap.from(headingRef.current, {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: headingRef.current,
-          start: 'top 92%',
-        },
-      });
+      if (headingRef.current) {
+        createScrollReveal(headingRef.current, {
+          y: ANIMATIONS.transform.slideUp.medium,
+          duration: ANIMATIONS.duration.medium,
+        });
+      }
 
-      // Animate grid columns with stagger
-      gsap.from(gridRef.current?.children || [], {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        ease: 'power2.out',
-        stagger: 0.06,
-        scrollTrigger: {
+      if (gridRef.current) {
+        createStaggerReveal(gridRef.current.children, {
+          y: ANIMATIONS.transform.slideUp.medium,
           trigger: gridRef.current,
-          start: 'top 90%',
-        },
-      });
+        });
+      }
 
-      // Animate quote
-      gsap.from(quoteRef.current, {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: quoteRef.current,
-          start: 'top 92%',
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
+      if (quoteRef.current) {
+        createScrollReveal(quoteRef.current, {
+          y: ANIMATIONS.transform.slideUp.medium,
+          duration: ANIMATIONS.duration.medium,
+        });
+      }
+    },
+    { disabled: prefersReducedMotion }
+  );
 
   return (
     <section 

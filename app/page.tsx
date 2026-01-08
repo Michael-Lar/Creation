@@ -13,7 +13,6 @@ import Footer from "@/components/sections/Footer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
-import SkipToContent from "@/components/SkipToContent";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import gsap from 'gsap';
 
@@ -171,14 +170,13 @@ export default function Home() {
 
   return (
     <SmoothScroll>
-      <SkipToContent />
       <KeyboardShortcuts />
       <div id="primary" className="relative min-h-screen">
         {/* Elegant Border Frame - Wraps entire page including header */}
         <div 
           className="fixed inset-0 pointer-events-none z-[100]"
           style={{
-            border: 'clamp(8px, 2vw, 20px) solid var(--color-cream)',
+            border: 'clamp(4px, 1.5vw, 20px) solid var(--color-cream)',
             boxShadow: `
               inset 0 0 0 1px rgba(255, 255, 255, 0.1),
               0 0 0 1px rgba(0, 0, 0, 0.05)
@@ -190,10 +188,10 @@ export default function Home() {
         <div 
           className="fixed pointer-events-none z-[100]"
           style={{
-            top: 'clamp(8px, 2vw, 20px)',
-            left: 'clamp(8px, 2vw, 20px)',
-            right: 'clamp(8px, 2vw, 20px)',
-            bottom: 'clamp(8px, 2vw, 20px)',
+            top: 'clamp(4px, 1.5vw, 20px)',
+            left: 'clamp(4px, 1.5vw, 20px)',
+            right: 'clamp(4px, 1.5vw, 20px)',
+            bottom: 'clamp(4px, 1.5vw, 20px)',
             border: '1px solid rgba(184, 160, 104, 0.2)',
           }}
           aria-hidden="true"

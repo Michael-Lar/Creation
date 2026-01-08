@@ -159,6 +159,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     if (hiddenVideoIndex !== nextIndex) {
       const hiddenVideoPath = getVideoPath(hiddenVideo.src);
       if (hiddenVideoPath !== nextVideoSrc) {
+        hiddenVideo.preload = 'auto'; // Enable preloading for faster transitions
         hiddenVideo.src = nextVideoSrc;
         hiddenVideo.load();
         hiddenVideo.addEventListener('loadeddata', () => {
@@ -385,6 +386,35 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     };
   }, [handleVideoError]);
 
+  // Preload next video in background for faster transitions
+  useEffect(() => {
+    if (!preloaderComplete || !video1Ref.current || !video2Ref.current) return;
+    
+    const nextIndex = (currentVideoIndex + 1) % videoUrls.length;
+    const hiddenVideo = activeVideoRef.current === 0 ? video2Ref.current : video1Ref.current;
+    const hiddenVideoIndex = activeVideoRef.current === 0 ? video2IndexRef.current : video1IndexRef.current;
+    
+    // Only preload if it's not already loaded
+    if (hiddenVideoIndex !== nextIndex) {
+      const hiddenVideoPath = getVideoPath(hiddenVideo.src);
+      const nextVideoSrc = videoUrls[nextIndex];
+      
+      if (hiddenVideoPath !== nextVideoSrc) {
+        // Preload the next video in the background
+        hiddenVideo.preload = 'auto';
+        hiddenVideo.src = nextVideoSrc;
+        hiddenVideo.load();
+        
+        // Update index reference
+        if (activeVideoRef.current === 0) {
+          video2IndexRef.current = nextIndex;
+        } else {
+          video1IndexRef.current = nextIndex;
+        }
+      }
+    }
+  }, [currentVideoIndex, preloaderComplete]);
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -521,7 +551,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload="none"
+        preload={preloaderComplete ? 'metadata' : 'none'}
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 

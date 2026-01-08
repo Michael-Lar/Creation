@@ -10,7 +10,8 @@
     "clean": "rm -rf .next && echo 'Cleared .next build cache'",
     "clean:all": "rm -rf .next node_modules/.cache && echo 'Cleared all build caches'",
     "dev:clean": "npm run clean && npm run dev",
-    "dev:fresh": "npm run clean:all && npm run dev"
+    "dev:fresh": "npm run clean:all && npm run dev",
+    "generate-favicons": "node scripts/generate-favicons.js"
   },
   "dependencies": {
     "gsap": "^3.14.2",
@@ -27,6 +28,7 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "postcss": "^8.4.39",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.5.3"
   }

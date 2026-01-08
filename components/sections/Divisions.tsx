@@ -1,21 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { createScrollReveal, createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 const divisions = [
-  {
-    name: 'Creation Capital',
-    description: 'Strategic capital for real estate investments.',
-    image: '/images/webp/capital.webp',
-    icon: '💎',
-  },
   {
     name: 'Creation Realty Corporation',
     description: 'Full-service brokerage and advisory.',
@@ -36,78 +28,53 @@ const divisions = [
   },
 ];
 
-
 export default function Divisions() {
   const sectionRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleChange);
-    return () => motionQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion) return;
-
-    // Check if animation has already played this session
-    const hasAnimated = sessionStorage.getItem('divisionsAnimated') === 'true';
-
-    if (hasAnimated) {
-      // Skip animation - elements are already visible
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      // Animate section label with impact (quicker)
-      gsap.from(labelRef.current, {
-        opacity: 0,
-        y: 30,
-        scale: 0.9,
-        duration: 0.6,
-        ease: 'power3.out',
-        scrollTrigger: {
+  // Standardized scroll-triggered animations (sessionStorage hack removed, using once: true instead)
+  useScrollAnimation(
+    sectionRef,
+    () => {
+      if (labelRef.current) {
+        createScrollReveal(labelRef.current, {
+          y: ANIMATIONS.transform.slideUp.medium,
+          scale: ANIMATIONS.transform.scale.subtle,
           trigger: sectionRef.current,
-          start: 'top 90%',
-          once: true, // Only trigger once
-        },
-      });
+        });
+      }
 
-      // Animate cards with dramatic stagger and movement (quicker)
-      const cards = Array.from(cardsRef.current?.children || []) as HTMLElement[];
-      gsap.from(cards, {
-        opacity: 0,
-        y: 80,
-        scale: 0.85,
-        rotateY: -15,
-        duration: 0.8,
-        ease: 'power4.out',
-        stagger: {
-          amount: 0.3,
-          from: 'start',
-        },
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: 'top 85%',
-          once: true, // Only trigger once
-        },
-        onComplete: () => {
-          // Mark animation as complete in sessionStorage
-          sessionStorage.setItem('divisionsAnimated', 'true');
-          cards.forEach((card) => {
-            gsap.set(card, { clearProps: 'all' });
-          });
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
+      if (cardsRef.current) {
+        const cards = Array.from(cardsRef.current.children) as HTMLElement[];
+        gsap.from(cards, {
+          opacity: 0,
+          y: ANIMATIONS.transform.slideUp.large,
+          scale: ANIMATIONS.transform.scale.medium,
+          rotateY: -8,
+          duration: ANIMATIONS.duration.standard,
+          ease: ANIMATIONS.ease.smooth,
+          stagger: {
+            amount: 0.15,
+            from: 'start',
+          },
+          scrollTrigger: {
+            trigger: cardsRef.current,
+            start: ANIMATIONS.scrollTrigger.start,
+            once: ANIMATIONS.scrollTrigger.once,
+          },
+          onComplete: () => {
+            // Clear GSAP props after animation completes for better performance
+            cards.forEach((card) => {
+              gsap.set(card, { clearProps: 'all' });
+            });
+          },
+        });
+      }
+    },
+    { disabled: prefersReducedMotion }
+  );
 
   return (
     <section 
@@ -129,13 +96,13 @@ export default function Divisions() {
         {/* Divisions Grid - Image Card Layout */}
         <div 
           ref={cardsRef} 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 max-w-7xl mx-auto md:justify-items-center lg:justify-items-stretch"
           style={{ perspective: '1200px' }}
         >
           {divisions.map((division, index) => (
             <article
               key={index}
-              className="group relative aspect-[3/4] rounded-2xl overflow-hidden transition-all duration-500 hover:scale-[1.05] hover:shadow-2xl hover:z-10"
+              className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden transition-all transition-slow hover:scale-[1.05] hover:shadow-2xl hover:z-10 w-full max-w-md md:max-w-none"
             >
               {/* Background Image */}
               <Image
@@ -143,7 +110,7 @@ export default function Divisions() {
                 alt={`${division.name} division - ${division.description}`}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 priority={index < 2}
               />
 
@@ -158,18 +125,18 @@ export default function Divisions() {
               </div>
 
               {/* Text Content at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform duration-500 group-hover:translate-y-[-8px]">
-                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all duration-500 group-hover:text-accent group-hover:scale-105 origin-bottom-left">
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform transition-slow group-hover:translate-y-[-8px]">
+                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all transition-slow group-hover:text-accent group-hover:scale-105 origin-bottom-left">
                   {division.name}
                 </h3>
-                <p className="text-[clamp(1rem,2.5vw,1.125rem)] sm:text-base md:text-lg lg:text-base text-white/80 font-light leading-relaxed transition-all duration-500 group-hover:text-white">
+                <p className="text-[clamp(1rem,2.5vw,1.125rem)] sm:text-base md:text-lg lg:text-base text-white/80 font-light leading-relaxed transition-all transition-slow group-hover:text-white">
                   {division.description}
                 </p>
               </div>
 
               {/* Hover effect - stronger glow */}
-              <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-[5]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-[5]" />
+              <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-[5]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-[5]" />
             </article>
           ))}
         </div>

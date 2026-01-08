@@ -91,12 +91,17 @@ const config: Config = {
         'inner-bronze': 'inset 0 0 20px rgba(184, 160, 104, 0.04)',
       },
       transitionDuration: {
+        'fast': '250ms',
+        'standard': '300ms',
+        'medium': '350ms',
+        'slow': '800ms',
         '400': '400ms',
         '600': '600ms',
         '800': '800ms',
       },
       transitionTimingFunction: {
-        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'standard': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'smooth': 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
         'smooth-out': 'cubic-bezier(0, 0, 0.2, 1)',
       },
       animation: {

@@ -1,47 +1,29 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function Footer() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleChange);
-    return () => motionQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      gsap.from(contentRef.current?.children || [], {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        ease: 'power2.out',
-        stagger: 0.06,
-        scrollTrigger: {
+  // Standardized scroll-triggered animations
+  useScrollAnimation(
+    sectionRef,
+    () => {
+      if (contentRef.current) {
+        createStaggerReveal(contentRef.current.children, {
+          y: ANIMATIONS.transform.slideUp.small,
           trigger: sectionRef.current,
-          start: 'top 92%',
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
+        });
+      }
+    },
+    { disabled: prefersReducedMotion }
+  );
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -64,7 +46,6 @@ export default function Footer() {
   return (
     <footer 
       ref={sectionRef} 
-      id="contact" 
       className="relative overflow-hidden"
       style={{ 
         backgroundColor: 'var(--color-ink)', 
@@ -104,7 +85,7 @@ export default function Footer() {
           alt=""
           width={500}
           height={500}
-          className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] opacity-[0.04]"
+          className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] opacity-[0.04]"
           style={{ 
             filter: 'brightness(0) invert(1)',
             transform: 'translate(25%, 25%)',
@@ -156,7 +137,7 @@ export default function Footer() {
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="block text-body text-cream-100/70 hover:text-cream-100 transition-colors duration-300 font-light text-left"
+                  className="block text-body text-cream-100/70 hover:text-cream-100 transition-colors font-light text-left"
                 >
                   {link.label}
                 </button>
@@ -175,7 +156,7 @@ export default function Footer() {
               </div>
               <a 
                 href="mailto:ys@creation-partners.com" 
-                className="block text-cream-100/70 hover:text-accent transition-colors duration-300"
+                className="block text-cream-100/70 hover:text-accent transition-colors"
               >
                 ys@creation-partners.com
               </a>
@@ -211,7 +192,7 @@ export default function Footer() {
                 href="https://www.linkedin.com/company/creation-partners" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors duration-300 font-light"
+                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
                 aria-label="LinkedIn (opens in new tab)"
               >
                 LinkedIn
@@ -220,7 +201,7 @@ export default function Footer() {
                 href="https://www.instagram.com/creationpartners" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors duration-300 font-light"
+                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
                 aria-label="Instagram (opens in new tab)"
               >
                 Instagram

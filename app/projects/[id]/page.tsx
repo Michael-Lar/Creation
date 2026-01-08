@@ -1,89 +1,128 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/sections/Footer';
 import { getProjectById } from '@/data/projects';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const projectId = parseInt(params.id as string, 10);
-  const project = getProjectById(projectId);
   
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  // Robust ID parsing with validation
+  const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const projectId = rawId ? parseInt(String(rawId), 10) : NaN;
+  const isValidId = !isNaN(projectId) && projectId > 0;
+  const project = isValidId ? getProjectById(projectId) : undefined;
+  
+  const prefersReducedMotion = usePrefersReducedMotion();
   const contentRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
+  // Reset scroll position to top when project page loads
   useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleChange);
-    return () => motionQuery.removeEventListener('change', handleChange);
+    if (typeof window !== 'undefined') {
+      // Disable scroll restoration
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      
+      // Reset scroll immediately
+      const resetScroll = () => {
+        const lenis = window.lenis;
+        if (lenis) {
+          lenis.stop();
+          lenis.scrollTo(0, { immediate: true, duration: 0 });
+        } else {
+          window.scrollTo(0, 0);
+        }
+      };
+      
+      // Reset immediately
+      resetScroll();
+      
+      // Also reset after a brief delay to catch any delayed scrolls
+      const timeoutId = setTimeout(resetScroll, 50);
+      const rafId = requestAnimationFrame(() => {
+        resetScroll();
+      });
+      
+      return () => {
+        clearTimeout(timeoutId);
+        cancelAnimationFrame(rafId);
+      };
+    }
   }, []);
 
-  useEffect(() => {
-    if (!contentRef.current || prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      gsap.from(contentRef.current?.children || [], {
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        ease: 'power3.out',
-        stagger: 0.1,
-        scrollTrigger: {
+  // Standardized scroll-triggered animations
+  useScrollAnimation(
+    contentRef,
+    () => {
+      if (contentRef.current) {
+        createStaggerReveal(contentRef.current.children, {
+          y: ANIMATIONS.transform.slideUp.medium,
+          duration: ANIMATIONS.duration.medium,
           trigger: contentRef.current,
-          start: 'top 85%',
-        },
-      });
-    }, contentRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
+        });
+      }
+    },
+    { disabled: prefersReducedMotion }
+  );
 
   const handleBackToProjects = (e: React.MouseEvent) => {
     e.preventDefault();
     
     // Store flag to skip preloader and scroll to projects
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('scrollToProjects', 'true');
-      // Disable scroll restoration to prevent jumping to top
-      if ('scrollRestoration' in window.history) {
-        window.history.scrollRestoration = 'manual';
-      }
-      
-      // Check if we can use browser back (if there's history)
-      // Otherwise use router navigation
-      if (window.history.length > 1) {
-        // Use browser back for smoother navigation
-        window.history.back();
-      } else {
-        // Fallback to router navigation
+      try {
+        sessionStorage.setItem('scrollToProjects', 'true');
+        // Disable scroll restoration to prevent jumping to top
+        if ('scrollRestoration' in window.history) {
+          window.history.scrollRestoration = 'manual';
+        }
+        
+        // Check if we can use browser back (if there's history)
+        // Otherwise use router navigation
+        if (window.history.length > 1) {
+          // Use browser back for smoother navigation
+          window.history.back();
+        } else {
+          // Fallback to router navigation
+          router.replace('/');
+        }
+      } catch (error) {
+        // Fallback if sessionStorage or navigation fails
+        console.error('Navigation error:', error);
         router.replace('/');
       }
     }
   };
 
-  if (!project) {
+  // Handle invalid or missing project
+  if (!isValidId || !project) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-headline text-ink-800 mb-4">Project Not Found</h1>
+      <div className="min-h-screen bg-cream flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-3xl md:text-4xl font-serif text-ink-800 mb-4">
+            Project Not Found
+          </h1>
+          <p className="text-body text-ink-600 mb-8">
+            {!isValidId 
+              ? 'The project ID is invalid.' 
+              : 'The project you\'re looking for doesn\'t exist or has been removed.'}
+          </p>
           <button 
             onClick={handleBackToProjects}
-            className="text-body text-accent hover:underline"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-ink-800 text-white rounded-sm hover:bg-ink-700 transition-colors"
           >
-            Back to Projects
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Back to Projects</span>
           </button>
         </div>
       </div>
@@ -103,7 +142,7 @@ export default function ProjectDetailPage() {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <span className="text-ink-300 text-6xl md:text-7xl font-serif">
-              {project.name.charAt(0)}
+              {project.name && project.name.length > 0 ? project.name.charAt(0).toUpperCase() : '?'}
             </span>
           </div>
         </div>
@@ -122,14 +161,14 @@ export default function ProjectDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/40 to-transparent" />
         
         {/* Back Button - Elegant positioning */}
-        <div className="absolute top-24 md:top-28 left-0 right-0 z-10">
+        <div className="absolute top-20 sm:top-24 md:top-28 left-0 right-0 z-10">
           <div className="container-main">
             <button
               onClick={handleBackToProjects}
-              className="inline-flex items-center gap-3 text-ink-700 hover:text-ink-900 transition-all duration-300 group bg-cream/95 backdrop-blur-sm px-5 py-2.5 rounded-sm border border-ink-200/50 hover:border-accent/30 shadow-soft hover:shadow-lift"
+              className="inline-flex items-center gap-3 text-ink-700 hover:text-ink-900 transition-all-standard group bg-cream/95 backdrop-blur-sm px-5 py-2.5 rounded-sm border border-ink-200/50 hover:border-accent/30 shadow-soft hover:shadow-lift"
             >
               <svg 
-                className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
@@ -251,15 +290,15 @@ export default function ProjectDetailPage() {
             <div className="pt-8 border-t border-ink-100">
               <button
                 onClick={handleBackToProjects}
-                className="inline-flex items-center gap-3 text-ink-700 hover:text-ink-900 transition-all duration-300 group"
+                className="inline-flex items-center gap-3 text-ink-700 hover:text-ink-900 transition-all-standard group"
               >
                 <span className="text-caption tracking-wide uppercase font-light">
                   View All Projects
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="w-8 h-px bg-ink-300 group-hover:w-12 group-hover:bg-accent transition-all duration-300" />
+                  <span className="w-8 h-px bg-ink-300 group-hover:w-12 group-hover:bg-accent transition-all-standard" />
                   <svg 
-                    className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" 
+                    className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
                     fill="none" 
                     viewBox="0 0 24 24" 
                     stroke="currentColor"

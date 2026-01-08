@@ -3,11 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { createScrollReveal, createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 
 interface TeamMember {
   id: number;
@@ -20,7 +18,6 @@ interface TeamMember {
   image?: string; // Path to headshot image
 }
 
-// Placeholder team data - replace with actual data
 const teamMembers: TeamMember[] = [
   {
     id: 1,
@@ -30,37 +27,28 @@ const teamMembers: TeamMember[] = [
     email: 'ys@creation-partners.com',
     phone: '310.749.9628',
     linkedin: 'https://www.linkedin.com/in/yoav-sarraf',
-    image: '/team/yoav-sarraf.png', // Add headshot image path here
+    image: '/team/yoav-sarraf.png',
   },
   {
     id: 2,
-    name: 'Team Member',
+    name: 'Yaron Samuha',
     title: 'Position',
     bio: 'Bio information will appear here when expanded. This section can include professional background, expertise, and key achievements.',
+    image: '/team/yaron-samuha.png',
   },
   {
     id: 3,
-    name: 'Team Member',
+    name: 'Avi Khoshnood',
     title: 'Position',
     bio: 'Bio information will appear here when expanded. This section can include professional background, expertise, and key achievements.',
+    image: '/team/avi-khoshnood.png',
   },
   {
     id: 4,
-    name: 'Team Member',
+    name: 'Sacha Boroumand',
     title: 'Position',
     bio: 'Bio information will appear here when expanded. This section can include professional background, expertise, and key achievements.',
-  },
-  {
-    id: 5,
-    name: 'Team Member',
-    title: 'Position',
-    bio: 'Bio information will appear here when expanded. This section can include professional background, expertise, and key achievements.',
-  },
-  {
-    id: 6,
-    name: 'Team Member',
-    title: 'Position',
-    bio: 'Bio information will appear here when expanded. This section can include professional background, expertise, and key achievements.',
+    image: '/team/sacha-boroumand.png',
   },
 ];
 
@@ -69,57 +57,45 @@ export default function Team() {
   const labelRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const expandedContentRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
-  useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleChange);
-    return () => motionQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      // Animate section label
-      gsap.from(labelRef.current, {
-        opacity: 0,
-        y: 15,
-        duration: 0.5,
-        ease: 'power2.out',
-        scrollTrigger: {
+  // Standardized scroll-triggered animations
+  useScrollAnimation(
+    sectionRef,
+    () => {
+      if (labelRef.current) {
+        createScrollReveal(labelRef.current, {
+          y: ANIMATIONS.transform.slideUp.small,
           trigger: sectionRef.current,
-          start: 'top 92%',
-        },
-      });
+        });
+      }
 
-      // Animate team cards with elegant stagger
-      const cards = Array.from(gridRef.current?.children || []) as HTMLElement[];
-      gsap.from(cards, {
-        opacity: 0,
-        y: 30,
-        scale: 0.95,
-        duration: 0.6,
-        ease: 'power3.out',
-        stagger: 0.08,
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: 'top 88%',
-        },
-        onComplete: () => {
-          cards.forEach((card) => {
-            gsap.set(card, { clearProps: 'all' });
-          });
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
+      if (gridRef.current) {
+        const cards = Array.from(gridRef.current.children) as HTMLElement[];
+        gsap.from(cards, {
+          opacity: 0,
+          y: ANIMATIONS.transform.slideUp.medium,
+          scale: ANIMATIONS.transform.scale.subtle,
+          duration: ANIMATIONS.duration.medium,
+          ease: ANIMATIONS.ease.standard,
+          stagger: ANIMATIONS.stagger.standard,
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: ANIMATIONS.scrollTrigger.start,
+            once: ANIMATIONS.scrollTrigger.once,
+          },
+          onComplete: () => {
+            // Clear GSAP props after animation completes for better performance
+            cards.forEach((card) => {
+              gsap.set(card, { clearProps: 'all' });
+            });
+          },
+        });
+      }
+    },
+    { disabled: prefersReducedMotion }
+  );
 
   // Handle expand/collapse with GSAP animations
   useEffect(() => {
@@ -150,8 +126,8 @@ export default function Team() {
         gsap.to(contentEl, {
           height: height,
           opacity: 1,
-          duration: 0.6,
-          ease: 'power3.out',
+          duration: ANIMATIONS.duration.standard,
+          ease: ANIMATIONS.ease.standard,
           onComplete: () => {
             gsap.set(contentEl, { height: 'auto', overflow: 'visible' });
           },
@@ -164,8 +140,8 @@ export default function Team() {
         gsap.to(contentEl, {
           height: 0,
           opacity: 0,
-          duration: 0.45,
-          ease: 'power3.in',
+          duration: ANIMATIONS.duration.fast,
+          ease: ANIMATIONS.ease.in,
         });
       }
     });
@@ -204,17 +180,18 @@ export default function Team() {
             return (
               <article
                 key={member.id}
-                className="group bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all duration-500 hover:bg-white hover:border-accent/30 hover:shadow-lg cursor-pointer"
+                className="group bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all transition-slow hover:bg-white hover:border-accent/30 hover:shadow-lg cursor-pointer"
                 onClick={(e) => handleCardClick(e, member.id)}
               >
                 {/* Photo Container - Clean B&W Cutout */}
-                <div className="aspect-[4/5] relative flex items-center justify-center bg-gradient-to-b from-gray-50 to-white overflow-hidden group-hover:from-white group-hover:to-gray-50 transition-all duration-500">
+                <div className="aspect-[4/5] relative flex items-center justify-center bg-gradient-to-b from-gray-50 to-white overflow-hidden group-hover:from-white group-hover:to-gray-50 transition-all transition-slow">
                   {member.image ? (
                     <Image
                       src={member.image}
                       alt={`${member.name} - ${member.title}`}
                       fill
-                      className="object-contain object-center transition-all duration-500 group-hover:scale-105"
+                      className="object-contain object-center transition-all transition-slow group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       style={{
                         filter: 'grayscale(100%) contrast(1.15)',
                         WebkitFilter: 'grayscale(100%) contrast(1.15)',
@@ -234,7 +211,7 @@ export default function Team() {
                 <div className="p-4 sm:p-5 md:p-6 lg:p-7">
                   <div className="flex items-start justify-between gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-[clamp(1.125rem,3vw,1.5rem)] sm:text-lg md:text-xl font-playfair text-ink-800 mb-1 leading-tight group-hover:text-accent transition-colors duration-400">
+                      <h3 className="text-[clamp(1.125rem,3vw,1.5rem)] sm:text-lg md:text-xl font-playfair text-ink-800 mb-1 leading-tight group-hover:text-accent transition-colors">
                         {member.name}
                       </h3>
                       <p className="text-[clamp(0.75rem,2vw,0.875rem)] sm:text-xs uppercase tracking-wider text-ink-400 font-light">
@@ -244,7 +221,7 @@ export default function Team() {
                     
                     {/* Expand/Collapse Indicator */}
                     <button
-                      className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-ink-200 text-ink-400 hover:border-accent hover:text-accent transition-all duration-300 touch-target ${
+                      className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-ink-200 text-ink-400 hover:border-accent hover:text-accent transition-all transition-standard touch-target ${
                         isExpanded ? 'rotate-180 border-accent text-accent' : ''
                       }`}
                       aria-label={isExpanded ? 'Collapse bio' : 'Expand bio'}
@@ -284,7 +261,7 @@ export default function Team() {
                           <a
                             href={`mailto:${member.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
+                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors group/link"
                           >
                             <span className="w-5 h-5 flex items-center justify-center">
                               <svg 
@@ -305,7 +282,7 @@ export default function Team() {
                           <a
                             href={`tel:${member.phone}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
+                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors group/link"
                           >
                             <span className="w-5 h-5 flex items-center justify-center">
                               <svg 
@@ -328,7 +305,7 @@ export default function Team() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors duration-300 group/link"
+                            className="inline-flex items-center gap-2.5 text-[clamp(0.875rem,2vw,0.9375rem)] sm:text-sm text-ink/60 hover:text-accent transition-colors group/link"
                           >
                             <span className="w-5 h-5 flex items-center justify-center">
                               <svg 

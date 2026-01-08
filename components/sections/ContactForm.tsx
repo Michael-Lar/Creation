@@ -1,59 +1,37 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { useRef } from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { createScrollReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function ContactForm() {
   const sectionRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleChange);
-    return () => motionQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      // Animate section label
-      gsap.from(labelRef.current, {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        ease: 'power3.out',
-        scrollTrigger: {
+  // Standardized scroll-triggered animations
+  useScrollAnimation(
+    sectionRef,
+    () => {
+      if (labelRef.current) {
+        createScrollReveal(labelRef.current, {
+          y: ANIMATIONS.transform.slideUp.small,
           trigger: sectionRef.current,
-          start: 'top 85%',
-        },
-      });
+        });
+      }
 
-      // Animate content
-      gsap.from(contentRef.current, {
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
+      if (contentRef.current) {
+        createScrollReveal(contentRef.current, {
+          y: ANIMATIONS.transform.slideUp.medium,
+          duration: ANIMATIONS.duration.medium,
           trigger: contentRef.current,
-          start: 'top 85%',
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
+        });
+      }
+    },
+    { disabled: prefersReducedMotion }
+  );
 
   return (
     <section 
@@ -75,7 +53,7 @@ export default function ContactForm() {
         {/* Contact Content */}
         <div ref={contentRef} className="text-center">
           {/* Main Tagline */}
-          <p className="text-base sm:text-lg md:text-xl text-ink/50 mb-8 sm:mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed tracking-wide">
+          <p className="text-base sm:text-lg md:text-xl text-ink-500 mb-8 sm:mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed tracking-wide">
             We would love to connect.
           </p>
 
@@ -85,10 +63,10 @@ export default function ContactForm() {
               href="mailto:hello@creation-partners.com"
               className="group inline-block"
             >
-              <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-playfair text-ink tracking-wide group-hover:text-accent transition-colors duration-300 break-all sm:break-normal">
+              <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-playfair text-ink tracking-wide group-hover:text-accent transition-colors break-words sm:break-normal">
                 hello@creation-partners.com
               </span>
-              <div className="h-px w-0 group-hover:w-full bg-accent/40 mt-1.5 sm:mt-2 transition-all duration-500 ease-out mx-auto" />
+              <div className="h-px w-0 group-hover:w-full bg-accent/40 mt-1.5 sm:mt-2 transition-all transition-slow ease-out mx-auto" />
             </a>
           </div>
 
@@ -98,10 +76,10 @@ export default function ContactForm() {
               href="tel:+13102732846"
               className="group inline-block"
             >
-              <span className="text-lg sm:text-xl md:text-2xl font-playfair text-ink/80 tracking-wide group-hover:text-accent transition-colors duration-300">
+              <span className="text-lg sm:text-xl md:text-2xl font-playfair text-ink-600 tracking-wide group-hover:text-accent transition-colors">
                 (310) CREATION
               </span>
-              <span className="block text-xs sm:text-sm text-ink/50 mt-1 tracking-wider group-hover:text-accent/70 transition-colors duration-300">
+              <span className="block text-xs sm:text-sm text-ink-500 mt-1 tracking-wider group-hover:text-accent/70 transition-colors">
                 (310) 273-2846
               </span>
             </a>
@@ -113,7 +91,7 @@ export default function ContactForm() {
               href="https://instagram.com/creationpartners"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-ink/50 hover:text-accent transition-colors duration-300 touch-target"
+              className="group flex items-center gap-2 text-ink-500 hover:text-accent transition-colors touch-target"
               aria-label="Follow us on Instagram"
             >
               <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -122,13 +100,13 @@ export default function ContactForm() {
               <span className="text-[0.625rem] sm:text-xs uppercase tracking-widest font-medium">Instagram</span>
             </a>
 
-            <span className="w-px h-3 sm:h-4 bg-ink/20" aria-hidden="true" />
+            <span className="w-px h-3 sm:h-4 bg-ink-200" aria-hidden="true" />
 
             <a 
               href="https://linkedin.com/company/creation-partners"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-ink/50 hover:text-accent transition-colors duration-300 touch-target"
+              className="group flex items-center gap-2 text-ink-500 hover:text-accent transition-colors touch-target"
               aria-label="Connect with us on LinkedIn"
             >
               <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -140,7 +118,7 @@ export default function ContactForm() {
 
           {/* Location */}
           <div>
-            <span className="text-[0.625rem] sm:text-xs uppercase tracking-widest text-ink/40 font-medium">
+            <span className="text-[0.625rem] sm:text-xs uppercase tracking-widest text-ink-400 font-medium">
               Los Angeles, California
             </span>
           </div>
