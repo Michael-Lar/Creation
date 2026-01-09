@@ -2,29 +2,30 @@
 
 import { useEffect, ReactNode } from 'react';
 import Lenis from 'lenis';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { LENIS_CONFIG, EASING } from '@/constants/animations';
 
 interface SmoothScrollProps {
   children: ReactNode;
 }
 
 export default function SmoothScroll({ children }: SmoothScrollProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   useEffect(() => {
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
     if (prefersReducedMotion) {
       return; // Don't initialize Lenis if user prefers reduced motion
     }
 
     // Initialize Lenis
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: LENIS_CONFIG.DURATION,
+      easing: EASING.LENIS_EASING,
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
+      wheelMultiplier: LENIS_CONFIG.WHEEL_MULTIPLIER,
+      touchMultiplier: LENIS_CONFIG.TOUCH_MULTIPLIER,
       infinite: false,
     });
 
@@ -63,7 +64,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       lenis.destroy();
       delete window.lenis;
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   return <>{children}</>;
 }

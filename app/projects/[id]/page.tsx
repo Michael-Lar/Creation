@@ -5,9 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/sections/Footer';
 import { getProjectById } from '@/data/projects';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { createStaggerReveal, ANIMATIONS } from '@/utils/animations';
+import { useLenis } from '@/utils/lenis';
+import { ErrorHandler, ErrorCategory } from '@/utils/errorHandler';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -19,7 +18,7 @@ export default function ProjectDetailPage() {
   const isValidId = !isNaN(projectId) && projectId > 0;
   const project = isValidId ? getProjectById(projectId) : undefined;
   
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const lenis = useLenis();
   const contentRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +32,6 @@ export default function ProjectDetailPage() {
       
       // Reset scroll immediately
       const resetScroll = () => {
-        const lenis = window.lenis;
         if (lenis) {
           lenis.stop();
           lenis.scrollTo(0, { immediate: true, duration: 0 });
@@ -56,22 +54,7 @@ export default function ProjectDetailPage() {
         cancelAnimationFrame(rafId);
       };
     }
-  }, []);
-
-  // Standardized scroll-triggered animations
-  useScrollAnimation(
-    contentRef,
-    () => {
-      if (contentRef.current) {
-        createStaggerReveal(contentRef.current.children, {
-          y: ANIMATIONS.transform.slideUp.medium,
-          duration: ANIMATIONS.duration.medium,
-          trigger: contentRef.current,
-        });
-      }
-    },
-    { disabled: prefersReducedMotion }
-  );
+  }, [lenis]);
 
   const handleBackToProjects = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,19 +68,17 @@ export default function ProjectDetailPage() {
           window.history.scrollRestoration = 'manual';
         }
         
-        // Check if we can use browser back (if there's history)
-        // Otherwise use router navigation
-        if (window.history.length > 1) {
-          // Use browser back for smoother navigation
-          window.history.back();
-        } else {
-          // Fallback to router navigation
-          router.replace('/');
-        }
+        // Navigate to home page with projects hash
+        // This will trigger the scroll logic in page.tsx
+        router.push('/#projects');
       } catch (error) {
         // Fallback if sessionStorage or navigation fails
-        console.error('Navigation error:', error);
-        router.replace('/');
+        ErrorHandler.handleError(
+          error instanceof Error ? error : new Error(String(error)),
+          ErrorCategory.UNKNOWN,
+          { component: 'ProjectDetailPage', action: 'navigation' }
+        );
+        router.push('/#projects');
       }
     }
   };

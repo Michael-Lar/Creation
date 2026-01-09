@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { ErrorHandler, ErrorCategory } from '@/utils/errorHandler';
 
 export default function GlobalError({
   error,
@@ -10,8 +11,11 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log critical error
-    console.error('Global error occurred:', error);
+    ErrorHandler.handleError(error, ErrorCategory.UNKNOWN, {
+      component: 'GlobalErrorBoundary',
+      digest: error.digest,
+      critical: true,
+    });
   }, [error]);
 
   return (

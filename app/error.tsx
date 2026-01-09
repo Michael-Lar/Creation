@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { ErrorHandler, ErrorCategory } from '@/utils/errorHandler';
 
 export default function Error({
   error,
@@ -10,13 +11,10 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Application error:', error);
-    }
-    
-    // In production, you could send to an error tracking service
-    // Example: logErrorToService(error);
+    ErrorHandler.handleError(error, ErrorCategory.UNKNOWN, {
+      component: 'ErrorBoundary',
+      digest: error.digest,
+    });
   }, [error]);
 
   return (

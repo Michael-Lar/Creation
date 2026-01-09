@@ -3,9 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import gsap from 'gsap';
+import { gsap } from '@/utils/gsap';
+import { useScrollListener } from '@/hooks/useScrollPosition';
 
-export default function Header() {
+interface HeaderProps {
+  isModalOpen?: boolean;
+}
+
+export default function Header({ isModalOpen = false }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOverHero, setIsOverHero] = useState(true);
@@ -17,58 +22,65 @@ export default function Header() {
 
   useEffect(() => {
     setMounted(true);
-    // Get Lenis instance if available
-    const getLenis = () => {
-      return window.lenis || null;
-    };
-
-    const handleScroll = () => {
-      const lenis = getLenis();
-      let scrollY = 0;
-
-      if (lenis) {
-        // Use Lenis scroll position
-        scrollY = lenis.scroll;
-      } else {
-        // Fallback to native scroll
-        scrollY = window.scrollY;
-      }
-
-      setIsScrolled(scrollY > 50);
-      setIsOverHero(scrollY < window.innerHeight * 0.8);
-    };
-
-    // Initial check after mount
-    handleScroll();
-
-    // Try to use Lenis scroll event
-    const lenis = getLenis();
-    if (lenis) {
-      lenis.on('scroll', handleScroll);
-      return () => {
-        lenis.off('scroll', handleScroll);
-      };
-    } else {
-      // Fallback to native scroll
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
-    }
   }, []);
 
-  // Fade in header
+  useScrollListener((scrollY) => {
+    setIsScrolled(scrollY > 50);
+    setIsOverHero(scrollY < window.innerHeight * 0.8);
+  });
+
+  // Fade in header (only on initial mount, not when modal closes)
   useEffect(() => {
+    if (isModalOpen) return; // Don't fade in if modal is open
+    
     const timer = setTimeout(() => {
-      if (headerRef.current) {
-        gsap.to(headerRef.current, {
-          opacity: 1,
-          duration: 0.8,
-          ease: 'power2.out',
-        });
+      if (headerRef.current && !isModalOpen) {
+        // Check current opacity to avoid overriding modal close animation
+        const currentOpacity = headerRef.current.style.opacity;
+        if (!currentOpacity || parseFloat(currentOpacity) === 0) {
+          gsap.to(headerRef.current, {
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+          });
+        }
       }
     }, 2500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // Only run on mount, not when isModalOpen changes
+
+  // Hide/show header when modal opens/closes
+  useEffect(() => {
+    if (!headerRef.current || !mounted) return;
+    
+    if (isModalOpen) {
+      gsap.to(headerRef.current, {
+        opacity: 0,
+        duration: 0.25,
+        ease: 'power1.in',
+        onComplete: () => {
+          if (headerRef.current) {
+            headerRef.current.style.visibility = 'hidden';
+          }
+        },
+      });
+    } else {
+      if (headerRef.current) {
+        headerRef.current.style.visibility = 'visible';
+      }
+      // Only animate opacity if header was already visible (not initial mount)
+      const computedOpacity = window.getComputedStyle(headerRef.current).opacity;
+      if (parseFloat(computedOpacity) > 0) {
+        gsap.to(headerRef.current, {
+          opacity: 1,
+          duration: 0.3,
+          ease: 'power1.out',
+          delay: 0.1,
+        });
+      }
+    }
+  }, [isModalOpen, mounted]);
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -148,9 +160,9 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className={`fixed z-50 transition-all duration-500 ${headerBg}`}
+      className={`fixed z-50 transition-all duration-500 ${headerBg} ${isModalOpen ? 'pointer-events-none' : ''}`}
       style={{ 
-        opacity: 0,
+        opacity: 0, // Will be animated by GSAP
         top: 'clamp(4px, 1.5vw, 20px)',
         left: 'clamp(4px, 1.5vw, 20px)',
         right: 'clamp(4px, 1.5vw, 20px)',

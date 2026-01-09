@@ -2,10 +2,6 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { createScrollReveal, createStaggerReveal, ANIMATIONS } from '@/utils/animations';
-import gsap from 'gsap';
 
 const divisions = [
   {
@@ -30,51 +26,6 @@ const divisions = [
 
 export default function Divisions() {
   const sectionRef = useRef<HTMLElement>(null);
-  const labelRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  // Standardized scroll-triggered animations (sessionStorage hack removed, using once: true instead)
-  useScrollAnimation(
-    sectionRef,
-    () => {
-      if (labelRef.current) {
-        createScrollReveal(labelRef.current, {
-          y: ANIMATIONS.transform.slideUp.medium,
-          scale: ANIMATIONS.transform.scale.subtle,
-          trigger: sectionRef.current,
-        });
-      }
-
-      if (cardsRef.current) {
-        const cards = Array.from(cardsRef.current.children) as HTMLElement[];
-        gsap.from(cards, {
-          opacity: 0,
-          y: ANIMATIONS.transform.slideUp.large,
-          scale: ANIMATIONS.transform.scale.medium,
-          rotateY: -8,
-          duration: ANIMATIONS.duration.standard,
-          ease: ANIMATIONS.ease.smooth,
-          stagger: {
-            amount: 0.15,
-            from: 'start',
-          },
-          scrollTrigger: {
-            trigger: cardsRef.current,
-            start: ANIMATIONS.scrollTrigger.start,
-            once: ANIMATIONS.scrollTrigger.once,
-          },
-          onComplete: () => {
-            // Clear GSAP props after animation completes for better performance
-            cards.forEach((card) => {
-              gsap.set(card, { clearProps: 'all' });
-            });
-          },
-        });
-      }
-    },
-    { disabled: prefersReducedMotion }
-  );
 
   return (
     <section 
@@ -88,16 +39,14 @@ export default function Divisions() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-6 md:mb-8 lg:mb-10">
+        <div className="section-label mb-6 md:mb-8 lg:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">Divisions</span>
         </div>
 
         {/* Divisions Grid - Image Card Layout */}
         <div 
-          ref={cardsRef} 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 max-w-7xl mx-auto md:justify-items-center lg:justify-items-stretch"
-          style={{ perspective: '1200px' }}
         >
           {divisions.map((division, index) => (
             <article

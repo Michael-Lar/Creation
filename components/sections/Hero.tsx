@@ -1,73 +1,45 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import gsap from 'gsap';
-
-// Video file paths
-const videoUrls = [
-  '/videos/video1.mp4',
-  '/videos/video2.mp4',
-  '/videos/video3.mp4',
-  '/videos/video4.mp4',
-  '/videos/video5.mp4',
-  '/videos/video6.mp4',
-];
-
-// Helper function to extract pathname from video src for comparison
-const getVideoPath = (src: string): string => {
-  try {
-    if (src.startsWith('http://') || src.startsWith('https://')) {
-      return new URL(src).pathname;
-    }
-    return src;
-  } catch {
-    const match = src.match(/\/videos\/[^/]+\.mp4/);
-    return match ? match[0] : src;
-  }
-};
+import { gsap } from '@/utils/gsap';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useScrollListener } from '@/hooks/useScrollPosition';
+import { ANIMATION_TIMING } from '@/constants/animations';
+import { useVideoRotation } from '@/hooks/useVideoRotation';
 
 interface HeroProps {
   preloaderComplete?: boolean;
 }
 
 export default function Hero({ preloaderComplete = false }: HeroProps) {
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [activeVideo, setActiveVideo] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [failedVideos, setFailedVideos] = useState<Set<number>>(new Set());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isDesktop, setIsDesktop] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
   
   const sectionRef = useRef<HTMLElement>(null);
-  const video1Ref = useRef<HTMLVideoElement>(null);
-  const video2Ref = useRef<HTMLVideoElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const prepareTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const activeVideoRef = useRef(0);
-  const video1IndexRef = useRef<number | null>(null);
-  const video2IndexRef = useRef<number | null>(null);
-  const pauseListenerRef = useRef<((e: Event) => void) | null>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const creationTextRef = useRef<HTMLSpanElement>(null);
 
-  // Check for desktop and reduced motion
+  // Use video rotation hook
+  const {
+    activeVideo,
+    isLoading,
+    hasError,
+    errorMessage,
+    video1Ref,
+    video2Ref,
+  } = useVideoRotation({
+    preloaderComplete,
+    // Don't pass onError - errors are already handled by the hook
+  });
+
+  // Check for desktop
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
-    setPrefersReducedMotion(motionQuery.matches);
     checkDesktop();
     
-    const handleMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener('change', handleMotionChange);
     window.addEventListener('resize', checkDesktop);
-    
     return () => {
-      motionQuery.removeEventListener('change', handleMotionChange);
       window.removeEventListener('resize', checkDesktop);
     };
   }, []);
@@ -90,180 +62,23 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [handleMouseMove, isDesktop, prefersReducedMotion]);
 
-  const handleVideoError = useCallback((videoIndex: number, videoElement: HTMLVideoElement) => {
-    setFailedVideos((prev) => {
-      const updated = new Set([...prev, videoIndex]);
-      
-      if (updated.size < videoUrls.length - 1) {
-        const nextIndex = (videoIndex + 1) % videoUrls.length;
-        if (!updated.has(nextIndex)) {
-          setTimeout(() => {
-            videoElement.src = videoUrls[nextIndex];
-            videoElement.load();
-          }, 500);
-        }
-      } else {
-        setHasError(true);
-        setErrorMessage('Unable to load videos. Please refresh the page.');
-        setIsLoading(false);
-      }
-      
-      return updated;
-    });
-  }, []);
 
-  useEffect(() => {
-    if (!video1Ref.current || !video2Ref.current) return;
-    // Don't start video rotation until preloader is complete
-    if (!preloaderComplete) return;
-
-    const currentIndex = currentVideoIndex;
-    const currentVideoSrc = videoUrls[currentIndex];
-    
-    const showingVideo = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
-    const hiddenVideo = activeVideoRef.current === 0 ? video2Ref.current : video1Ref.current;
-    
-    const showingVideoIndex = activeVideoRef.current === 0 ? video1IndexRef.current : video2IndexRef.current;
-    const hiddenVideoIndex = activeVideoRef.current === 0 ? video2IndexRef.current : video1IndexRef.current;
-
-    if (showingVideoIndex !== currentIndex) {
-      const showingVideoPath = getVideoPath(showingVideo.src);
-      if (showingVideoPath !== currentVideoSrc) {
-        showingVideo.src = currentVideoSrc;
-        showingVideo.load();
-        showingVideo.addEventListener('loadeddata', () => {
-          setIsLoading(false);
-          showingVideo.currentTime = 0;
-          showingVideo.play().catch(() => {
-            handleVideoError(currentIndex, showingVideo);
-          });
-        }, { once: true });
-
-        showingVideo.addEventListener('error', () => {
-          handleVideoError(currentIndex, showingVideo);
-        }, { once: true });
-      } else {
-        showingVideo.currentTime = 0;
-        showingVideo.play().catch(() => {});
-      }
-      if (activeVideoRef.current === 0) {
-        video1IndexRef.current = currentIndex;
-      } else {
-        video2IndexRef.current = currentIndex;
-      }
+  // Track if user has scrolled (for shimmer effect)
+  const [hasScrolled, setHasScrolled] = useState(false);
+  
+  // Listen for scroll to stop shimmer
+  useScrollListener(() => {
+    if (!hasScrolled) {
+      setHasScrolled(true);
     }
-
-    const nextIndex = (currentIndex + 1) % videoUrls.length;
-    const nextVideoSrc = videoUrls[nextIndex];
-    
-    if (hiddenVideoIndex !== nextIndex) {
-      const hiddenVideoPath = getVideoPath(hiddenVideo.src);
-      if (hiddenVideoPath !== nextVideoSrc) {
-        hiddenVideo.preload = 'auto'; // Enable preloading for faster transitions
-        hiddenVideo.src = nextVideoSrc;
-        hiddenVideo.load();
-        hiddenVideo.addEventListener('loadeddata', () => {
-          hiddenVideo.currentTime = 0;
-        }, { once: true });
-
-        hiddenVideo.addEventListener('error', () => {
-          handleVideoError(nextIndex, hiddenVideo);
-        }, { once: true });
-      }
-      if (activeVideoRef.current === 0) {
-        video2IndexRef.current = nextIndex;
-      } else {
-        video1IndexRef.current = nextIndex;
-      }
-    }
-
-    // Only start video rotation timers if preloader is complete
-    if (preloaderComplete) {
-      prepareTimeoutRef.current = setTimeout(() => {
-        if (hiddenVideo.readyState >= 4) {
-          hiddenVideo.currentTime = 0;
-          const playPromise = hiddenVideo.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              const handlePause = () => {
-                if (!hiddenVideo.paused) return;
-                hiddenVideo.play().catch(() => {});
-              };
-              if (pauseListenerRef.current) {
-                hiddenVideo.removeEventListener('pause', pauseListenerRef.current);
-              }
-              pauseListenerRef.current = handlePause;
-              hiddenVideo.addEventListener('pause', handlePause);
-            }).catch(() => {});
-          }
-        }
-      }, 2000);
-
-      fadeTimeoutRef.current = setTimeout(() => {
-        if (hiddenVideo && hiddenVideo.readyState >= 4 && !hiddenVideo.paused) {
-          const newActiveVideo = activeVideoRef.current === 0 ? 1 : 0;
-          activeVideoRef.current = newActiveVideo;
-          setActiveVideo(newActiveVideo);
-        }
-      }, 2500);
-
-      timeoutRef.current = setTimeout(() => {
-        const oldShowingVideo = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
-        if (oldShowingVideo) {
-          oldShowingVideo.pause();
-        }
-        setCurrentVideoIndex(nextIndex);
-      }, 3000);
-    }
-
-    // Store ref values for cleanup
-    const video1 = video1Ref.current;
-    const video2 = video2Ref.current;
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (prepareTimeoutRef.current) clearTimeout(prepareTimeoutRef.current);
-      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
-      if (pauseListenerRef.current) {
-        video1?.removeEventListener('pause', pauseListenerRef.current);
-        video2?.removeEventListener('pause', pauseListenerRef.current);
-        pauseListenerRef.current = null;
-      }
-    };
-  }, [currentVideoIndex, preloaderComplete, handleVideoError]);
-
-  // Reset video to index 0 when preloader completes (only once)
-  const preloaderCompleteRef = useRef(false);
-  useEffect(() => {
-    if (preloaderComplete && !preloaderCompleteRef.current && video1Ref.current) {
-      preloaderCompleteRef.current = true;
-      // Ensure we're on video 1 and reset state
-      setCurrentVideoIndex(0);
-      setActiveVideo(0);
-      activeVideoRef.current = 0;
-      video1IndexRef.current = null;
-      video2IndexRef.current = null;
-      
-      // Reset video1 to first video if needed
-      if (video1Ref.current) {
-        const currentPath = getVideoPath(video1Ref.current.src);
-        if (currentPath !== videoUrls[0]) {
-          video1Ref.current.src = videoUrls[0];
-          video1Ref.current.load();
-          video1Ref.current.currentTime = 0;
-          video1Ref.current.play().catch(() => {});
-        }
-      }
-    }
-  }, [preloaderComplete]);
+  });
 
   // Shimmer effect for "creation" text when it loads - loops until scroll
   useEffect(() => {
-    if (!preloaderComplete || !creationTextRef.current || prefersReducedMotion) return;
+    if (!preloaderComplete || !creationTextRef.current || prefersReducedMotion || hasScrolled) return;
 
     const creationText = creationTextRef.current;
     let shimmerTween: gsap.core.Tween | null = null;
-    let isScrolled = false;
     
     // Set initial state - start with normal white text
     creationText.style.display = 'inline-block';
@@ -272,7 +87,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     
     // Function to start shimmer animation
     const startShimmer = () => {
-      if (isScrolled || !creationTextRef.current) return;
+      if (hasScrolled || !creationTextRef.current) return;
       
       // Apply shimmer gradient
       creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.5) 30%, rgba(184,160,104,1) 45%, rgba(255,255,255,1) 50%, rgba(184,160,104,1) 55%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,0.3) 100%)';
@@ -295,7 +110,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         repeatDelay: 1, // Pause 1 second between loops
         onRepeat: () => {
           // Reset position for next loop
-          if (!isScrolled && creationTextRef.current) {
+          if (!hasScrolled && creationTextRef.current) {
             creationText.style.backgroundPosition = '-200% center';
           }
         },
@@ -308,6 +123,8 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         shimmerTween.kill();
         shimmerTween = null;
       }
+      
+      if (!creationTextRef.current) return;
       
       // Remove gradient and restore normal text
       creationText.style.background = 'none';
@@ -323,166 +140,30 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     // Start shimmer after initial delay
     const startTimer = setTimeout(() => {
       startShimmer();
-    }, 1200);
-    
-    // Listen for scroll to stop shimmer
-    const handleScroll = () => {
-      if (!isScrolled) {
-        isScrolled = true;
-        stopShimmer();
-      }
-    };
-    
-    // Use Lenis scroll if available, otherwise native scroll
-    const getLenis = () => {
-      return window.lenis || null;
-    };
-    
-    const lenis = getLenis();
-    if (lenis) {
-      lenis.on('scroll', handleScroll);
-    } else {
-      window.addEventListener('scroll', handleScroll, { passive: true });
-    }
+    }, ANIMATION_TIMING.SHIMMER_START_DELAY);
     
     return () => {
       clearTimeout(startTimer);
-      if (shimmerTween) {
-        shimmerTween.kill();
-      }
-      if (lenis) {
-        lenis.off('scroll', handleScroll);
-      } else {
-        window.removeEventListener('scroll', handleScroll);
-      }
+      stopShimmer();
     };
-  }, [preloaderComplete, prefersReducedMotion]);
+  }, [preloaderComplete, prefersReducedMotion, hasScrolled]);
 
-  // Preload first video on mount
-  useEffect(() => {
-    if (!video1Ref.current) return;
-    
-    setIsLoading(true);
-    const firstVideo = video1Ref.current;
-    firstVideo.src = videoUrls[0];
-    firstVideo.preload = 'auto';
-    
-    const handleCanPlay = () => {
-      setIsLoading(false);
-      firstVideo.play().catch(() => {
-        handleVideoError(0, firstVideo);
-      });
-    };
-
-    const handleError = () => handleVideoError(0, firstVideo);
-
-    firstVideo.addEventListener('canplay', handleCanPlay, { once: true });
-    firstVideo.addEventListener('error', handleError, { once: true });
-    firstVideo.load();
-
-    return () => {
-      firstVideo.removeEventListener('canplay', handleCanPlay);
-      firstVideo.removeEventListener('error', handleError);
-    };
-  }, [handleVideoError]);
-
-  // Preload next video in background for faster transitions
-  useEffect(() => {
-    if (!preloaderComplete || !video1Ref.current || !video2Ref.current) return;
-    
-    const nextIndex = (currentVideoIndex + 1) % videoUrls.length;
-    const hiddenVideo = activeVideoRef.current === 0 ? video2Ref.current : video1Ref.current;
-    const hiddenVideoIndex = activeVideoRef.current === 0 ? video2IndexRef.current : video1IndexRef.current;
-    
-    // Only preload if it's not already loaded
-    if (hiddenVideoIndex !== nextIndex) {
-      const hiddenVideoPath = getVideoPath(hiddenVideo.src);
-      const nextVideoSrc = videoUrls[nextIndex];
-      
-      if (hiddenVideoPath !== nextVideoSrc) {
-        // Preload the next video in the background
-        hiddenVideo.preload = 'auto';
-        hiddenVideo.src = nextVideoSrc;
-        hiddenVideo.load();
-        
-        // Update index reference
-        if (activeVideoRef.current === 0) {
-          video2IndexRef.current = nextIndex;
-        } else {
-          video1IndexRef.current = nextIndex;
-        }
-      }
-    }
-  }, [currentVideoIndex, preloaderComplete]);
-
-  // Keyboard controls
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === ' ' && e.target === document.body) {
-        e.preventDefault();
-        const activeVideoElement = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
-        if (activeVideoElement) {
-          if (activeVideoElement.paused) {
-            activeVideoElement.play().catch(() => {});
-          } else {
-            activeVideoElement.pause();
-          }
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
-
-  // Intersection Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            video1Ref.current?.pause();
-            video2Ref.current?.pause();
-          } else {
-            const activeVideoElement = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
-            if (activeVideoElement && !activeVideoElement.paused) {
-              activeVideoElement.play().catch(() => {});
-            }
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    const section = sectionRef.current;
-    if (section) observer.observe(section);
-
-    return () => {
-      if (section) observer.unobserve(section);
-    };
-  }, []);
 
   // Scroll indicator fade
-  useEffect(() => {
+  useScrollListener((scrollY) => {
     if (!scrollIndicatorRef.current || prefersReducedMotion) return;
-
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const opacity = Math.max(0, 1 - scrollY / (windowHeight * 0.5));
-      
-      if (scrollIndicatorRef.current) {
-        gsap.to(scrollIndicatorRef.current, {
-          opacity,
-          duration: 0.3,
-          ease: 'power2.out',
-        });
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [prefersReducedMotion]);
+    
+    const windowHeight = window.innerHeight;
+    const opacity = Math.max(0, 1 - scrollY / (windowHeight * 0.5));
+    
+    if (scrollIndicatorRef.current) {
+      gsap.to(scrollIndicatorRef.current, {
+        opacity,
+        duration: ANIMATION_TIMING.SCROLL_INDICATOR_FADE_DURATION,
+        ease: 'power2.out',
+      });
+    }
+  });
 
   const scrollToAbout = () => {
     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
@@ -527,7 +208,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload={currentVideoIndex === 0 ? 'auto' : 'none'}
+        preload="auto"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
@@ -551,7 +232,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload={preloaderComplete ? 'metadata' : 'none'}
+        preload="metadata"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 

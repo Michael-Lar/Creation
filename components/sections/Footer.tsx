@@ -2,28 +2,9 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function Footer() {
   const sectionRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  // Standardized scroll-triggered animations
-  useScrollAnimation(
-    sectionRef,
-    () => {
-      if (contentRef.current) {
-        createStaggerReveal(contentRef.current.children, {
-          y: ANIMATIONS.transform.slideUp.small,
-          trigger: sectionRef.current,
-        });
-      }
-    },
-    { disabled: prefersReducedMotion }
-  );
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -101,7 +82,7 @@ export default function Footer() {
         aria-hidden="true"
       />
 
-      <div ref={contentRef} className="container-main relative">
+      <div className="container-main relative">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16 md:mb-20">
           

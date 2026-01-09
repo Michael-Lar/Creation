@@ -1,21 +1,18 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
+import { gsap } from '@/utils/gsap';
+import { useLenis } from '@/utils/lenis';
 
 export default function ScrollProgress() {
   const progressRef = useRef<HTMLDivElement>(null);
 
+  const lenis = useLenis();
+
   useEffect(() => {
     if (!progressRef.current) return;
 
-    // Wait for Lenis to be available
-    const getLenis = () => {
-      return window.lenis || null;
-    };
-
     const updateProgress = () => {
-      const lenis = getLenis();
       let progress = 0;
 
       if (lenis) {
@@ -42,21 +39,21 @@ export default function ScrollProgress() {
       }
     };
 
+    // Initial update
+    updateProgress();
+
     // Try to use Lenis scroll event
-    const lenis = getLenis();
     if (lenis) {
       lenis.on('scroll', updateProgress);
-      updateProgress(); // Initial update
       return () => {
         lenis.off('scroll', updateProgress);
       };
     } else {
       // Fallback to native scroll
       window.addEventListener('scroll', updateProgress, { passive: true });
-      updateProgress(); // Initial update
       return () => window.removeEventListener('scroll', updateProgress);
     }
-  }, []);
+  }, [lenis]);
 
   return (
     <div className="fixed top-0 left-0 right-0 h-0.5 bg-bronze/30 z-50 origin-left">

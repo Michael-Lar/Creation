@@ -1,13 +1,8 @@
 'use client';
 
 import { useEffect, useRef, RefObject } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '@/utils/gsap';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 interface UseScrollAnimationOptions {
   trigger?: RefObject<HTMLElement>;

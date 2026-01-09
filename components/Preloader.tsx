@@ -2,28 +2,27 @@
 
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 interface PreloaderProps {
   onComplete?: () => void;
   shouldSkip?: boolean;
 }
 
-// Persistent flags outside component to survive re-renders
-let globalVideoPlayed = false;
-let globalAnimationComplete = false;
-
 export default function Preloader({ onComplete, shouldSkip = false }: PreloaderProps) {
   const preloaderRef = useRef<HTMLDivElement>(null);
   const forwardVideoRef = useRef<HTMLVideoElement>(null);
   const reverseVideoRef = useRef<HTMLVideoElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [shouldShow, setShouldShow] = useState(true);
+  
+  // Use refs for persistent flags to survive re-renders without using global variables
+  const videoPlayedRef = useRef(false);
+  const animationCompleteRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(motionQuery.matches);
     
     if (typeof window !== 'undefined') {
       const skipPreloader = sessionStorage.getItem('scrollToProjects') === 'true' || shouldSkip;
@@ -49,18 +48,20 @@ export default function Preloader({ onComplete, shouldSkip = false }: PreloaderP
     const reverseVideo = reverseVideoRef.current;
     const preloader = preloaderRef.current;
 
-    if (globalAnimationComplete) {
-      preloader.style.display = 'none';
-      preloader.style.pointerEvents = 'none';
+    if (animationCompleteRef.current) {
+      if (preloader) {
+        preloader.style.display = 'none';
+        preloader.style.pointerEvents = 'none';
+      }
       onComplete?.();
       return;
     }
 
-    if (globalVideoPlayed) {
+    if (videoPlayedRef.current) {
       return;
     }
     
-    globalVideoPlayed = true;
+    videoPlayedRef.current = true;
 
     // Speed up videos for snappier feel
     const playbackSpeed = 1.3;
@@ -96,8 +97,8 @@ export default function Preloader({ onComplete, shouldSkip = false }: PreloaderP
     };
 
     const finishAnimation = () => {
-      if (globalAnimationComplete) return;
-      globalAnimationComplete = true;
+      if (animationCompleteRef.current) return;
+      animationCompleteRef.current = true;
       
       // Instant fade out
       gsap.to(preloader, {
@@ -137,7 +138,7 @@ export default function Preloader({ onComplete, shouldSkip = false }: PreloaderP
 
     // Fallback timeout
     const fallbackTimeout = setTimeout(() => {
-      if (!globalAnimationComplete) {
+      if (!animationCompleteRef.current) {
         if (forwardVideo.readyState >= 2) {
           playForward();
         } else {

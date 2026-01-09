@@ -1,37 +1,9 @@
 'use client';
 
 import { useRef } from 'react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { createScrollReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function ContactForm() {
   const sectionRef = useRef<HTMLElement>(null);
-  const labelRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  // Standardized scroll-triggered animations
-  useScrollAnimation(
-    sectionRef,
-    () => {
-      if (labelRef.current) {
-        createScrollReveal(labelRef.current, {
-          y: ANIMATIONS.transform.slideUp.small,
-          trigger: sectionRef.current,
-        });
-      }
-
-      if (contentRef.current) {
-        createScrollReveal(contentRef.current, {
-          y: ANIMATIONS.transform.slideUp.medium,
-          duration: ANIMATIONS.duration.medium,
-          trigger: contentRef.current,
-        });
-      }
-    },
-    { disabled: prefersReducedMotion }
-  );
 
   return (
     <section 
@@ -45,13 +17,13 @@ export default function ContactForm() {
       
       <div className="max-w-4xl mx-auto pt-2 md:pt-4">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-5 sm:mb-6 md:mb-8">
+        <div className="section-label mb-5 sm:mb-6 md:mb-8">
           <div className="section-label-line" />
           <span className="section-label-text">Connect</span>
         </div>
 
         {/* Contact Content */}
-        <div ref={contentRef} className="text-center">
+        <div className="text-center">
           {/* Main Tagline */}
           <p className="text-base sm:text-lg md:text-xl text-ink-500 mb-8 sm:mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed tracking-wide">
             We would love to connect.

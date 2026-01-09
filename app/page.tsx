@@ -19,6 +19,7 @@ import gsap from 'gsap';
 export default function Home() {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -76,7 +77,8 @@ export default function Home() {
         window.history.scrollRestoration = 'manual';
       }
       
-      const scrollToProjects = sessionStorage.getItem('scrollToProjects') === 'true';
+      // Check both sessionStorage and URL hash
+      const scrollToProjects = sessionStorage.getItem('scrollToProjects') === 'true' || window.location.hash === '#projects';
       setShouldSkipPreloader(scrollToProjects);
       if (scrollToProjects) {
         setPreloaderComplete(true);
@@ -113,19 +115,19 @@ export default function Home() {
         
         const lenis = window.lenis;
         if (lenis) {
-          // Use Lenis for instant scroll (immediate: true)
+          // Use Lenis for smooth scroll to projects section
           lenis.scrollTo(projectsSection, { 
             offset: -100, 
-            immediate: true,
-            duration: 0
+            immediate: false,
+            duration: 0.8
           });
           return true;
         } else {
-          // Fallback to instant window scroll
+          // Fallback to smooth window scroll
           window.scrollTo({
             top: projectsSection.offsetTop - 100,
             left: 0,
-            behavior: 'auto' as ScrollBehavior
+            behavior: 'smooth' as ScrollBehavior
           });
           return true;
         }
@@ -133,7 +135,7 @@ export default function Home() {
       
       // Try multiple times to ensure scroll happens
       let attempts = 0;
-      const maxAttempts = 10;
+      const maxAttempts = 15;
       
       const tryScroll = () => {
         attempts++;
@@ -143,16 +145,56 @@ export default function Home() {
         requestAnimationFrame(tryScroll);
       };
       
-      // Start trying immediately
-      tryScroll();
-      // Also try after a short delay in case Lenis isn't ready yet
+      // Start trying after a brief delay to ensure page is ready
+      setTimeout(() => {
+        tryScroll();
+      }, 200);
+      
+      // Also try after Lenis is more likely to be ready
       setTimeout(() => {
         if (attempts < maxAttempts) {
           tryScroll();
         }
-      }, 100);
+      }, 500);
     }
   }, [shouldSkipPreloader, fadeInContent]);
+
+  // Handle hash navigation (e.g., /#projects)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#projects' && preloaderComplete) {
+        const projectsSection = document.getElementById('projects');
+        if (projectsSection) {
+          const lenis = window.lenis;
+          if (lenis) {
+            lenis.scrollTo(projectsSection, { 
+              offset: -100, 
+              immediate: false,
+              duration: 0.8
+            });
+          } else {
+            projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+    };
+    
+    // Check hash on mount
+    if (window.location.hash === '#projects') {
+      // Wait for content to be ready
+      setTimeout(handleHashChange, 500);
+    }
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [preloaderComplete]);
 
   // Fallback: ensure content is visible after 4 seconds even if preloader doesn't complete
   useEffect(() => {
@@ -199,7 +241,7 @@ export default function Home() {
         
         <ScrollProgress />
         {!shouldSkipPreloader && <Preloader onComplete={handlePreloaderComplete} shouldSkip={shouldSkipPreloader} />}
-        <Header />
+        <Header isModalOpen={isModalOpen} />
         <main 
           ref={mainContentRef} 
           className="main-content" 
@@ -221,7 +263,7 @@ export default function Home() {
             <Divisions />
           </ErrorBoundary>
           <ErrorBoundary sectionName="Team">
-            <Team />
+            <Team onModalStateChange={setIsModalOpen} />
           </ErrorBoundary>
           <ErrorBoundary sectionName="Projects">
             <Projects />

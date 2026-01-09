@@ -1,164 +1,23 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from 'next/image';
 import { projects } from '@/data/projects';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { createScrollReveal, ANIMATIONS } from '@/utils/animations';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { stopLenis } from '@/utils/lenis';
 
 // Get unique project types for filter
 const projectTypes = ['All', ...Array.from(new Set(projects.map(p => p.type)))];
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
-  const labelRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const [activeFilter, setActiveFilter] = useState('All');
-  const [isInitialMount, setIsInitialMount] = useState(true);
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const scrollTriggerInstanceRef = useRef<ScrollTrigger | null>(null);
 
   // Robust filtering with validation
   const filteredProjects = activeFilter === 'All' 
     ? projects 
     : projects.filter(p => p && p.type === activeFilter);
-
-  // Standardized scroll-triggered animations for label
-  useScrollAnimation(
-    sectionRef,
-    () => {
-      if (labelRef.current) {
-        createScrollReveal(labelRef.current, {
-          y: ANIMATIONS.transform.slideUp.small,
-          trigger: sectionRef.current,
-        });
-      }
-    },
-    { disabled: prefersReducedMotion }
-  );
-
-  // Scroll-triggered animation for cards (only runs once on mount)
-  useEffect(() => {
-    if (prefersReducedMotion || !gridRef.current || !isInitialMount) return;
-
-    const cards = Array.from(gridRef.current.children) as HTMLElement[];
-    if (cards.length === 0) return;
-
-    // Kill any existing ScrollTrigger on the grid
-    if (scrollTriggerInstanceRef.current) {
-      scrollTriggerInstanceRef.current.kill();
-    }
-
-    // Check if section is already in view
-    const rect = gridRef.current.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    const isInView = rect.top < windowHeight * 0.95 && rect.bottom > 0;
-
-    if (isInView) {
-      // Section is already in view, animate immediately without ScrollTrigger
-      gsap.fromTo(cards,
-        {
-          opacity: 0,
-          y: ANIMATIONS.transform.slideUp.medium,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: ANIMATIONS.duration.standard,
-          stagger: ANIMATIONS.stagger.standard,
-          ease: ANIMATIONS.ease.standard,
-          onComplete: () => {
-            cards.forEach((card) => {
-              gsap.set(card, { clearProps: 'transform' });
-            });
-            setIsInitialMount(false);
-          },
-        }
-      );
-    } else {
-      // Section not in view yet, use ScrollTrigger
-      gsap.set(cards, {
-        opacity: 0,
-        y: ANIMATIONS.transform.slideUp.medium,
-      });
-
-      const st = ScrollTrigger.create({
-        trigger: gridRef.current,
-        start: ANIMATIONS.scrollTrigger.start,
-        once: true,
-        onEnter: () => {
-          gsap.to(cards, {
-            opacity: 1,
-            y: 0,
-            duration: ANIMATIONS.duration.standard,
-            stagger: ANIMATIONS.stagger.standard,
-            ease: ANIMATIONS.ease.standard,
-            onComplete: () => {
-              cards.forEach((card) => {
-                gsap.set(card, { clearProps: 'transform' });
-              });
-              setIsInitialMount(false);
-              if (scrollTriggerInstanceRef.current) {
-                scrollTriggerInstanceRef.current.kill();
-                scrollTriggerInstanceRef.current = null;
-              }
-            },
-          });
-        },
-      });
-
-      scrollTriggerInstanceRef.current = st;
-    }
-
-    return () => {
-      if (scrollTriggerInstanceRef.current) {
-        scrollTriggerInstanceRef.current.kill();
-        scrollTriggerInstanceRef.current = null;
-      }
-    };
-  }, [prefersReducedMotion, isInitialMount]);
-
-  // Animate cards when filter changes (skip on initial mount)
-  useEffect(() => {
-    if (prefersReducedMotion || !gridRef.current || isInitialMount) return;
-    
-    const cards = Array.from(gridRef.current.children) as HTMLElement[];
-    if (cards.length === 0) return;
-
-    // Kill the scroll trigger since we're manually animating
-    if (scrollTriggerInstanceRef.current) {
-      scrollTriggerInstanceRef.current.kill();
-      scrollTriggerInstanceRef.current = null;
-    }
-
-    // Reset and animate cards
-    gsap.fromTo(cards,
-      {
-        opacity: 0,
-        y: ANIMATIONS.transform.slideUp.medium,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: ANIMATIONS.duration.standard,
-        stagger: ANIMATIONS.stagger.standard,
-        ease: ANIMATIONS.ease.standard,
-        onComplete: () => {
-          // Clear transform after animation completes
-          cards.forEach((card) => {
-            gsap.set(card, { clearProps: 'transform' });
-          });
-        },
-      }
-    );
-  }, [activeFilter, prefersReducedMotion, isInitialMount]);
 
   return (
     <section 
@@ -174,7 +33,7 @@ export default function Projects() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8 lg:mb-10">
           {/* Section Label */}
-          <div ref={labelRef}>
+          <div>
             <div className="section-label mb-0">
               <div className="section-label-line" />
               <span className="section-label-text">Recent Projects</span>
@@ -222,11 +81,8 @@ export default function Projects() {
               onClick={(e) => {
                 // Prevent any scroll behavior during navigation
                 if (typeof window !== 'undefined') {
-                  const lenis = window.lenis;
-                  if (lenis) {
-                    // Immediately stop any ongoing scroll
-                    lenis.stop();
-                  }
+                  // Immediately stop any ongoing scroll
+                  stopLenis();
                   // Disable scroll restoration temporarily
                   if ('scrollRestoration' in window.history) {
                     window.history.scrollRestoration = 'manual';
@@ -237,29 +93,40 @@ export default function Projects() {
               <article>
                 {/* Project Image - 4:3 aspect ratio with premium shadow */}
                 <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-3 sm:mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all-standard">
-                  {/* Subtle pattern */}
-                  <div 
-                    className="absolute inset-0 opacity-[0.04]"
-                    style={{
-                      backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
-                      backgroundSize: '20px 20px',
-                    }}
-                    aria-hidden="true"
-                  />
+                  {/* Project Image */}
+                  {project.images && project.images.length > 0 ? (
+                    <Image
+                      src={project.images[0]}
+                      alt={`${project.name} - ${project.location}`}
+                      fill
+                      className="object-cover object-center transition-transform transition-slow group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  ) : (
+                    /* Fallback pattern if no image */
+                    <div 
+                      className="absolute inset-0 opacity-[0.04]"
+                      style={{
+                        backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
+                        backgroundSize: '20px 20px',
+                      }}
+                      aria-hidden="true"
+                    />
+                  )}
                   
                   {/* Type Badge with bronze accent */}
-                  <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-white/95 backdrop-blur-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-sm border border-ink-100/50">
+                  <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-white/95 backdrop-blur-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-sm border border-ink-100/50 z-10">
                     <span className="text-[0.625rem] sm:text-label text-ink-600 tracking-wider">
                       {project.type}
                     </span>
                   </div>
                   
                   {/* Corner accents on hover */}
-                  <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity transition-slow" aria-hidden="true" />
-                  <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity transition-slow" aria-hidden="true" />
+                  <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-10" aria-hidden="true" />
+                  <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-10" aria-hidden="true" />
                   
                   {/* Hover Overlay with View indicator */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-standard flex items-end justify-center pb-5 sm:pb-6">
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-standard flex items-end justify-center pb-5 sm:pb-6 z-10">
                     <span className="text-white text-[0.65rem] sm:text-caption tracking-[0.15em] uppercase font-medium">
                       View Project
                     </span>

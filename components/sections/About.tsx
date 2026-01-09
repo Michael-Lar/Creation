@@ -2,61 +2,9 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { createScrollReveal, createStaggerReveal, ANIMATIONS } from '@/utils/animations';
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const labelRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const quoteRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  // Standardized scroll-triggered animations
-  useScrollAnimation(
-    sectionRef,
-    () => {
-      if (labelRef.current) {
-        createScrollReveal(labelRef.current, {
-          y: ANIMATIONS.transform.slideUp.small,
-          trigger: sectionRef.current,
-        });
-      }
-
-      if (logoRef.current && headingRef.current) {
-        createScrollReveal(logoRef.current, {
-          scale: ANIMATIONS.transform.scale.subtle,
-          duration: ANIMATIONS.duration.medium,
-          trigger: headingRef.current,
-        });
-      }
-
-      if (headingRef.current) {
-        createScrollReveal(headingRef.current, {
-          y: ANIMATIONS.transform.slideUp.medium,
-          duration: ANIMATIONS.duration.medium,
-        });
-      }
-
-      if (gridRef.current) {
-        createStaggerReveal(gridRef.current.children, {
-          y: ANIMATIONS.transform.slideUp.medium,
-          trigger: gridRef.current,
-        });
-      }
-
-      if (quoteRef.current) {
-        createScrollReveal(quoteRef.current, {
-          y: ANIMATIONS.transform.slideUp.medium,
-          duration: ANIMATIONS.duration.medium,
-        });
-      }
-    },
-    { disabled: prefersReducedMotion }
-  );
 
   return (
     <section 
@@ -70,7 +18,7 @@ export default function About() {
       
       <div className="container-content relative">
         {/* Section Label */}
-        <div ref={labelRef} className="section-label mb-6 md:mb-8 lg:mb-10">
+        <div className="section-label mb-6 md:mb-8 lg:mb-10">
           <div className="section-label-line" />
           <span className="section-label-text">About</span>
         </div>
@@ -78,17 +26,14 @@ export default function About() {
         {/* Main Heading with Logo */}
         <div className="grid md:grid-cols-12 gap-5 md:gap-6 lg:gap-8 items-start mb-8 md:mb-10 lg:mb-12">
           {/* Heading */}
-          <div ref={headingRef} className="md:col-span-9">
+          <div className="md:col-span-9">
             <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] leading-[1.15] text-ink-800 tracking-tight-luxury">
               A Los Angeles-based, vertically integrated real estate investment and operating platform.
             </h2>
           </div>
           
           {/* Logo Mark */}
-          <div 
-            ref={logoRef}
-            className="hidden md:flex md:col-span-3 items-center justify-center"
-          >
+          <div className="hidden md:flex md:col-span-3 items-center justify-center">
             <div className="relative group">
               {/* Subtle ring around logo */}
               <div 
@@ -118,10 +63,7 @@ export default function About() {
         </div>
 
         {/* Two Column Grid */}
-        <div 
-          ref={gridRef} 
-          className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-24 pb-10 md:pb-12 lg:pb-16"
-        >
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-24 pb-10 md:pb-12 lg:pb-16">
           <div className="relative">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
@@ -149,7 +91,7 @@ export default function About() {
         <div className="divider-bronze my-10 md:my-12 lg:my-16" aria-hidden="true" />
 
         {/* Pull Quote */}
-        <div ref={quoteRef}>
+        <div>
           <div className="relative pl-4 sm:pl-6 md:pl-8">
             {/* Decorative quote border with bronze accent */}
             <div 
