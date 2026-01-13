@@ -1,24 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo, useCallback } from 'react';
 import Image from 'next/image';
-import TeamMemberModal from '@/components/TeamMemberModal';
-
-interface TeamMember {
-  id: number;
-  name: string;
-  title: string;
-  bio?: string;
-  email?: string;
-  phone?: string;
-  linkedin?: string;
-  image?: string; // Path to headshot image
-}
+import dynamic from 'next/dynamic';
+import { TeamMember } from '@/types/models';
+import ImageSkeleton from '@/components/ImageSkeleton';
 
 interface TeamProps {
   onModalStateChange?: (isOpen: boolean) => void;
 }
 
+// Constants
 const teamMembers: TeamMember[] = [
   {
     id: 1,
@@ -89,18 +81,96 @@ Michael holds a Bachelor of Science from the University of California, Berkeley.
   },
 ];
 
-export default function Team({ onModalStateChange }: TeamProps) {
-  const sectionRef = useRef<HTMLElement>(null);
+// Dynamically import TeamMemberModal to reduce initial bundle size
+// Preloaded proactively to eliminate click delay
+const TeamMemberModal = dynamic(() => import('@/components/TeamMemberModal'), {
+  ssr: false, // Modal is interactive and only shown client-side
+  loading: () => (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" aria-hidden="true">
+      <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+    </div>
+  ),
+});
+
+function Team({ onModalStateChange }: TeamProps) {
+  // State hooks
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set(teamMembers.map(m => m.id)));
+  
+  // Refs
+  const sectionRef = useRef<HTMLElement>(null);
+  const preloadedRef = useRef<boolean>(false);
+  const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
 
-  // Notify parent when modal state changes
+  // Preload modal component to eliminate click delay
+  const preloadModal = useCallback(() => {
+    if (preloadedRef.current) return;
+    preloadedRef.current = true;
+    // Preload the modal module - this downloads and caches it
+    import('@/components/TeamMemberModal').catch(() => {
+      // Silently handle any import errors
+      preloadedRef.current = false; // Allow retry
+    });
+  }, []);
+
+  // Preload modal when section becomes visible (Intersection Observer)
+  useEffect(() => {
+    if (!sectionRef.current || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      // Fallback: preload after a delay if IntersectionObserver not available
+      const timer = setTimeout(() => {
+        preloadModal();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            preloadModal();
+            // Once we've preloaded, we can disconnect the observer
+            if (intersectionObserverRef.current) {
+              intersectionObserverRef.current.disconnect();
+              intersectionObserverRef.current = null;
+            }
+          }
+        });
+      },
+      {
+        // Start preloading when section is 200px away from viewport
+        rootMargin: '200px',
+        threshold: 0,
+      }
+    );
+
+    intersectionObserverRef.current = observer;
+    observer.observe(sectionRef.current);
+
+    return () => {
+      if (intersectionObserverRef.current) {
+        intersectionObserverRef.current.disconnect();
+      }
+    };
+  }, [preloadModal]);
+
+  // Fallback: Preload modal after page load (delayed to not interfere with initial load)
+  useEffect(() => {
+    // Preload after 1.5 seconds to ensure initial page load isn't impacted
+    const timer = setTimeout(() => {
+      preloadModal();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [preloadModal]);
+
+  // Effects
   useEffect(() => {
     if (onModalStateChange) {
       onModalStateChange(selectedMember !== null);
     }
   }, [selectedMember, onModalStateChange]);
 
+  // Event handlers
   const handleMemberClick = (member: TeamMember) => {
     const index = teamMembers.findIndex(m => m.id === member.id);
     setCurrentIndex(index);
@@ -139,6 +209,7 @@ export default function Team({ onModalStateChange }: TeamProps) {
               key={member.id}
               className="group relative bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all transition-standard hover:bg-white hover:border-accent/40 hover:shadow-premium-lg hover:-translate-y-1 cursor-pointer active:translate-y-0 active:shadow-premium"
               onClick={() => handleMemberClick(member)}
+              onMouseEnter={preloadModal}
               role="button"
               tabIndex={0}
               aria-label={`View ${member.name}'s profile`}
@@ -163,26 +234,57 @@ export default function Team({ onModalStateChange }: TeamProps) {
               </div>
               {/* Photo Container - Clean B&W Cutout */}
               <div className="aspect-[4/5] relative flex items-center justify-center bg-gradient-to-b from-gray-50 to-white overflow-hidden group-hover:from-white group-hover:to-gray-50 transition-all transition-standard z-0">
-                {member.image ? (
-                  <Image
-                    src={member.image}
-                    alt={`${member.name} - ${member.title}`}
-                    fill
-                    className="object-contain object-center transition-all transition-standard group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    style={{
-                      filter: 'grayscale(100%) contrast(1.15)',
-                      WebkitFilter: 'grayscale(100%) contrast(1.15)',
-                    }}
-                  />
-                ) : (
-                  // Fallback placeholder
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-ink-300 text-6xl font-playfair">
-                      {member.name.charAt(0)}
-                    </span>
-                  </div>
-                )}
+                {(() => {
+                  const isLoading = loadingImages.has(member.id);
+                  
+                  return member.image ? (
+                    <>
+                      {/* Loading Skeleton */}
+                      {isLoading && (
+                        <ImageSkeleton 
+                          className="absolute inset-0 z-[1]"
+                          aspectRatio="aspect-[4/5]"
+                          showShimmer={true}
+                        />
+                      )}
+                      
+                      <Image
+                        src={member.image}
+                        alt={`${member.name} - ${member.title}`}
+                        fill
+                        className={`object-contain object-center transition-all duration-500 group-hover:scale-105 transition-transform transition-standard ${
+                          isLoading ? 'opacity-0' : 'opacity-100'
+                        }`}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        style={{
+                          filter: 'grayscale(100%) contrast(1.15)',
+                          WebkitFilter: 'grayscale(100%) contrast(1.15)',
+                        }}
+                        onLoad={() => {
+                          setLoadingImages(prev => {
+                            const next = new Set(prev);
+                            next.delete(member.id);
+                            return next;
+                          });
+                        }}
+                        onError={() => {
+                          setLoadingImages(prev => {
+                            const next = new Set(prev);
+                            next.delete(member.id);
+                            return next;
+                          });
+                        }}
+                      />
+                    </>
+                  ) : (
+                    // Fallback placeholder
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-ink-300 text-6xl font-playfair">
+                        {member.name.charAt(0)}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Content */}
@@ -214,15 +316,19 @@ export default function Team({ onModalStateChange }: TeamProps) {
         </div>
       </div>
 
-      {/* Team Member Modal */}
-      <TeamMemberModal
-        member={selectedMember}
-        allMembers={teamMembers}
-        currentIndex={currentIndex}
-        isOpen={selectedMember !== null}
-        onClose={() => setSelectedMember(null)}
-        onNavigate={handleNavigate}
-      />
+      {/* Team Member Modal - Only render when a member is selected */}
+      {selectedMember && (
+        <TeamMemberModal
+          member={selectedMember}
+          allMembers={teamMembers}
+          currentIndex={currentIndex}
+          isOpen={selectedMember !== null}
+          onClose={() => setSelectedMember(null)}
+          onNavigate={handleNavigate}
+        />
+      )}
     </section>
   );
 }
+
+export default memo(Team);

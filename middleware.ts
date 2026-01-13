@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   // Create response
   const response = NextResponse.next();
+
+  // Check if we're in development mode (needed for conditional security headers)
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
   // Security Headers
   
@@ -11,10 +14,13 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   
   // Strict Transport Security (HSTS) - Force HTTPS for 1 year including subdomains
-  response.headers.set(
-    'Strict-Transport-Security',
-    'max-age=31536000; includeSubDomains'
-  );
+  // Only set in production to avoid breaking local development (especially Safari)
+  if (!isDevelopment) {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains'
+    );
+  }
   
   // X-Frame-Options - Prevent clickjacking by disallowing iframe embedding
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
@@ -41,7 +47,6 @@ export function middleware(request: NextRequest) {
   // Content Security Policy (CSP) - Comprehensive security policy
   // Note: Adjust based on your needs, especially for analytics/third-party scripts
   // Allow localhost for development debugging
-  const isDevelopment = process.env.NODE_ENV === 'development';
   const cspDirectives = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
@@ -56,7 +61,8 @@ export function middleware(request: NextRequest) {
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'self'",
-    "upgrade-insecure-requests",
+    // Only upgrade insecure requests in production to avoid breaking local development (especially Safari)
+    ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
   ].join('; ');
   
   response.headers.set('Content-Security-Policy', cspDirectives);

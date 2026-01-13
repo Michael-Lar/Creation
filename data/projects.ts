@@ -1,3 +1,5 @@
+import { ErrorHandler } from '@/utils/errorHandler';
+
 export interface Project {
   id: number;
   name: string;
@@ -52,7 +54,7 @@ export const projects: Project[] = [
     slug: '152-n-la-brea-blvd',
     description: 'Retail and office space in the heart of Los Angeles.',
     details: 'A prime retail and office development located on La Brea Boulevard, combining commercial and professional spaces.',
-    images: ['/projects/152 N La Brea Blvd, Los Angeles (Retail_Office]).png'],
+    images: ['/projects/152 N La Brea Blvd, Los Angeles (Retail_Office).png'],
     status: 'Completed',
     size: 'TBD',
     role: 'Acquisition & Development',
@@ -184,7 +186,11 @@ export function getProjectById(id: number): Project | undefined {
   
   // Validate project data integrity
   if (project && (!project.name || !project.location || !project.type)) {
-    console.warn(`Project ${id} has missing required fields`);
+    // Use ErrorHandler for validation warnings
+    ErrorHandler.handleValidationWarning(
+      `Project ${id} has missing required fields`,
+      { projectId: id, project }
+    );
     return undefined;
   }
   
@@ -201,7 +207,11 @@ export function getProjectBySlug(slug: string): Project | undefined {
   
   // Validate project data integrity
   if (project && (!project.name || !project.location || !project.type)) {
-    console.warn(`Project with slug "${slug}" has missing required fields`);
+    // Use ErrorHandler for validation warnings
+    ErrorHandler.handleValidationWarning(
+      `Project with slug "${slug}" has missing required fields`,
+      { slug, project }
+    );
     return undefined;
   }
   

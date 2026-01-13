@@ -1,8 +1,7 @@
 export enum ErrorCategory {
   NETWORK = 'network',
-  VALIDATION = 'validation',
   VIDEO = 'video',
-  FORM = 'form',
+  VALIDATION = 'validation',
   UNKNOWN = 'unknown',
 }
 
@@ -15,11 +14,58 @@ export interface ErrorInfo {
 }
 
 /**
+ * Type guard to check if a value is an Error instance
+ */
+function isError(value: unknown): value is Error {
+  return value instanceof Error;
+}
+
+/**
+ * Type guard to check if a value is a string
+ */
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+/**
+ * Safely extract error message from unknown value
+ */
+function getErrorMessage(error: unknown): string {
+  if (isError(error)) {
+    return error.message;
+  }
+  if (isString(error)) {
+    return error;
+  }
+  if (error && typeof error === 'object' && 'message' in error && isString(error.message)) {
+    return error.message;
+  }
+  return 'An unknown error occurred';
+}
+
+/**
+ * Safely extract Error instance from unknown value
+ */
+function getErrorInstance(error: unknown): Error | undefined {
+  if (isError(error)) {
+    return error;
+  }
+  if (isString(error)) {
+    return new Error(error);
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = isString(error.message) ? error.message : 'An unknown error occurred';
+    return new Error(message);
+  }
+  return undefined;
+}
+
+/**
  * Centralized error handler for logging and categorization
  */
 export class ErrorHandler {
   private static generateErrorId(): string {
-    return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `err_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   private static logError(info: ErrorInfo): string {
@@ -45,8 +91,8 @@ export class ErrorHandler {
   ): string {
     const errorInfo: ErrorInfo = {
       category,
-      message: error instanceof Error ? error.message : String(error),
-      error: error instanceof Error ? error : undefined,
+      message: getErrorMessage(error),
+      error: getErrorInstance(error),
       context,
       timestamp: new Date().toISOString(),
     };
@@ -61,13 +107,6 @@ export class ErrorHandler {
     });
   }
 
-  static handleValidationError(error: Error, field?: string): string {
-    return this.handleError(error, ErrorCategory.VALIDATION, {
-      field,
-      type: 'validation_error',
-    });
-  }
-
   static handleVideoError(error: Error, videoIndex?: number): string {
     return this.handleError(error, ErrorCategory.VIDEO, {
       videoIndex,
@@ -75,10 +114,29 @@ export class ErrorHandler {
     });
   }
 
-  static handleFormError(error: Error, formData?: Record<string, unknown>): string {
-    return this.handleError(error, ErrorCategory.FORM, {
-      formData: formData ? { ...formData, sensitive: true } : undefined,
-      type: 'form_error',
+  /**
+   * Handle validation warnings (non-critical issues)
+   * These are logged but don't break the application flow
+   */
+  static handleValidationWarning(message: string, context?: Record<string, unknown>): string {
+    return this.handleError(
+      new Error(message),
+      ErrorCategory.VALIDATION,
+      {
+        ...context,
+        type: 'validation_warning',
+        severity: 'warning',
+      }
+    );
+  }
+
+  /**
+   * Handle scroll-related errors
+   */
+  static handleScrollError(error: Error | unknown, context?: Record<string, unknown>): string {
+    return this.handleError(error, ErrorCategory.UNKNOWN, {
+      ...context,
+      type: 'scroll_error',
     });
   }
 }

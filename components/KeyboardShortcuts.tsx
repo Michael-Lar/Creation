@@ -25,8 +25,7 @@ export default function KeyboardShortcuts() {
         { key: '2', id: 'divisions' },
         { key: '3', id: 'team' },
         { key: '4', id: 'projects' },
-        { key: '5', id: 'form' },
-        { key: '6', id: 'contact' },
+        { key: '5', id: 'contact' },
       ];
 
       // Number keys for sections

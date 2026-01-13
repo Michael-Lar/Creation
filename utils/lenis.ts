@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import type { LenisInstance, LenisScrollToOptions } from '@/types/lenis';
 
 /**
@@ -42,71 +42,18 @@ export function useLenis(): LenisInstance | null {
   const [lenis, setLenis] = useState<LenisInstance | null>(null);
 
   useEffect(() => {
-    // Check if Lenis is available
     const checkLenis = () => {
       const instance = getLenisInstance();
-      setLenis(instance);
-    };
-
-    // Initial check
-    checkLenis();
-
-    // Poll for Lenis initialization (in case it's initialized after mount)
-    const interval = setInterval(() => {
-      if (!lenis) {
-        checkLenis();
-      } else {
-        clearInterval(interval);
+      if (instance) {
+        setLenis(instance);
       }
-    }, 100);
-
-    // Cleanup interval after 5 seconds (Lenis should be initialized by then)
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-    }, 5000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
     };
-  }, [lenis]);
+
+    checkLenis(); // Initial check
+    waitForLenis().then(checkLenis); // Check again when ready
+  }, []); // Empty deps - only run on mount
 
   return lenis;
-}
-
-/**
- * Hook to get current scroll position (works with both Lenis and native scroll)
- */
-export function useScrollPosition(): number {
-  const [scrollY, setScrollY] = useState(0);
-  const lenis = useLenis();
-
-  useEffect(() => {
-    const updateScroll = () => {
-      if (lenis) {
-        setScrollY(lenis.scroll);
-      } else {
-        setScrollY(window.scrollY);
-      }
-    };
-
-    // Initial update
-    updateScroll();
-
-    if (lenis) {
-      lenis.on('scroll', updateScroll);
-      return () => {
-        lenis.off('scroll', updateScroll);
-      };
-    } else {
-      window.addEventListener('scroll', updateScroll, { passive: true });
-      return () => {
-        window.removeEventListener('scroll', updateScroll);
-      };
-    }
-  }, [lenis]);
-
-  return scrollY;
 }
 
 /**
@@ -153,4 +100,46 @@ export function startLenis(): void {
   if (lenis) {
     lenis.start();
   }
+}
+
+/**
+ * Lenis ready state management
+ */
+let lenisReady = false;
+let lenisReadyPromise: Promise<void> | null = null;
+let lenisReadyResolve: (() => void) | null = null;
+
+/**
+ * Mark Lenis as ready (called by SmoothScroll after initialization)
+ */
+export function markLenisReady(): void {
+  if (lenisReady) return;
+  lenisReady = true;
+  if (lenisReadyResolve) {
+    lenisReadyResolve();
+    lenisReadyResolve = null;
+    lenisReadyPromise = null;
+  }
+}
+
+/**
+ * Check if Lenis is ready
+ */
+export function isLenisReady(): boolean {
+  return lenisReady;
+}
+
+/**
+ * Wait for Lenis to be ready (returns immediately if already ready)
+ */
+export function waitForLenis(): Promise<void> {
+  if (lenisReady) {
+    return Promise.resolve();
+  }
+  if (!lenisReadyPromise) {
+    lenisReadyPromise = new Promise<void>((resolve) => {
+      lenisReadyResolve = resolve;
+    });
+  }
+  return lenisReadyPromise;
 }

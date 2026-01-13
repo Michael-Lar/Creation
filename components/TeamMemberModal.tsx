@@ -3,20 +3,10 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { gsap } from '@/utils/gsap';
-import { stopLenis, startLenis } from '@/utils/lenis';
+import { stopLenis, startLenis, getLenisInstance } from '@/utils/lenis';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { EASING } from '@/constants/animations';
-
-interface TeamMember {
-  id: number;
-  name: string;
-  title: string;
-  bio?: string;
-  email?: string;
-  phone?: string;
-  linkedin?: string;
-  image?: string;
-}
+import { TeamMember } from '@/types/models';
 
 interface TeamMemberModalProps {
   member: TeamMember | null;
@@ -27,25 +17,62 @@ interface TeamMemberModalProps {
   onNavigate: (index: number) => void;
 }
 
-export default function TeamMemberModal({ member, allMembers, currentIndex, isOpen, onClose, onNavigate }: TeamMemberModalProps) {
+export default function TeamMemberModal({ 
+  member, 
+  allMembers, 
+  currentIndex, 
+  isOpen, 
+  onClose, 
+  onNavigate 
+}: TeamMemberModalProps) {
+  // Custom hooks
+  const prefersReducedMotion = usePrefersReducedMotion();
+  
+  // Refs
   const backdropRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+  const savedScrollPositionRef = useRef<number>(0);
 
   // Scroll lock integration
   useEffect(() => {
     if (isOpen) {
+      // Save the current scroll position using Lenis if available, otherwise window.scrollY
+      const lenis = getLenisInstance();
+      savedScrollPositionRef.current = lenis ? lenis.scroll : (window.scrollY || window.pageYOffset || 0);
       previousActiveElementRef.current = document.activeElement as HTMLElement;
       stopLenis();
+      
+      // Prevent body scroll
       document.body.style.overflow = 'hidden';
-    } else {
-      startLenis();
-      document.body.style.overflow = '';
-      if (previousActiveElementRef.current) {
-        previousActiveElementRef.current.focus();
-      }
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedScrollPositionRef.current}px`;
+      document.body.style.width = '100%';
     }
+    
+    // Cleanup function - ALWAYS runs on unmount or when isOpen changes
+    return () => {
+      // Only restore if body was locked (overflow is hidden) - this means modal was open
+      const wasLocked = document.body.style.overflow === 'hidden' || window.getComputedStyle(document.body).overflow === 'hidden';
+      
+      if (wasLocked) {
+        // Get the saved scroll position BEFORE removing fixed positioning
+        const scrollPosition = savedScrollPositionRef.current;
+        
+        // CRITICAL: Restore body styles immediately
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        
+        // CRITICAL: Restore scroll position IMMEDIATELY after removing fixed positioning
+        // Use window.scrollTo synchronously to prevent jump to top
+        window.scrollTo(0, scrollPosition);
+        
+        // Then restore Lenis (it will sync with the scroll position we just set)
+        startLenis();
+      }
+    };
   }, [isOpen]);
 
   // Handle Escape key and arrow navigation
@@ -107,7 +134,7 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
     };
   }, [isOpen]);
 
-  // Prevent Lenis from intercepting scroll events within the modal
+  // Prevent Lenis from intercepting scroll events within the modal (desktop and mobile)
   useEffect(() => {
     if (!isOpen || !modalRef.current) return;
 
@@ -122,11 +149,23 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
       // Allow native scrolling within the modal
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      // Always stop propagation to prevent Lenis from handling touch events
+      // This allows native scrolling within the modal
+      e.stopPropagation();
+      
+      // Allow native scrolling - don't prevent default
+      // The browser will handle scrolling naturally within the scrollable container
+    };
+
     // Use capture phase to intercept before Lenis
     scrollableContent.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+    // Use passive: true for touchmove to allow smooth native scrolling
+    scrollableContent.addEventListener('touchmove', handleTouchMove, { passive: true, capture: true });
     
     return () => {
       scrollableContent.removeEventListener('wheel', handleWheel, { capture: true });
+      scrollableContent.removeEventListener('touchmove', handleTouchMove, { capture: true });
     };
   }, [isOpen]);
 
@@ -198,7 +237,7 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-[60] bg-ink-900/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 lg:p-8"
+      className="fixed inset-0 z-[60] bg-ink-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8"
       onClick={handleBackdropClick}
       aria-hidden={!isOpen}
       style={{ display: isOpen ? 'flex' : 'none' }}
@@ -208,7 +247,7 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
     >
       <div
         ref={modalRef}
-        className="bg-cream rounded-sm shadow-premium-lg max-w-6xl w-full max-h-[92vh] flex flex-col lg:flex-row relative border border-accent/30 overflow-hidden"
+        className="bg-cream rounded-sm shadow-premium-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[92vh] flex flex-col lg:flex-row relative border border-accent/30 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Bronze corner accents */}
@@ -218,7 +257,7 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 hover:bg-white border border-ink-200/60 hover:border-accent/50 flex items-center justify-center text-ink-600 hover:text-accent transition-all transition-standard touch-target z-20 shadow-soft"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white active:bg-white border border-ink-200/60 hover:border-accent/50 flex items-center justify-center text-ink-600 hover:text-accent transition-all transition-standard touch-target z-20 shadow-soft"
           aria-label="Close modal"
         >
           <svg
@@ -233,7 +272,7 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
         </button>
 
         {/* Photo Section - Fixed on left */}
-        <div className="relative w-full lg:w-[42%] xl:w-[40%] flex-shrink-0 bg-cream lg:h-[92vh] border-b lg:border-b-0 lg:border-r border-accent/30 flex items-center justify-center p-8 sm:p-10 lg:p-12 overflow-hidden">
+        <div className="relative w-full lg:w-[42%] xl:w-[40%] flex-shrink-0 bg-cream lg:h-[92vh] border-b lg:border-b-0 lg:border-r border-accent/30 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 overflow-hidden max-h-[40vh] sm:max-h-[45vh] lg:max-h-none">
           {/* Decorative background pattern */}
           <div 
             className="absolute inset-0 opacity-[0.02]"
@@ -245,7 +284,7 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
           />
           <div className="w-full max-w-full h-full max-h-full flex items-center justify-center relative z-10">
             {member.image ? (
-              <div className="relative w-full aspect-[4/5] max-w-[400px] bg-white rounded-sm border border-accent/30 shadow-premium overflow-hidden group/photo">
+              <div className="relative w-full aspect-[4/5] max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] bg-white rounded-sm border border-accent/30 shadow-premium overflow-hidden group/photo">
                 <Image
                   src={member.image}
                   alt={`${member.name} - ${member.title}`}
@@ -272,7 +311,10 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
         </div>
 
         {/* Content Section - Scrollable on right */}
-        <div className="flex-1 overflow-y-auto max-h-[92vh] relative">
+        <div 
+          className="flex-1 overflow-y-auto max-h-[55vh] sm:max-h-[47vh] lg:max-h-[92vh] relative"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {/* Decorative background pattern */}
           <div 
             className="absolute inset-0 opacity-[0.015] pointer-events-none"
@@ -283,27 +325,27 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
             }}
             aria-hidden="true"
           />
-          <div className="relative z-10 p-8 sm:p-10 lg:p-12 xl:p-14">
+          <div className="relative z-10 p-5 sm:p-8 md:p-10 lg:p-12 xl:p-14">
             {/* Name and Title */}
-            <div className="mb-8 sm:mb-10">
-              <h2 id="modal-title" className="text-[clamp(1.875rem,4.5vw,2.75rem)] font-playfair text-ink-800 mb-3 leading-tight">
+            <div className="mb-5 sm:mb-8 md:mb-10">
+              <h2 id="modal-title" className="text-[clamp(1.5rem,5vw,2.75rem)] font-playfair text-ink-800 mb-2 sm:mb-3 leading-tight">
                 {member.name}
               </h2>
-              <p className="text-sm sm:text-base uppercase tracking-[0.12em] text-ink-500 font-light">
+              <p className="text-xs sm:text-sm md:text-base uppercase tracking-[0.12em] text-ink-500 font-light">
                 {member.title}
               </p>
             </div>
 
             {/* Bronze Divider */}
-            <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-accent/80 to-transparent mb-8 sm:mb-10" aria-hidden="true" />
+            <div className="w-20 sm:w-24 h-0.5 bg-gradient-to-r from-transparent via-accent/80 to-transparent mb-5 sm:mb-8 md:mb-10" aria-hidden="true" />
 
             {/* Bio */}
             {member.bio && (
-              <div className="mb-10 sm:mb-12">
+              <div className="mb-6 sm:mb-10 md:mb-12">
                 {member.bio.split('\n\n').map((paragraph, idx) => (
                   <p
                     key={idx}
-                    className="text-base sm:text-lg text-ink-700 font-light leading-[1.8] mb-6 last:mb-0"
+                    className="text-sm sm:text-base md:text-lg text-ink-700 font-light leading-[1.75] sm:leading-[1.8] mb-4 sm:mb-6 last:mb-0"
                   >
                     {paragraph}
                   </p>
@@ -332,23 +374,23 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
           </div>
           
           {/* Navigation Arrows */}
-          <div className="sticky bottom-0 left-0 right-0 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-t from-cream via-cream/95 to-transparent border-t border-accent/20 z-20">
+          <div className="sticky bottom-0 left-0 right-0 flex items-center justify-between p-3 sm:p-4 md:p-6 bg-gradient-to-t from-cream via-cream/98 to-transparent border-t border-accent/20 z-20">
             <button
               onClick={() => {
                 const prevIndex = currentIndex > 0 ? currentIndex - 1 : allMembers.length - 1;
                 onNavigate(prevIndex);
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white border border-ink-200/60 hover:border-accent/50 rounded-sm text-ink-600 hover:text-accent transition-all transition-standard shadow-soft group/prev"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-white/80 hover:bg-white active:bg-white/90 border border-ink-200/60 hover:border-accent/50 rounded-sm text-ink-600 hover:text-accent transition-all transition-standard shadow-soft group/prev touch-target"
               aria-label="Previous team member"
             >
-              <svg className="w-5 h-5 transform group-hover/prev:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover/prev:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
               </svg>
-              <span className="text-sm font-medium hidden sm:inline">Previous</span>
+              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Previous</span>
             </button>
             
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/60 rounded-sm border border-ink-100/40">
-              <span className="text-xs text-ink-500 font-medium">
+            <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1 bg-white/60 rounded-sm border border-ink-100/40">
+              <span className="text-[10px] sm:text-xs text-ink-500 font-medium">
                 {currentIndex + 1} / {allMembers.length}
               </span>
             </div>
@@ -358,11 +400,11 @@ export default function TeamMemberModal({ member, allMembers, currentIndex, isOp
                 const nextIndex = currentIndex < allMembers.length - 1 ? currentIndex + 1 : 0;
                 onNavigate(nextIndex);
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white border border-ink-200/60 hover:border-accent/50 rounded-sm text-ink-600 hover:text-accent transition-all transition-standard shadow-soft group/next"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-white/80 hover:bg-white active:bg-white/90 border border-ink-200/60 hover:border-accent/50 rounded-sm text-ink-600 hover:text-accent transition-all transition-standard shadow-soft group/next touch-target"
               aria-label="Next team member"
             >
-              <span className="text-sm font-medium hidden sm:inline">Next</span>
-              <svg className="w-5 h-5 transform group-hover/next:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Next</span>
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover/next:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>

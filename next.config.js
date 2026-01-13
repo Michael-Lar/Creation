@@ -3,7 +3,7 @@ const nextConfig = {
   images: {
     remotePatterns: [],
     // Enable image optimization for better performance
-    // SVGs are handled separately via dangerouslyAllowSVG or as regular img tags
+    // SVGs are automatically served as-is (Next.js handles them without optimization by default)
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
     formats: ['image/avif', 'image/webp'],
@@ -11,7 +11,7 @@ const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  swcMinify: true,
+  // Note: swcMinify is enabled by default in Next.js 14+
   // Optimize webpack for better chunk management and prevent cache issues
   webpack: (config, { dev, isServer }) => {
     // In development, use simpler chunking to prevent cache corruption

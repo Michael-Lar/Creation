@@ -1,22 +1,64 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Preloader from "@/components/Preloader";
+import dynamic from 'next/dynamic';
 import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Divisions from "@/components/sections/Divisions";
-import Team from "@/components/sections/Team";
-import Projects from "@/components/sections/Projects";
-import ContactForm from "@/components/sections/ContactForm";
-import Footer from "@/components/sections/Footer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import { getLenisInstance, waitForLenis } from '@/utils/lenis';
+import { SCROLL, TIMING, VISUAL } from '@/constants/ui';
+import { useScrollConfiguration } from '@/hooks/useScrollConfiguration';
 import gsap from 'gsap';
 
+// Dynamically import Preloader to reduce initial bundle size
+// SSR disabled since it uses client-side video elements
+const Preloader = dynamic(() => import("@/components/Preloader"), {
+  ssr: false,
+  loading: () => null, // No loading state needed - preloader handles its own appearance
+});
+
+// Lazy-load below-the-fold sections to reduce initial bundle size
+// These sections are not visible on initial page load
+const Team = dynamic(() => import("@/components/sections/Team"), {
+  ssr: true,
+  loading: () => <SectionSkeleton height="min-h-[600px]" />,
+});
+
+const Projects = dynamic(() => import("@/components/sections/Projects"), {
+  ssr: true,
+  loading: () => <SectionSkeleton height="min-h-[800px]" />,
+});
+
+const ContactForm = dynamic(() => import("@/components/sections/ContactForm"), {
+  ssr: true,
+  loading: () => <SectionSkeleton height="min-h-[500px]" />,
+});
+
+const Footer = dynamic(() => import("@/components/sections/Footer"), {
+  ssr: true,
+  loading: () => <SectionSkeleton height="min-h-[300px]" />,
+});
+
+// Minimal skeleton component for lazy-loaded sections
+function SectionSkeleton({ height = "min-h-[400px]" }: { height?: string }) {
+  return (
+    <div 
+      className={`${height} bg-cream animate-pulse`}
+      style={{ backgroundColor: 'var(--color-cream)' }}
+      aria-hidden="true"
+    />
+  );
+}
+
 export default function Home() {
+  // Configure scroll restoration once at app level
+  useScrollConfiguration();
+  
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,127 +110,79 @@ export default function Home() {
     }
   }, []);
 
-  // Check if returning from project page - skip preloader and scroll to projects immediately
+  // Check if URL has #projects hash on initial load - skip preloader and scroll
   useEffect(() => {
-    // Check sessionStorage only on client side
-    if (typeof window !== 'undefined') {
-      // Disable automatic scroll restoration
-      if ('scrollRestoration' in window.history) {
-        window.history.scrollRestoration = 'manual';
-      }
-      
-      // Check both sessionStorage and URL hash
-      const scrollToProjects = sessionStorage.getItem('scrollToProjects') === 'true' || window.location.hash === '#projects';
-      setShouldSkipPreloader(scrollToProjects);
-      if (scrollToProjects) {
-        setPreloaderComplete(true);
-        // Immediately set body and html background to cream when skipping preloader
-        if (typeof document !== 'undefined') {
-          document.body.style.backgroundColor = 'var(--color-cream)';
-          document.documentElement.style.backgroundColor = 'var(--color-cream)';
-          // Prevent scroll to top on page load
-          window.scrollTo(0, 0);
-        }
+    if (typeof window === 'undefined') return;
+    
+    // Check if URL has #projects hash on initial load
+    const hash = window.location.hash;
+    const hasProjectsHash = hash === '#projects';
+    
+    if (hasProjectsHash) {
+      setShouldSkipPreloader(true);
+      setPreloaderComplete(true);
+      // Immediately set body and html background to cream when skipping preloader
+      if (typeof document !== 'undefined') {
+        document.body.style.backgroundColor = 'var(--color-cream)';
+        document.documentElement.style.backgroundColor = 'var(--color-cream)';
       }
     }
   }, []);
 
   useEffect(() => {
     if (shouldSkipPreloader) {
-      sessionStorage.removeItem('scrollToProjects');
       // Content should already be visible since preloaderComplete starts as true
       fadeInContent();
-      
-      // Prevent default scroll to top
-      if (typeof window !== 'undefined') {
-        if ('scrollRestoration' in window.history) {
-          window.history.scrollRestoration = 'manual';
-        }
-        // Immediately prevent scroll to top
-        window.scrollTo(0, 0);
-      }
-      
-      // Wait for Lenis to be ready, then scroll
-      const waitForLenisAndScroll = () => {
-        const projectsSection = document.getElementById('projects');
-        if (!projectsSection) return false;
-        
-        const lenis = window.lenis;
-        if (lenis) {
-          // Use Lenis for smooth scroll to projects section
-          lenis.scrollTo(projectsSection, { 
-            offset: -100, 
-            immediate: false,
-            duration: 0.8
-          });
-          return true;
-        } else {
-          // Fallback to smooth window scroll
-          window.scrollTo({
-            top: projectsSection.offsetTop - 100,
-            left: 0,
-            behavior: 'smooth' as ScrollBehavior
-          });
-          return true;
-        }
-      };
-      
-      // Try multiple times to ensure scroll happens
-      let attempts = 0;
-      const maxAttempts = 15;
-      
-      const tryScroll = () => {
-        attempts++;
-        if (waitForLenisAndScroll() || attempts >= maxAttempts) {
-          return;
-        }
-        requestAnimationFrame(tryScroll);
-      };
-      
-      // Start trying after a brief delay to ensure page is ready
-      setTimeout(() => {
-        tryScroll();
-      }, 200);
-      
-      // Also try after Lenis is more likely to be ready
-      setTimeout(() => {
-        if (attempts < maxAttempts) {
-          tryScroll();
-        }
-      }, 500);
     }
   }, [shouldSkipPreloader, fadeInContent]);
 
-  // Handle hash navigation (e.g., /#projects)
+  // Handle hash navigation (e.g., /#projects) - both initial load and hash changes
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !preloaderComplete) return;
     
-    const handleHashChange = () => {
+    const scrollToProjectsSection = async () => {
       const hash = window.location.hash;
-      if (hash === '#projects' && preloaderComplete) {
+      if (hash === '#projects') {
         const projectsSection = document.getElementById('projects');
-        if (projectsSection) {
-          const lenis = window.lenis;
-          if (lenis) {
-            lenis.scrollTo(projectsSection, { 
-              offset: -100, 
-              immediate: false,
-              duration: 0.8
-            });
-          } else {
-            projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+        if (!projectsSection) return;
+        
+        await waitForLenis();
+        
+        const lenis = getLenisInstance();
+        if (lenis) {
+          lenis.scrollTo(projectsSection, { 
+            offset: SCROLL.SECTION_OFFSET,
+            immediate: false,
+            duration: 0.8,
+            onComplete: () => {
+              // Remove hash from URL after scroll animation completes
+              if (window.location.hash === '#projects') {
+                window.history.replaceState(null, '', window.location.pathname);
+              }
+            }
+          });
+        } else {
+          projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Fallback: Remove hash after native scroll completes
+          setTimeout(() => {
+            if (window.location.hash === '#projects') {
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+          }, 1000); // Standard smooth scroll duration
         }
       }
     };
     
-    // Check hash on mount
-    if (window.location.hash === '#projects') {
-      // Wait for content to be ready
-      setTimeout(handleHashChange, 500);
-    }
+    // Check hash on mount (for initial navigation from project detail page)
+    scrollToProjectsSection();
     
-    // Listen for hash changes
+    // Also listen for hash changes (for user navigation with hash links)
+    const handleHashChange = () => {
+      scrollToProjectsSection().then(() => {
+        // Hash removal happens inside scrollToProjectsSection
+      });
+    };
+    
     window.addEventListener('hashchange', handleHashChange);
     
     return () => {
@@ -205,10 +199,28 @@ export default function Home() {
         setPreloaderComplete(true);
         fadeInContent();
       }
-    }, 4000);
+    }, TIMING.PRELOADER_FALLBACK);
 
     return () => clearTimeout(fallbackTimer);
   }, [preloaderComplete, shouldSkipPreloader, fadeInContent]);
+
+  // Safari safety: Force content visibility if GSAP animation fails
+  // This catches edge cases where JavaScript errors prevent fadeInContent from running
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const safetyTimer = setTimeout(() => {
+      if (mainContentRef.current && getComputedStyle(mainContentRef.current).opacity === '0') {
+        // If content is still invisible after 5 seconds, force it visible with CSS
+        mainContentRef.current.style.opacity = '1';
+        mainContentRef.current.style.backgroundColor = 'var(--color-cream)';
+        document.body.style.backgroundColor = 'var(--color-cream)';
+        document.documentElement.style.backgroundColor = 'var(--color-cream)';
+      }
+    }, 5000);
+
+    return () => clearTimeout(safetyTimer);
+  }, []);
 
   return (
     <SmoothScroll>
@@ -216,8 +228,9 @@ export default function Home() {
       <div id="primary" className="relative min-h-screen">
         {/* Elegant Border Frame - Wraps entire page including header */}
         <div 
-          className="fixed inset-0 pointer-events-none z-[100]"
+          className="fixed inset-0 pointer-events-none"
           style={{
+            zIndex: VISUAL.FRAME_Z_INDEX,
             border: 'clamp(4px, 1.5vw, 20px) solid var(--color-cream)',
             boxShadow: `
               inset 0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -228,8 +241,9 @@ export default function Home() {
         />
         {/* Inner accent line */}
         <div 
-          className="fixed pointer-events-none z-[100]"
+          className="fixed pointer-events-none"
           style={{
+            zIndex: VISUAL.FRAME_Z_INDEX,
             top: 'clamp(4px, 1.5vw, 20px)',
             left: 'clamp(4px, 1.5vw, 20px)',
             right: 'clamp(4px, 1.5vw, 20px)',
