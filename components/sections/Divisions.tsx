@@ -1,9 +1,11 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
+import { Division } from '@/types/models';
+import ImageSkeleton from '@/components/ImageSkeleton';
 
-const divisions = [
+const divisions: Division[] = [
   {
     name: 'Creation Realty Corporation',
     description: 'Full-service brokerage and advisory.',
@@ -26,6 +28,7 @@ const divisions = [
 
 export default function Divisions() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set(divisions.map((_, i) => i)));
 
   return (
     <section 
@@ -48,19 +51,47 @@ export default function Divisions() {
         <div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 max-w-7xl mx-auto md:justify-items-center lg:justify-items-stretch"
         >
-          {divisions.map((division, index) => (
+          {divisions.map((division, index) => {
+            const isLoading = loadingImages.has(index);
+            
+            return (
             <article
               key={index}
               className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden transition-all transition-slow hover:scale-[1.05] hover:shadow-2xl hover:z-10 w-full max-w-md md:max-w-none"
             >
+              {/* Loading Skeleton */}
+              {isLoading && (
+                <ImageSkeleton 
+                  className="absolute inset-0 rounded-2xl z-[1]"
+                  aspectRatio=""
+                  showShimmer={true}
+                />
+              )}
+              
               {/* Background Image */}
               <Image
                 src={division.image}
                 alt={`${division.name} division - ${division.description}`}
                 fill
-                className="object-cover"
+                className={`object-cover transition-opacity duration-500 ${
+                  isLoading ? 'opacity-0' : 'opacity-100'
+                }`}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 priority={index < 2}
+                onLoad={() => {
+                  setLoadingImages(prev => {
+                    const next = new Set(prev);
+                    next.delete(index);
+                    return next;
+                  });
+                }}
+                onError={() => {
+                  setLoadingImages(prev => {
+                    const next = new Set(prev);
+                    next.delete(index);
+                    return next;
+                  });
+                }}
               />
 
               {/* Dark overlay for text readability */}
@@ -87,7 +118,8 @@ export default function Divisions() {
               <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-[5]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-[5]" />
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

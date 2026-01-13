@@ -3,26 +3,28 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 
+// Constants
+const quickLinks = [
+  { label: 'About', id: 'about' },
+  { label: 'Divisions', id: 'divisions' },
+  { label: 'Team', id: 'team' },
+  { label: 'Projects', id: 'projects' },
+];
+
+const divisions = [
+  'Creation Capital',
+  'Creation Realty Corporation',
+  'Creation Equities',
+  'Creation Asset Management',
+];
+
 export default function Footer() {
   const sectionRef = useRef<HTMLElement>(null);
 
+  // Event handlers
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const quickLinks = [
-    { label: 'About', id: 'about' },
-    { label: 'Divisions', id: 'divisions' },
-    { label: 'Team', id: 'team' },
-    { label: 'Projects', id: 'projects' },
-  ];
-
-  const divisions = [
-    'Creation Capital',
-    'Creation Realty Corporation',
-    'Creation Equities',
-    'Creation Asset Management',
-  ];
 
   return (
     <footer 
@@ -71,7 +73,6 @@ export default function Footer() {
             filter: 'brightness(0) invert(1)',
             transform: 'translate(25%, 25%)',
           }}
-          unoptimized
         />
       </div>
 
@@ -97,7 +98,6 @@ export default function Footer() {
                 height={32}
                 className="w-8 h-8 opacity-60"
                 style={{ filter: 'brightness(0) invert(1)' }}
-                unoptimized
               />
               <h2 className="text-title text-cream-100">
                 Creation Partners

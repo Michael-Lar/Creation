@@ -6,7 +6,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/sections/Footer';
 import { getProjectById } from '@/data/projects';
 import { useLenis } from '@/utils/lenis';
-import { ErrorHandler, ErrorCategory } from '@/utils/errorHandler';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -24,63 +23,41 @@ export default function ProjectDetailPage() {
 
   // Reset scroll position to top when project page loads
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Disable scroll restoration
-      if ('scrollRestoration' in window.history) {
-        window.history.scrollRestoration = 'manual';
-      }
-      
-      // Reset scroll immediately
-      const resetScroll = () => {
-        if (lenis) {
-          lenis.stop();
-          lenis.scrollTo(0, { immediate: true, duration: 0 });
-        } else {
-          window.scrollTo(0, 0);
-        }
-      };
-      
-      // Reset immediately
-      resetScroll();
-      
-      // Also reset after a brief delay to catch any delayed scrolls
-      const timeoutId = setTimeout(resetScroll, 50);
-      const rafId = requestAnimationFrame(() => {
-        resetScroll();
-      });
-      
-      return () => {
-        clearTimeout(timeoutId);
-        cancelAnimationFrame(rafId);
-      };
+    if (typeof window === 'undefined') {
+      return;
     }
+    
+    // Reset scroll immediately
+    const resetScroll = () => {
+      if (lenis) {
+        lenis.stop();
+        lenis.scrollTo(0, { immediate: true, duration: 0 });
+      } else {
+        window.scrollTo(0, 0);
+      }
+    };
+    
+    // Reset immediately
+    resetScroll();
+    
+    // Also reset after a brief delay to catch any delayed scrolls
+    const timeoutId = setTimeout(resetScroll, 50);
+    const rafId = requestAnimationFrame(() => {
+      resetScroll();
+    });
+    
+    return () => {
+      clearTimeout(timeoutId);
+      cancelAnimationFrame(rafId);
+    };
   }, [lenis]);
 
   const handleBackToProjects = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Store flag to skip preloader and scroll to projects
-    if (typeof window !== 'undefined') {
-      try {
-        sessionStorage.setItem('scrollToProjects', 'true');
-        // Disable scroll restoration to prevent jumping to top
-        if ('scrollRestoration' in window.history) {
-          window.history.scrollRestoration = 'manual';
-        }
-        
-        // Navigate to home page with projects hash
-        // This will trigger the scroll logic in page.tsx
-        router.push('/#projects');
-      } catch (error) {
-        // Fallback if sessionStorage or navigation fails
-        ErrorHandler.handleError(
-          error instanceof Error ? error : new Error(String(error)),
-          ErrorCategory.UNKNOWN,
-          { component: 'ProjectDetailPage', action: 'navigation' }
-        );
-        router.push('/#projects');
-      }
-    }
+    // Navigate to home page with projects hash
+    // The hash will be checked on page load to skip preloader and scroll
+    router.push('/#projects');
   };
 
   // Handle invalid or missing project
@@ -112,7 +89,7 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <Header />
+      <Header forceScrolledStyle={true} />
       
       {/* Hero Image Section */}
       <div 
@@ -142,22 +119,27 @@ export default function ProjectDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/40 to-transparent" />
         
         {/* Back Button - Elegant positioning */}
-        <div className="absolute top-20 sm:top-24 md:top-28 left-0 right-0 z-10">
+        <div className="absolute top-20 sm:top-24 md:top-28 left-0 right-0 z-[60]">
           <div className="container-main">
             <button
               onClick={handleBackToProjects}
               className="inline-flex items-center gap-3 text-ink-700 hover:text-ink-900 transition-all-standard group bg-cream/95 backdrop-blur-sm px-5 py-2.5 rounded-sm border border-ink-200/50 hover:border-accent/30 shadow-soft hover:shadow-lift"
             >
-              <svg 
-                className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-              </svg>
-              <span className="text-caption tracking-wide uppercase font-light">Back to Projects</span>
+              <span className="text-caption tracking-wide uppercase font-light">
+                View All Projects
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-px bg-ink-300 group-hover:w-12 group-hover:bg-accent transition-all-standard" />
+                <svg 
+                  className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </div>
             </button>
           </div>
         </div>

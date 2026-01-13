@@ -47,7 +47,6 @@ export default function About() {
                 height={96}
                 className="w-20 h-20 lg:w-24 lg:h-24 opacity-25 transition-all duration-500 group-hover:opacity-35 group-hover:scale-105"
                 style={{ filter: 'grayscale(30%)' }}
-                unoptimized
               />
               {/* Bronze glow on hover */}
               <div 

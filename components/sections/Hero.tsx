@@ -1,17 +1,18 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { gsap } from '@/utils/gsap';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { useScrollListener } from '@/hooks/useScrollPosition';
 import { ANIMATION_TIMING } from '@/constants/animations';
+import { BREAKPOINTS, TIMING, VISUAL, PERCENTAGES } from '@/constants/ui';
 import { useVideoRotation } from '@/hooks/useVideoRotation';
 
 interface HeroProps {
   preloaderComplete?: boolean;
 }
 
-export default function Hero({ preloaderComplete = false }: HeroProps) {
+function Hero({ preloaderComplete = false }: HeroProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isDesktop, setIsDesktop] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -33,16 +34,39 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     // Don't pass onError - errors are already handled by the hook
   });
 
-  // Check for desktop
+  // Debounced resize handler to avoid excessive calculations
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const checkDesktop = useCallback(() => {
+    setIsDesktop(window.innerWidth >= BREAKPOINTS.DESKTOP);
+  }, []);
+
+  // Check for desktop with debounced resize listener
   useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    // Initial check
     checkDesktop();
     
-    window.addEventListener('resize', checkDesktop);
-    return () => {
-      window.removeEventListener('resize', checkDesktop);
+    const handleResize = () => {
+      // Clear existing timeout
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      
+      // Set new timeout for debounced execution
+      resizeTimeoutRef.current = setTimeout(() => {
+        checkDesktop();
+      }, TIMING.RESIZE_DEBOUNCE);
     };
-  }, []);
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      // Clean up timeout on unmount
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+    };
+  }, [checkDesktop]);
 
   // Cursor glow effect (desktop only, respects reduced motion)
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -91,19 +115,19 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       
       // Apply shimmer gradient
       creationText.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.5) 30%, rgba(184,160,104,1) 45%, rgba(255,255,255,1) 50%, rgba(184,160,104,1) 55%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,0.3) 100%)';
-      creationText.style.backgroundSize = '200% 100%';
+      creationText.style.backgroundSize = `${VISUAL.SHIMMER_BACKGROUND_SIZE} 100%`;
       creationText.style.webkitBackgroundClip = 'text';
       creationText.style.backgroundClip = 'text';
       creationText.style.webkitTextFillColor = 'transparent';
       creationText.style.color = 'transparent';
-      creationText.style.backgroundPosition = '-200% center';
+      creationText.style.backgroundPosition = `${VISUAL.SHIMMER_BACKGROUND_POSITION} center`;
       creationText.style.filter = 'drop-shadow(0 0 8px rgba(184, 160, 104, 0.3))';
       
       creationText.classList.add('shimmer-text');
       
       // Animate the background position - loop continuously
       shimmerTween = gsap.to(creationText, {
-        backgroundPosition: '200% center',
+        backgroundPosition: `${VISUAL.SHIMMER_BACKGROUND_POSITION_END} center`,
         duration: 2.5,
         ease: 'power2.inOut',
         repeat: -1, // Infinite loop
@@ -111,7 +135,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         onRepeat: () => {
           // Reset position for next loop
           if (!hasScrolled && creationTextRef.current) {
-            creationText.style.backgroundPosition = '-200% center';
+            creationText.style.backgroundPosition = `${VISUAL.SHIMMER_BACKGROUND_POSITION} center`;
           }
         },
       });
@@ -172,7 +196,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden"
+      className="relative h-screen min-h-[100svh] w-full overflow-hidden"
       role="region"
       aria-label="Hero section with video background"
       tabIndex={0}
@@ -203,12 +227,15 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
       )}
 
       {/* Video Elements */}
+      {/* Note: poster image provides fallback if video fails to load. 
+          Create /public/images/hero-poster.jpg for production use. */}
       <video
         ref={video1Ref}
         muted
         playsInline
         loop={false}
         preload="auto"
+        poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
@@ -223,7 +250,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
           'x5-playsinline': 'true',
           'x5-video-player-type': 'h5',
           'x5-video-player-fullscreen': 'true',
-          'x5-video-orientation': 'portraint',
+          'x5-video-orientation': 'portrait',
         } as React.VideoHTMLAttributes<HTMLVideoElement>)}
       />
 
@@ -233,6 +260,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         playsInline
         loop={false}
         preload="metadata"
+        poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
@@ -247,7 +275,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
           'x5-playsinline': 'true',
           'x5-video-player-type': 'h5',
           'x5-video-player-fullscreen': 'true',
-          'x5-video-orientation': 'portraint',
+          'x5-video-orientation': 'portrait',
         } as React.VideoHTMLAttributes<HTMLVideoElement>)}
       />
 
@@ -278,7 +306,7 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
         <div 
           className="absolute inset-0 z-[5] pointer-events-none transition-opacity duration-500"
           style={{
-            background: `radial-gradient(600px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(184, 160, 104, 0.06), transparent 50%)`,
+            background: `radial-gradient(${VISUAL.CURSOR_GLOW_SIZE}px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(184, 160, 104, 0.06), transparent ${PERCENTAGES.HALF}%)`,
           }}
         />
       )}
@@ -327,3 +355,5 @@ export default function Hero({ preloaderComplete = false }: HeroProps) {
     </section>
   );
 }
+
+export default memo(Hero);

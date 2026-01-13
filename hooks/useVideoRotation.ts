@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ANIMATION_TIMING } from '@/constants/animations';
-import { ErrorHandler, ErrorCategory } from '@/utils/errorHandler';
+import { TIMING } from '@/constants/ui';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 // Video file paths
 const videoUrls = [
@@ -56,7 +57,7 @@ export function useVideoRotation(
   const [isLoading, setIsLoading] = useState(false); // Start as false - only show loading when actually loading
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [failedVideos, setFailedVideos] = useState<Set<number>>(new Set());
+  const [, setFailedVideos] = useState<Set<number>>(new Set());
   
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
@@ -85,7 +86,7 @@ export function useVideoRotation(
           setTimeout(() => {
             videoElement.src = videoUrls[nextIndex];
             videoElement.load();
-          }, 500);
+          }, TIMING.VIDEO_ERROR_RETRY);
         }
       } else {
         setHasError(true);
@@ -121,6 +122,7 @@ export function useVideoRotation(
     if (showingVideoIndex !== currentIndex) {
       const showingVideoPath = getVideoPath(showingVideo.src);
       if (showingVideoPath !== currentVideoSrc) {
+        setIsLoading(true);
         showingVideo.src = currentVideoSrc;
         showingVideo.load();
         showingVideo.addEventListener('loadeddata', () => {
@@ -132,6 +134,7 @@ export function useVideoRotation(
         }, { once: true });
 
         showingVideo.addEventListener('error', () => {
+          setIsLoading(false);
           handleVideoError(currentIndex, showingVideo);
         }, { once: true });
       } else {
@@ -265,18 +268,46 @@ export function useVideoRotation(
     }
     
     firstVideoLoadedRef.current = true;
-    // Don't set isLoading to true - the loading state caused issues with React Strict Mode
-    // The video will load in the background and play when ready
+    // Set loading state only if preloader is complete (videos start after preloader)
+    if (preloaderComplete) {
+      setIsLoading(true);
+    }
     firstVideo.src = videoUrls[0];
     firstVideo.preload = 'auto';
     
     const handleCanPlay = () => {
-      firstVideo.play().catch((err) => {
+      setIsLoading(false);
+      firstVideo.play().catch(() => {
         handleVideoError(0, firstVideo);
       });
     };
 
     const handleError = (e: Event) => {
+      setIsLoading(false);
+      // Type guard: safely extract error information from event
+      let errorMessage = 'Video loading failed';
+      if (e instanceof ErrorEvent) {
+        // ErrorEvent has error property that could be unknown type
+        const error = e.error;
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          errorMessage = e.message || errorMessage;
+        }
+      } else if (e.target instanceof HTMLVideoElement) {
+        const video = e.target;
+        if (video.error) {
+          const mediaError = video.error;
+          errorMessage = `Media error: ${mediaError.message || `Code ${mediaError.code}`}`;
+        }
+      } else if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string') {
+        errorMessage = e.message;
+      }
+      // Call the error handler with proper parameters
       handleVideoError(0, firstVideo);
     };
 
@@ -287,7 +318,7 @@ export function useVideoRotation(
     
     // Check if video is already ready (race condition: video loaded before event listener attached)
     if (firstVideo.readyState >= 3) {
-      setTimeout(() => handleCanPlay(), 100);
+      setTimeout(() => handleCanPlay(), TIMING.VIDEO_READY_CHECK);
     }
 
     return () => {
@@ -295,7 +326,7 @@ export function useVideoRotation(
       firstVideo.removeEventListener('canplaythrough', handleCanPlay);
       firstVideo.removeEventListener('error', handleError);
     };
-  }, []); // Run only once on mount - remove handleVideoError dependency
+  }, [preloaderComplete]); // Include preloaderComplete to set loading state correctly
 
   // Preload next video in background for faster transitions
   useEffect(() => {

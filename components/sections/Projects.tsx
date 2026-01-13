@@ -1,23 +1,36 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, memo, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { projects } from '@/data/projects';
 import { stopLenis } from '@/utils/lenis';
+import ImageSkeleton from '@/components/ImageSkeleton';
 
 // Get unique project types for filter
 const projectTypes = ['All', ...Array.from(new Set(projects.map(p => p.type)))];
 
-export default function Projects() {
+function Projects() {
+  // State hooks
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set());
+  
+  // Refs
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const [activeFilter, setActiveFilter] = useState('All');
 
-  // Robust filtering with validation
-  const filteredProjects = activeFilter === 'All' 
-    ? projects 
-    : projects.filter(p => p && p.type === activeFilter);
+  // Derived values (memoized to prevent recalculation on every render)
+  const filteredProjects = useMemo(() => {
+    return activeFilter === 'All' 
+      ? projects 
+      : projects.filter(p => p && p.type === activeFilter);
+  }, [activeFilter]);
+
+  // Initialize loading state for filtered projects when filter changes
+  useEffect(() => {
+    const initialLoadingSet = new Set(filteredProjects.map(p => p.id));
+    setLoadingImages(initialLoadingSet);
+  }, [filteredProjects]);
 
   return (
     <section 
@@ -73,46 +86,70 @@ export default function Projects() {
           role="tabpanel"
         >
           {filteredProjects.length > 0 ? (
-            filteredProjects.map((project) => (
-            <Link 
-              key={project.id}
-              href={`/projects/${project.id}`}
-              className="group block"
-              onClick={(e) => {
-                // Prevent any scroll behavior during navigation
-                if (typeof window !== 'undefined') {
-                  // Immediately stop any ongoing scroll
-                  stopLenis();
-                  // Disable scroll restoration temporarily
-                  if ('scrollRestoration' in window.history) {
-                    window.history.scrollRestoration = 'manual';
+            filteredProjects.map((project) => {
+              const isLoading = loadingImages.has(project.id);
+              
+              return (
+              <Link 
+                key={project.id}
+                href={`/projects/${project.id}`}
+                className="group block"
+                onClick={() => {
+                  // Prevent any scroll behavior during navigation
+                  if (typeof window !== 'undefined') {
+                    // Immediately stop any ongoing scroll
+                    stopLenis();
                   }
-                }
-              }}
-            >
-              <article>
-                {/* Project Image - 4:3 aspect ratio with premium shadow */}
-                <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-3 sm:mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all-standard">
-                  {/* Project Image */}
-                  {project.images && project.images.length > 0 ? (
-                    <Image
-                      src={project.images[0]}
-                      alt={`${project.name} - ${project.location}`}
-                      fill
-                      className="object-cover object-center transition-transform transition-slow group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  ) : (
-                    /* Fallback pattern if no image */
-                    <div 
-                      className="absolute inset-0 opacity-[0.04]"
-                      style={{
-                        backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
-                        backgroundSize: '20px 20px',
-                      }}
-                      aria-hidden="true"
-                    />
-                  )}
+                }}
+              >
+                <article>
+                  {/* Project Image - 4:3 aspect ratio with premium shadow */}
+                  <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-3 sm:mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all-standard">
+                    {/* Loading Skeleton - shown while image is loading */}
+                    {isLoading && (
+                      <ImageSkeleton 
+                        className="absolute inset-0 rounded-card z-[1]"
+                        aspectRatio=""
+                        showShimmer={true}
+                      />
+                    )}
+                    
+                    {/* Project Image */}
+                    {project.images && project.images.length > 0 ? (
+                      <Image
+                        src={project.images[0]}
+                        alt={`${project.name} - ${project.location}`}
+                        fill
+                        className={`object-cover object-center transition-all duration-500 group-hover:scale-105 transition-transform transition-slow ${
+                          isLoading ? 'opacity-0' : 'opacity-100'
+                        }`}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        onLoad={() => {
+                          setLoadingImages(prev => {
+                            const next = new Set(prev);
+                            next.delete(project.id);
+                            return next;
+                          });
+                        }}
+                        onError={() => {
+                          setLoadingImages(prev => {
+                            const next = new Set(prev);
+                            next.delete(project.id);
+                            return next;
+                          });
+                        }}
+                      />
+                    ) : (
+                      /* Fallback pattern if no image */
+                      <div 
+                        className="absolute inset-0 opacity-[0.04] z-10"
+                        style={{
+                          backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
+                          backgroundSize: '20px 20px',
+                        }}
+                        aria-hidden="true"
+                      />
+                    )}
                   
                   {/* Type Badge with bronze accent */}
                   <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-white/95 backdrop-blur-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-sm border border-ink-100/50 z-10">
@@ -167,7 +204,8 @@ export default function Projects() {
                 </div>
               </article>
             </Link>
-            ))
+            );
+            })
           ) : (
             <div className="col-span-full text-center py-12">
               <p className="text-body text-ink-500">
@@ -180,3 +218,5 @@ export default function Projects() {
     </section>
   );
 }
+
+export default memo(Projects);

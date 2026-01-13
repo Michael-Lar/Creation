@@ -26,6 +26,36 @@ A clean Next.js website built with TypeScript and Tailwind CSS.
 
 Connect this repo to Vercel; main branch deploys automatically.
 
+## Code Style & Naming Conventions
+
+This project follows consistent naming conventions and component structure standards.
+
+### Component Structure
+
+All components should follow the standard structure defined in [`components/COMPONENT_TEMPLATE.md`](./components/COMPONENT_TEMPLATE.md). Key points:
+
+- **Prop destructuring**: Always destructure props in function parameters with inline defaults
+- **Hook ordering**: State hooks → Refs → Custom hooks → Effects → Callbacks
+- **Interface placement**: Always before the component function
+- **Export pattern**: Use `export default function` for simple components, `memo()` for expensive ones
+- **Constants**: Place large/shared constants before component, component-specific ones inside
+
+### Naming Conventions
+
+- **JavaScript/TypeScript**: Use `camelCase` for all variables, functions, and identifiers
+  - Variables: `scrollToSection`, `preloaderComplete`, `activeFilter`
+  - Functions: `fadeInContent`, `scrollToAbout`, `handleMemberClick`
+  - State: `isModalOpen`, `isScrolled`, `shouldSkipPreloader`
+  - Refs: `mainContentRef`, `headerRef`, `sectionRef`
+  - Constants: `SCROLL`, `TIMING`, `VISUAL` (UPPER_SNAKE_CASE for exported constants)
+
+- **CSS/HTML**: Use `kebab-case` for CSS classes, custom properties, and HTML attributes
+  - CSS classes: `section-spacing`, `divider-bronze`, `container-main`
+  - CSS custom properties: `--color-cream`, `--duration-normal`
+  - HTML attributes: `aria-label`, `aria-hidden`, `data-*`
+
+- **Files**: Use `kebab-case` for file and directory names (Next.js convention)
+
 ## Video Optimization
 
 The hero section uses 6 video files that loop continuously. For optimal performance:

@@ -9,7 +9,10 @@ interface PreloaderProps {
   shouldSkip?: boolean;
 }
 
-export default function Preloader({ onComplete, shouldSkip = false }: PreloaderProps) {
+export default function Preloader({ 
+  onComplete, 
+  shouldSkip = false 
+}: PreloaderProps) {
   const preloaderRef = useRef<HTMLDivElement>(null);
   const forwardVideoRef = useRef<HTMLVideoElement>(null);
   const reverseVideoRef = useRef<HTMLVideoElement>(null);
@@ -24,12 +27,11 @@ export default function Preloader({ onComplete, shouldSkip = false }: PreloaderP
   useEffect(() => {
     setMounted(true);
     
-    if (typeof window !== 'undefined') {
-      const skipPreloader = sessionStorage.getItem('scrollToProjects') === 'true' || shouldSkip;
-      if (skipPreloader) {
-        setShouldShow(false);
-        onComplete?.();
-      }
+    // Only check shouldSkip prop, not sessionStorage
+    // Hash-based navigation is handled in app/page.tsx
+    if (shouldSkip) {
+      setShouldShow(false);
+      onComplete?.();
     }
   }, [onComplete, shouldSkip]);
 

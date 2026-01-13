@@ -16,6 +16,9 @@ interface State {
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
+  // Optional props (fallback, sectionName) default to undefined via TypeScript
+  // No defaultProps needed as they're handled by TypeScript's optional properties
+
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null, errorId: null };
@@ -36,10 +39,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     );
 
     this.setState({ errorId });
-
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo, { errorId });
-    }
+    // ErrorHandler already logs errors in development mode, no need for console.error
   }
 
   handleRetry = () => {

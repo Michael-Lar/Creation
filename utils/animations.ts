@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger } from '@/utils/gsap';
+import { gsap } from '@/utils/gsap';
 
 /**
  * Standardized animation constants

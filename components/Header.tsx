@@ -5,16 +5,21 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { gsap } from '@/utils/gsap';
 import { useScrollListener } from '@/hooks/useScrollPosition';
+import { SCROLL, TIMING, PERCENTAGES } from '@/constants/ui';
 
 interface HeaderProps {
   isModalOpen?: boolean;
+  forceScrolledStyle?: boolean; // Force header to use scrolled (black text) styling
 }
 
-export default function Header({ isModalOpen = false }: HeaderProps) {
+export default function Header({ isModalOpen = false, forceScrolledStyle = false }: HeaderProps) {
+  // State hooks
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isOverHero, setIsOverHero] = useState(true);
+  const [isOverHero, setIsOverHero] = useState(!forceScrolledStyle); // Start as not over hero if forced
   const [mounted, setMounted] = useState(false);
+  
+  // Refs
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -25,30 +30,38 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
   }, []);
 
   useScrollListener((scrollY) => {
-    setIsScrolled(scrollY > 50);
-    setIsOverHero(scrollY < window.innerHeight * 0.8);
+    setIsScrolled(scrollY > SCROLL.HEADER_SCROLLED_THRESHOLD);
+    // Don't update isOverHero if forceScrolledStyle is true (always show scrolled styling)
+    if (!forceScrolledStyle) {
+      setIsOverHero(scrollY < window.innerHeight * PERCENTAGES.HERO_OVER);
+    }
   });
 
   // Fade in header (only on initial mount, not when modal closes)
   useEffect(() => {
-    if (isModalOpen) return; // Don't fade in if modal is open
+    if (!headerRef.current || isModalOpen) return;
+    
+    // If forceScrolledStyle is true, show header immediately without animation
+    if (forceScrolledStyle) {
+      headerRef.current.style.opacity = '1';
+      return;
+    }
+    
+    // For home page, set initial opacity to 0, then fade in after delay
+    headerRef.current.style.opacity = '0';
     
     const timer = setTimeout(() => {
-      if (headerRef.current && !isModalOpen) {
-        // Check current opacity to avoid overriding modal close animation
-        const currentOpacity = headerRef.current.style.opacity;
-        if (!currentOpacity || parseFloat(currentOpacity) === 0) {
-          gsap.to(headerRef.current, {
-            opacity: 1,
-            duration: 0.8,
-            ease: 'power2.out',
-          });
-        }
+      if (headerRef.current) {
+        gsap.to(headerRef.current, {
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+        });
       }
-    }, 2500);
+    }, TIMING.HEADER_FADE_DELAY);
 
     return () => clearTimeout(timer);
-  }, []); // Only run on mount, not when isModalOpen changes
+  }, [forceScrolledStyle, isModalOpen]);
 
   // Hide/show header when modal opens/closes
   useEffect(() => {
@@ -68,10 +81,6 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
     } else {
       if (headerRef.current) {
         headerRef.current.style.visibility = 'visible';
-      }
-      // Only animate opacity if header was already visible (not initial mount)
-      const computedOpacity = window.getComputedStyle(headerRef.current).opacity;
-      if (parseFloat(computedOpacity) > 0) {
         gsap.to(headerRef.current, {
           opacity: 1,
           duration: 0.3,
@@ -85,7 +94,7 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setIsMobileMenuOpen(false);
-    setTimeout(() => menuButtonRef.current?.focus(), 100);
+    setTimeout(() => menuButtonRef.current?.focus(), TIMING.FOCUS_DELAY);
   };
 
   // Escape key handler
@@ -99,7 +108,7 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
 
     if (isMobileMenuOpen) {
       window.addEventListener('keydown', handleEscape);
-      setTimeout(() => firstMenuItemRef.current?.focus(), 100);
+      setTimeout(() => firstMenuItemRef.current?.focus(), TIMING.MENU_FOCUS_DELAY);
     }
 
     return () => window.removeEventListener('keydown', handleEscape);
@@ -144,25 +153,27 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
 
   // Elegant background - subtle and clean
   // Use initial state until mounted to avoid hydration mismatch
-  const headerBg = !mounted || isOverHero
+  // If forceScrolledStyle is true, always use scrolled styling (black text, cream background)
+  const effectiveIsOverHero = forceScrolledStyle ? false : isOverHero;
+  const headerBg = !mounted || effectiveIsOverHero
     ? 'bg-transparent'
-    : isScrolled
+    : isScrolled || forceScrolledStyle
     ? 'bg-cream/95 backdrop-blur-md'
     : 'bg-transparent';
 
-  const textColor = !mounted || isOverHero ? 'text-white' : 'text-ink-800';
-  const logoFilter = !mounted || isOverHero ? 'brightness(0) invert(1)' : 'none';
+  const textColor = !mounted || effectiveIsOverHero ? 'text-white' : 'text-ink-800';
+  const logoFilter = !mounted || effectiveIsOverHero ? 'brightness(0) invert(1)' : 'none';
   
   // Border frame is responsive - header sits inside it
   const headerPaddingX = 'clamp(0.75rem, 2vw, 0.75rem)'; // Horizontal padding
-  const headerPaddingY = !mounted || isOverHero ? 'clamp(0.75rem, 2vw, 0.75rem)' : 'clamp(0.5rem, 1.5vw, 0.5rem)'; // Vertical padding shrinks when scrolled
+  const headerPaddingY = !mounted || effectiveIsOverHero ? 'clamp(0.75rem, 2vw, 0.75rem)' : 'clamp(0.5rem, 1.5vw, 0.5rem)'; // Vertical padding shrinks when scrolled
 
   return (
     <header
       ref={headerRef}
-      className={`fixed z-50 transition-all duration-500 ${headerBg} ${isModalOpen ? 'pointer-events-none' : ''}`}
+      className={`fixed z-50 ${forceScrolledStyle ? '' : 'transition-all duration-500'} ${headerBg} ${isModalOpen ? 'pointer-events-none' : ''}`}
       style={{ 
-        opacity: 0, // Will be animated by GSAP
+        // Don't set opacity here - let GSAP control it via useEffect
         top: 'clamp(4px, 1.5vw, 20px)',
         left: 'clamp(4px, 1.5vw, 20px)',
         right: 'clamp(4px, 1.5vw, 20px)',
@@ -189,7 +200,7 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
             width={200}
             height={80}
             className={`w-auto transition-all duration-500 ${
-              !mounted || isOverHero 
+              !mounted || effectiveIsOverHero 
                 ? 'h-12 sm:h-16 md:h-20 lg:h-24 xl:h-28' 
                 : 'h-8 sm:h-9 md:h-10 lg:h-11 xl:h-[52px]'
             }`}
@@ -198,7 +209,6 @@ export default function Header({ isModalOpen = false }: HeaderProps) {
               display: 'block',
             }}
             priority
-            unoptimized
           />
         </Link>
 
