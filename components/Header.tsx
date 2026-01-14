@@ -266,6 +266,7 @@ export default function Header({ isModalOpen = false, forceScrolledStyle = false
           className={`md:hidden overflow-hidden transition-all duration-300 ${
             isMobileMenuOpen ? 'max-h-[80vh] opacity-100' : 'max-h-0 opacity-0'
           }`}
+          aria-hidden={!isMobileMenuOpen}
           style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
         >
           <div className="pt-4 pb-2 space-y-1">
