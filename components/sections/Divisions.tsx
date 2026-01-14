@@ -10,19 +10,19 @@ const divisions: Division[] = [
     name: 'Creation Realty Corporation',
     description: 'Full-service brokerage and advisory.',
     image: '/images/webp/realty.webp',
-    icon: '🏛️',
+    icon: '',
   },
   {
     name: 'Creation Equities',
     description: 'Equity partnerships across asset classes.',
     image: '/images/webp/equities.webp',
-    icon: '📊',
+    icon: '',
   },
   {
     name: 'Creation Asset Management',
     description: 'Operations and value optimization.',
     image: '/images/webp/asset-management.webp',
-    icon: '🔑',
+    icon: '',
   },
 ];
 
@@ -96,13 +96,6 @@ export default function Divisions() {
 
               {/* Dark overlay for text readability */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-
-              {/* Icon in top-left */}
-              <div className="absolute top-4 sm:top-5 md:top-6 left-4 sm:left-5 md:left-6 z-10">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center text-white/90 text-xl sm:text-2xl">
-                  {division.icon}
-                </div>
-              </div>
 
               {/* Text Content at bottom */}
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform transition-slow group-hover:translate-y-[-8px]">
