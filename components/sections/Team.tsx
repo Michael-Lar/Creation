@@ -257,7 +257,7 @@ function Team({ onModalStateChange }: TeamProps) {
                         fill
                         className={`object-contain object-center transition-transform transition-standard group-hover:scale-105 ${
                           isLoading ? 'opacity-0' : 'opacity-100'
-                        } ${member.name === 'Yaron Samuha' ? 'translate-y-3' : ''}`}
+                        } ${member.name === 'Yaron Samuha' ? 'translate-y-3 scale-110' : ''}`}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         style={{
                           filter: 'grayscale(100%) contrast(1.15)',
