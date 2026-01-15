@@ -10,30 +10,30 @@ export default function About() {
     <section 
       ref={sectionRef} 
       id="about" 
-      className="section-spacing relative overflow-hidden bg-luxury-gradient"
+      className="relative overflow-hidden bg-luxury-gradient py-10 sm:py-12 md:py-14 lg:py-16"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
       {/* Subtle decorative elements */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-ink-100 to-transparent" aria-hidden="true" />
       
-      <div className="container-content relative">
+      <div className="container-main relative">
         {/* Section Label */}
-        <div className="section-label mb-6 md:mb-8 lg:mb-10">
+        <div className="section-label mb-4 md:mb-5 lg:mb-6">
           <div className="section-label-line" />
           <span className="section-label-text">About</span>
         </div>
 
         {/* Main Heading with Logo */}
-        <div className="grid md:grid-cols-12 gap-5 md:gap-6 lg:gap-8 items-start mb-8 md:mb-10 lg:mb-12">
+        <div className="grid md:grid-cols-12 gap-4 md:gap-5 lg:gap-6 items-start mb-6 md:mb-7 lg:mb-8">
           {/* Heading */}
           <div className="md:col-span-9">
-            <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] leading-[1.15] text-ink-800 tracking-tight-luxury">
-              A Los Angeles-based, vertically integrated real estate investment and operating platform.
+            <h2 className="text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.15] text-ink-800 tracking-tight-luxury">
+              Creation Partners is a Los Angeles–based real estate investment and operating platform with an integrated approach across the full lifecycle of an asset.
             </h2>
           </div>
           
           {/* Logo Mark */}
-          <div className="hidden md:flex md:col-span-3 items-center justify-center">
+          <div className="hidden md:flex md:col-span-3 items-center justify-start">
             <div className="relative group">
               {/* Subtle ring around logo */}
               <div 
@@ -43,9 +43,9 @@ export default function About() {
               <Image
                 src="/logos/logo.svg"
                 alt=""
-                width={96}
-                height={96}
-                className="w-20 h-20 lg:w-24 lg:h-24 opacity-25 transition-all duration-500 group-hover:opacity-35 group-hover:scale-105"
+                width={160}
+                height={160}
+                className="w-32 h-32 lg:w-40 lg:h-40 opacity-25 transition-all duration-500 group-hover:opacity-35 group-hover:scale-105"
                 style={{ filter: 'grayscale(30%)' }}
               />
               {/* Bronze glow on hover */}
@@ -62,15 +62,14 @@ export default function About() {
         </div>
 
         {/* Two Column Grid */}
-        <div className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-24 pb-10 md:pb-12 lg:pb-16">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16 pb-4 md:pb-6 lg:pb-8">
           <div className="relative">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
               <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">What We Do</span>
             </div>
-            <p className="text-[0.95rem] sm:text-base md:text-body-lg text-ink-600 font-light leading-relaxed">
-              Acquisitions, advisory, capital formation, and asset management—partnering with 
-              owners, investors, and operators to identify opportunities and create long-term value.
+            <p className="text-[1.05rem] sm:text-lg md:text-body-lg text-ink-600 font-light leading-relaxed">
+              We focus on acquisitions, advisory, and asset management, partnering closely with owners, investors, and operators to identify opportunities and create long-term value.
             </p>
           </div>
           
@@ -79,30 +78,8 @@ export default function About() {
               <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
               <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">How We Work</span>
             </div>
-            <p className="text-[0.95rem] sm:text-base md:text-body-lg text-ink-600 font-light leading-relaxed">
-              Deep market knowledge, creative problem-solving, and hands-on execution 
-              across a range of asset types with an emphasis on thoughtful growth and alignment.
-            </p>
-          </div>
-        </div>
-        
-        {/* Bronze divider */}
-        <div className="divider-bronze my-10 md:my-12 lg:my-16" aria-hidden="true" />
-
-        {/* Pull Quote */}
-        <div>
-          <div className="relative pl-4 sm:pl-6 md:pl-8">
-            {/* Decorative quote border with bronze accent */}
-            <div 
-              className="absolute left-0 top-0 bottom-0 w-px"
-              style={{
-                background: 'linear-gradient(to bottom, var(--color-accent) 0%, var(--color-accent) 30%, var(--color-gray-200) 100%)',
-              }}
-              aria-hidden="true"
-            />
-            <p className="text-[1.05rem] sm:text-[1.15rem] md:text-title text-ink-700 font-light italic leading-snug max-w-3xl">
-              &ldquo;At our core, Creation Partners is built around movement—of ideas, capital, 
-              projects, and people—with the goal of building enduring businesses and places over time.&rdquo;
+            <p className="text-[1.05rem] sm:text-lg md:text-body-lg text-ink-600 font-light leading-relaxed">
+              Our approach is grounded in deep market knowledge, creative problem-solving, and hands-on execution across a range of asset types, with an emphasis on thoughtful growth and long-term alignment.
             </p>
           </div>
         </div>

@@ -4,16 +4,28 @@ import { useRef, useState, memo, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { projects } from '@/data/projects';
-import { stopLenis } from '@/utils/lenis';
+import { getLenisInstance, stopLenis, waitForLenis } from '@/utils/lenis';
+import { SCROLL } from '@/constants/ui';
 import ImageSkeleton from '@/components/ImageSkeleton';
+import { useImageLoading } from '@/hooks/useImageLoading';
 
-// Get unique project types for filter
-const projectTypes = ['All', ...Array.from(new Set(projects.map(p => p.type)))];
+// Project category filters
+const projectTypes = [
+  'All',
+  'Retail',
+  'Hospitality',
+  'Education',
+  'Office',
+  'Multifamily',
+  'Development',
+];
 
 function Projects() {
   // State hooks
   const [activeFilter, setActiveFilter] = useState('All');
-  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set());
+  const { loadingImages, handleImageLoad, resetLoading } = useImageLoading(
+    []
+  );
   
   // Refs
   const sectionRef = useRef<HTMLElement>(null);
@@ -23,14 +35,50 @@ function Projects() {
   const filteredProjects = useMemo(() => {
     return activeFilter === 'All' 
       ? projects 
-      : projects.filter(p => p && p.type === activeFilter);
+      : projects.filter(project => project && project.types.includes(activeFilter));
   }, [activeFilter]);
 
   // Initialize loading state for filtered projects when filter changes
   useEffect(() => {
-    const initialLoadingSet = new Set(filteredProjects.map(p => p.id));
-    setLoadingImages(initialLoadingSet);
-  }, [filteredProjects]);
+    resetLoading(filteredProjects.map((project) => project.id));
+  }, [filteredProjects, resetLoading]);
+
+  // Ensure hash navigation works when section mounts
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const hash = window.location.hash;
+    if (hash !== '#projects') return;
+
+    const scrollToSelf = async () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      await waitForLenis();
+      const lenis = getLenisInstance();
+      if (lenis) {
+        lenis.scrollTo(section, {
+          offset: SCROLL.SECTION_OFFSET,
+          immediate: false,
+          duration: 0.8,
+          onComplete: () => {
+            if (window.location.hash === '#projects') {
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+          },
+        });
+      } else {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => {
+          if (window.location.hash === '#projects') {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+        }, 1000);
+      }
+    };
+
+    scrollToSelf();
+  }, []);
 
   return (
     <section 
@@ -120,24 +168,12 @@ function Projects() {
                         src={project.images[0]}
                         alt={`${project.name} - ${project.location}`}
                         fill
-                        className={`object-cover object-center transition-all duration-500 group-hover:scale-105 transition-transform transition-slow ${
+                        className={`object-cover object-center transition-all duration-slow group-hover:scale-105 ${
                           isLoading ? 'opacity-0' : 'opacity-100'
                         }`}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        onLoad={() => {
-                          setLoadingImages(prev => {
-                            const next = new Set(prev);
-                            next.delete(project.id);
-                            return next;
-                          });
-                        }}
-                        onError={() => {
-                          setLoadingImages(prev => {
-                            const next = new Set(prev);
-                            next.delete(project.id);
-                            return next;
-                          });
-                        }}
+                        onLoad={() => handleImageLoad(project.id)}
+                        onError={() => handleImageLoad(project.id)}
                       />
                     ) : (
                       /* Fallback pattern if no image */
@@ -154,13 +190,13 @@ function Projects() {
                   {/* Type Badge with bronze accent */}
                   <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-white/95 backdrop-blur-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-sm border border-ink-100/50 z-10">
                     <span className="text-[0.625rem] sm:text-label text-ink-600 tracking-wider">
-                      {project.type}
+                      {project.types.join(' / ')}
                     </span>
                   </div>
                   
                   {/* Corner accents on hover */}
-                  <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-10" aria-hidden="true" />
-                  <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-10" aria-hidden="true" />
+                  <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-10" aria-hidden="true" />
+                  <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-10" aria-hidden="true" />
                   
                   {/* Hover Overlay with View indicator */}
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-ink-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-standard flex items-end justify-center pb-5 sm:pb-6 z-10">

@@ -98,8 +98,8 @@ export default function RootLayout({
       "email": "ys@creation-partners.com"
     },
     "sameAs": [
-      "https://www.linkedin.com/company/creation-partners",
-      "https://www.instagram.com/creationpartners"
+      "https://www.linkedin.com/company/creationpartners",
+      "https://www.instagram.com/creation_partners"
     ]
   };
 

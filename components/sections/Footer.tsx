@@ -12,7 +12,6 @@ const quickLinks = [
 ];
 
 const divisions = [
-  'Creation Capital',
   'Creation Realty Corporation',
   'Creation Equities',
   'Creation Asset Management',
@@ -104,8 +103,7 @@ export default function Footer() {
               </h2>
             </div>
             <p className="text-body text-cream-100/60 font-light max-w-md mb-6 leading-relaxed">
-              Building enduring businesses and places through the movement of ideas, 
-              capital, projects, and people.
+              Creating enduring places and spaces through thoughtful investment, active execution, and long-term stewardship.
             </p>
             <div className="w-12 h-px bg-accent/40" />
           </div>
@@ -136,10 +134,16 @@ export default function Footer() {
                 <p>Los Angeles, CA 90025</p>
               </div>
               <a 
-                href="mailto:ys@creation-partners.com" 
+                href="mailto:hello@creation-partners.com" 
                 className="block text-cream-100/70 hover:text-accent transition-colors"
               >
-                ys@creation-partners.com
+                hello@creation-partners.com
+              </a>
+              <a 
+                href="tel:+13102732846"
+                className="block text-cream-100/70 hover:text-accent transition-colors"
+              >
+                (310) 273-2846
               </a>
             </address>
           </div>
@@ -164,13 +168,16 @@ export default function Footer() {
         <div className="pt-8 border-t border-cream-100/10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <p className="text-caption text-cream-100/40 font-light">
-              © {new Date().getFullYear()} Creation Partners. All rights reserved.
+              © 2026 Creation Partners. All rights reserved.
+            </p>
+            <p className="text-caption text-cream-100/40 font-light">
+              Creation Realty Corporation: CA DRE Corporation License # 02240668
             </p>
             
             {/* Social Links */}
             <div className="flex items-center gap-6">
               <a 
-                href="https://www.linkedin.com/company/creation-partners" 
+                href="https://www.linkedin.com/company/creationpartners" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
@@ -179,7 +186,7 @@ export default function Footer() {
                 LinkedIn
               </a>
               <a 
-                href="https://www.instagram.com/creationpartners" 
+                href="https://www.instagram.com/creation_partners" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"

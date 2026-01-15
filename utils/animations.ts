@@ -51,53 +51,6 @@ export const ANIMATIONS = {
 } as const;
 
 /**
- * Standard scroll reveal animation
- * Creates a fade + slide-up animation with consistent defaults
- */
-export function createScrollReveal(
-  element: gsap.TweenTarget | null | undefined,
-  options: {
-    y?: number;
-    scale?: number;
-    duration?: number;
-    ease?: string;
-    trigger?: HTMLElement | null;
-    start?: string;
-    once?: boolean;
-  } = {}
-) {
-  if (!element) return null;
-
-  const {
-    y = ANIMATIONS.transform.slideUp.medium,
-    scale,
-    duration = ANIMATIONS.duration.standard,
-    ease = ANIMATIONS.ease.standard,
-    trigger,
-    start = ANIMATIONS.scrollTrigger.start,
-    once = ANIMATIONS.scrollTrigger.once,
-  } = options;
-
-  const vars: gsap.TweenVars = {
-    opacity: 0,
-    y,
-    duration,
-    ease,
-    scrollTrigger: {
-      trigger: trigger || (element as HTMLElement),
-      start,
-      once,
-    },
-  };
-
-  if (scale !== undefined) {
-    vars.scale = scale;
-  }
-
-  return gsap.from(element, vars);
-}
-
-/**
  * Standard stagger reveal animation
  * Creates a staggered fade + slide-up animation for multiple elements
  */

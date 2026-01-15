@@ -1,40 +1,37 @@
 'use client';
 
-import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Division } from '@/types/models';
 import ImageSkeleton from '@/components/ImageSkeleton';
+import { useImageLoading } from '@/hooks/useImageLoading';
 
 const divisions: Division[] = [
   {
     name: 'Creation Realty Corporation',
     description: 'Full-service brokerage and advisory.',
     image: '/images/webp/realty.webp',
-    icon: '',
   },
   {
     name: 'Creation Equities',
     description: 'Equity partnerships across asset classes.',
     image: '/images/webp/equities.webp',
-    icon: '',
   },
   {
     name: 'Creation Asset Management',
     description: 'Operations and value optimization.',
     image: '/images/webp/asset-management.webp',
-    icon: '',
   },
 ];
 
 export default function Divisions() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set(divisions.map((_, i) => i)));
+  const { loadingImages, handleImageLoad } = useImageLoading(
+    divisions.map((_, i) => i)
+  );
 
   return (
     <section 
-      ref={sectionRef} 
       id="divisions" 
-      className="section-spacing relative bg-texture-paper"
+      className="section-spacing-sm relative bg-texture-paper"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
       {/* Section top divider - with spacing from content */}
@@ -57,7 +54,7 @@ export default function Divisions() {
             return (
             <article
               key={index}
-              className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden transition-all transition-slow hover:scale-[1.05] hover:shadow-2xl hover:z-10 w-full max-w-md md:max-w-none"
+              className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden border border-ink-100/40 bg-white/50 shadow-premium transition-all duration-slow hover:scale-[1.03] hover:shadow-premium-hover hover:border-accent/30 hover:z-10 w-full max-w-md md:max-w-none"
             >
               {/* Loading Skeleton */}
               {isLoading && (
@@ -78,38 +75,27 @@ export default function Divisions() {
                 }`}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 priority={index < 2}
-                onLoad={() => {
-                  setLoadingImages(prev => {
-                    const next = new Set(prev);
-                    next.delete(index);
-                    return next;
-                  });
-                }}
-                onError={() => {
-                  setLoadingImages(prev => {
-                    const next = new Set(prev);
-                    next.delete(index);
-                    return next;
-                  });
-                }}
+                onLoad={() => handleImageLoad(index)}
+                onError={() => handleImageLoad(index)}
               />
 
               {/* Dark overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
 
               {/* Text Content at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform transition-slow group-hover:translate-y-[-8px]">
-                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all transition-slow group-hover:text-accent group-hover:scale-105 origin-bottom-left">
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform duration-slow group-hover:translate-y-[-8px]">
+                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all duration-slow group-hover:text-accent group-hover:scale-105 origin-bottom-left">
                   {division.name}
                 </h3>
-                <p className="text-[clamp(1rem,2.5vw,1.125rem)] sm:text-base md:text-lg lg:text-base text-white/80 font-light leading-relaxed transition-all transition-slow group-hover:text-white">
+                <p className="text-[clamp(1rem,2.5vw,1.125rem)] sm:text-base md:text-lg lg:text-base text-white/80 font-light leading-relaxed transition-all duration-slow group-hover:text-white">
                   {division.description}
                 </p>
               </div>
 
               {/* Hover effect - stronger glow */}
-              <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-[5]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-slow z-[5]" />
+              <div className="absolute inset-0 bg-accent/15 opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-[5]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-[6]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-[5]" />
             </article>
             );
           })}

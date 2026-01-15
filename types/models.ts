@@ -27,5 +27,5 @@ export interface Division {
   name: string;
   description: string;
   image: string; // Path to division image
-  icon: string; // Emoji or icon identifier
+  icon?: string; // Emoji or icon identifier
 }

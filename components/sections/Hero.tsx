@@ -29,6 +29,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
     errorMessage,
     video1Ref,
     video2Ref,
+    isHeroInView,
   } = useVideoRotation({
     preloaderComplete,
     // Don't pass onError - errors are already handled by the hook
@@ -123,8 +124,6 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       creationText.style.backgroundPosition = `${VISUAL.SHIMMER_BACKGROUND_POSITION} center`;
       creationText.style.filter = 'drop-shadow(0 0 8px rgba(184, 160, 104, 0.3))';
       
-      creationText.classList.add('shimmer-text');
-      
       // Animate the background position - loop continuously
       shimmerTween = gsap.to(creationText, {
         backgroundPosition: `${VISUAL.SHIMMER_BACKGROUND_POSITION_END} center`,
@@ -150,6 +149,8 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       
       if (!creationTextRef.current) return;
       
+      const creationText = creationTextRef.current;
+      
       // Remove gradient and restore normal text
       creationText.style.background = 'none';
       creationText.style.webkitBackgroundClip = 'unset';
@@ -159,6 +160,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       creationText.style.filter = 'none';
       creationText.style.backgroundPosition = 'unset';
       creationText.style.backgroundSize = 'unset';
+      creationText.classList.remove('shimmer-text');
     };
     
     // Start shimmer after initial delay
@@ -234,7 +236,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload="auto"
+        preload={isHeroInView ? 'auto' : 'none'}
         poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
@@ -259,7 +261,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload="metadata"
+        preload={isHeroInView ? 'auto' : 'none'}
         poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"

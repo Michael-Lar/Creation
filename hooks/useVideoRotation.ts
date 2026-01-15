@@ -41,6 +41,7 @@ interface UseVideoRotationReturn {
   errorMessage: string;
   video1Ref: React.RefObject<HTMLVideoElement>;
   video2Ref: React.RefObject<HTMLVideoElement>;
+  isHeroInView: boolean;
 }
 
 /**
@@ -57,6 +58,7 @@ export function useVideoRotation(
   const [isLoading, setIsLoading] = useState(false); // Start as false - only show loading when actually loading
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isHeroInView, setIsHeroInView] = useState(false);
   const [, setFailedVideos] = useState<Set<number>>(new Set());
   
   const video1Ref = useRef<HTMLVideoElement>(null);
@@ -106,7 +108,7 @@ export function useVideoRotation(
     if (!video1Ref.current || !video2Ref.current) {
       return;
     }
-    if (!preloaderComplete) {
+    if (!preloaderComplete || !isHeroInView) {
       return;
     }
 
@@ -226,7 +228,7 @@ export function useVideoRotation(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentVideoIndex, preloaderComplete]); // Remove handleVideoError from dependencies
+  }, [currentVideoIndex, preloaderComplete, isHeroInView]); // Remove handleVideoError from dependencies
 
   // Reset video to index 0 when preloader completes (only once)
   useEffect(() => {
@@ -330,7 +332,7 @@ export function useVideoRotation(
 
   // Preload next video in background for faster transitions
   useEffect(() => {
-    if (!preloaderComplete || !video1Ref.current || !video2Ref.current) return;
+    if (!preloaderComplete || !isHeroInView || !video1Ref.current || !video2Ref.current) return;
     
     const nextIndex = (currentVideoIndex + 1) % videoUrls.length;
     const hiddenVideo = activeVideoRef.current === 0 ? video2Ref.current : video1Ref.current;
@@ -355,7 +357,7 @@ export function useVideoRotation(
         }
       }
     }
-  }, [currentVideoIndex, preloaderComplete]);
+  }, [currentVideoIndex, preloaderComplete, isHeroInView]);
 
   // Keyboard controls
   useEffect(() => {
@@ -383,11 +385,13 @@ export function useVideoRotation(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) {
+            setIsHeroInView(false);
             video1Ref.current?.pause();
             video2Ref.current?.pause();
           } else {
+            setIsHeroInView(true);
             const activeVideoElement = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
-            if (activeVideoElement && !activeVideoElement.paused) {
+            if (activeVideoElement && activeVideoElement.paused) {
               activeVideoElement.play().catch(() => {});
             }
           }
@@ -412,5 +416,6 @@ export function useVideoRotation(
     errorMessage,
     video1Ref,
     video2Ref,
+    isHeroInView,
   };
 }

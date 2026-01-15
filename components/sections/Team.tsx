@@ -5,6 +5,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { TeamMember } from '@/types/models';
 import ImageSkeleton from '@/components/ImageSkeleton';
+import { useImageLoading } from '@/hooks/useImageLoading';
 
 interface TeamProps {
   onModalStateChange?: (isOpen: boolean) => void;
@@ -55,7 +56,7 @@ Avi is a graduate of the University of California, Los Angeles. He lives in Los 
     title: 'Investment Associate',
     bio: `Sacha Boroumand is an Investment Associate at Creation Partners, advising clients on multifamily and retail investments throughout Los Angeles. He brings a hands-on, value-driven approach, emphasizing personal relationships and tailored strategies to help clients execute complex transactions with confidence and maximize long-term performance.
 
-Prior to joining Creation Partners, Sacha spent two years as an Investment Associate at Marcus & Millichap (Matthews Real Estate), where he focused on underwriting, deal execution, and client advisory across income-producing assets.
+Prior to joining Creation Partners, Sacha spent two years as an Investment Associate at Matthews Real Estate, where he focused on underwriting, deal execution, and client advisory across income-producing assets.
 
 Sacha earned his degree in Communication from the University of California, Santa Barbara, where he founded the Alpha Epsilon Pi fraternity chapter during the COVID-19 pandemic and competed on the UCSB lacrosse team. These experiences shaped his leadership, adaptability, and team-oriented approach to serving clients.`,
     image: '/team/sacha-boroumand.png',
@@ -96,7 +97,9 @@ function Team({ onModalStateChange }: TeamProps) {
   // State hooks
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set(teamMembers.map(m => m.id)));
+  const { loadingImages, handleImageLoad } = useImageLoading(
+    teamMembers.map((member) => member.id)
+  );
   
   // Refs
   const sectionRef = useRef<HTMLElement>(null);
@@ -252,28 +255,16 @@ function Team({ onModalStateChange }: TeamProps) {
                         src={member.image}
                         alt={`${member.name} - ${member.title}`}
                         fill
-                        className={`object-contain object-center transition-all duration-500 group-hover:scale-105 transition-transform transition-standard ${
+                        className={`object-contain object-center transition-transform transition-standard group-hover:scale-105 ${
                           isLoading ? 'opacity-0' : 'opacity-100'
-                        }`}
+                        } ${member.name === 'Yaron Samuha' ? 'translate-y-3' : ''}`}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         style={{
                           filter: 'grayscale(100%) contrast(1.15)',
                           WebkitFilter: 'grayscale(100%) contrast(1.15)',
                         }}
-                        onLoad={() => {
-                          setLoadingImages(prev => {
-                            const next = new Set(prev);
-                            next.delete(member.id);
-                            return next;
-                          });
-                        }}
-                        onError={() => {
-                          setLoadingImages(prev => {
-                            const next = new Set(prev);
-                            next.delete(member.id);
-                            return next;
-                          });
-                        }}
+                        onLoad={() => handleImageLoad(member.id)}
+                        onError={() => handleImageLoad(member.id)}
                       />
                     </>
                   ) : (

@@ -10,9 +10,14 @@ import { SCROLL, TIMING, PERCENTAGES } from '@/constants/ui';
 interface HeaderProps {
   isModalOpen?: boolean;
   forceScrolledStyle?: boolean; // Force header to use scrolled (black text) styling
+  scrolledBlurClass?: string;
 }
 
-export default function Header({ isModalOpen = false, forceScrolledStyle = false }: HeaderProps) {
+export default function Header({ 
+  isModalOpen = false, 
+  forceScrolledStyle = false,
+  scrolledBlurClass = 'backdrop-blur-md',
+}: HeaderProps) {
   // State hooks
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -158,7 +163,7 @@ export default function Header({ isModalOpen = false, forceScrolledStyle = false
   const headerBg = !mounted || effectiveIsOverHero
     ? 'bg-transparent'
     : isScrolled || forceScrolledStyle
-    ? 'bg-cream/95 backdrop-blur-md'
+    ? `bg-cream/95 ${scrolledBlurClass}`
     : 'bg-transparent';
 
   const textColor = !mounted || effectiveIsOverHero ? 'text-white' : 'text-ink-800';
