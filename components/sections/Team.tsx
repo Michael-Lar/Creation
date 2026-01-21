@@ -28,7 +28,7 @@ In parallel with his real estate work, Yoav is actively involved as an investor,
 Yoav is deeply engaged in philanthropic and community leadership. He currently serves as Chair of the House & Grounds Committee at Sinai Temple, is actively involved with Sinai Akiba Academy, and previously served as Real Estate Chair for the Young Adults division of the Jewish Federation of Greater Los Angeles. Above all, Yoav enjoys nothing more than spending time with his wife and children.`,
     image: '/team/yoav-sarraf.png',
     imagePosition: 'center 20%',
-    imageScale: 'scale-[1.03]',
+    imageScale: 'scale-[1.08]',
   },
   {
     id: 2,
