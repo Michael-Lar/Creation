@@ -231,12 +231,22 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       {/* Video Elements */}
       {/* Note: poster image provides fallback if video fails to load. 
           Create /public/images/hero-poster.jpg for production use. */}
+      <img
+        src="/images/hero-poster.jpg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+        style={{ zIndex: 0, pointerEvents: 'none' }}
+      />
       <video
         ref={video1Ref}
         muted
         playsInline
         loop={false}
-        preload="auto"
+        preload="metadata"
         poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
@@ -261,7 +271,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload={isHeroInView ? 'auto' : 'none'}
+        preload={isHeroInView ? 'metadata' : 'none'}
         poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
