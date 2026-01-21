@@ -9,7 +9,7 @@ export default function ContactForm() {
     <section 
       ref={sectionRef} 
       id="contact" 
-      className="py-12 sm:py-14 md:py-16 lg:py-20 xl:py-24 px-4 sm:px-6 md:px-8 lg:px-12 bg-texture-paper relative"
+      className="py-10 sm:py-12 md:py-14 lg:py-16 xl:py-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-texture-paper relative"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
       {/* Section top divider */}
@@ -17,7 +17,7 @@ export default function ContactForm() {
       
       <div className="max-w-4xl mx-auto pt-2 md:pt-4">
         {/* Section Label */}
-        <div className="section-label mb-5 sm:mb-6 md:mb-8">
+        <div className="section-label mb-4 sm:mb-5 md:mb-6">
           <div className="section-label-line" />
           <span className="section-label-text">Connect</span>
         </div>
@@ -25,12 +25,12 @@ export default function ContactForm() {
         {/* Contact Content */}
         <div className="text-center">
           {/* Main Tagline */}
-          <p className="text-base sm:text-lg md:text-xl text-ink-500 mb-8 sm:mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed tracking-wide">
+          <p className="text-base sm:text-lg md:text-xl text-ink-500 mb-5 sm:mb-6 md:mb-8 max-w-xl mx-auto leading-relaxed tracking-wide">
             We would love to connect.
           </p>
 
           {/* Primary Contact */}
-          <div className="mb-8 sm:mb-10 md:mb-12">
+          <div className="mb-5 sm:mb-6 md:mb-8">
             <a 
               href="mailto:hello@creation-partners.com"
               className="inline-flex items-center gap-2"
@@ -69,7 +69,7 @@ export default function ContactForm() {
           </div>
 
           {/* Phone */}
-          <div className="mb-8 sm:mb-10 md:mb-12">
+          <div className="mb-5 sm:mb-6 md:mb-8">
             <a 
               href="tel:+13102732846"
               className="inline-flex flex-col items-center"
@@ -97,7 +97,7 @@ export default function ContactForm() {
           </div>
 
           {/* Social Links */}
-          <div className="flex items-center justify-center gap-6 sm:gap-8 mb-8 sm:mb-10 md:mb-12">
+          <div className="flex items-center justify-center gap-6 sm:gap-8 mb-5 sm:mb-6 md:mb-8">
             <a 
               href="https://www.instagram.com/creation_partners"
               target="_blank"

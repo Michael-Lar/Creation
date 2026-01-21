@@ -18,6 +18,8 @@ export interface TeamMember {
   phone?: string;
   linkedin?: string;
   image?: string; // Path to headshot image
+  imagePosition?: string; // CSS object-position value
+  imageScale?: string; // Tailwind scale utility (e.g., "scale-[1.05]")
 }
 
 /**

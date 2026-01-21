@@ -27,6 +27,8 @@ In parallel with his real estate work, Yoav is actively involved as an investor,
 
 Yoav is deeply engaged in philanthropic and community leadership. He currently serves as Chair of the House & Grounds Committee at Sinai Temple, is actively involved with Sinai Akiba Academy, and previously served as Real Estate Chair for the Young Adults division of the Jewish Federation of Greater Los Angeles. Above all, Yoav enjoys nothing more than spending time with his wife and children.`,
     image: '/team/yoav-sarraf.png',
+    imagePosition: 'center 20%',
+    imageScale: 'scale-[1.03]',
   },
   {
     id: 2,
@@ -38,6 +40,8 @@ Yaron began his real estate career in Israel following his military service, whe
 
 Over time, Yaron expanded his role beyond advisory work and became an active investor, aligning his interests directly with those of his clients. Outside of work, he is a devoted husband and father, and brings a disciplined, relationship-driven, and long-term mindset to every transaction.`,
     image: '/team/yaron-samuha.png',
+    imagePosition: 'center 16%',
+    imageScale: 'scale-[1.02]',
   },
   {
     id: 3,
@@ -49,6 +53,8 @@ Prior to joining Creation Partners, Avi served for several years as an advisor a
 
 Avi is a graduate of the University of California, Los Angeles. He lives in Los Angeles with his wife and children and brings a grounded, detail-oriented approach to every engagement.`,
     image: '/team/avi-khoshnood.png',
+    imagePosition: 'center 12%',
+    imageScale: 'scale-[1.02]',
   },
   {
     id: 4,
@@ -60,6 +66,8 @@ Prior to joining Creation Partners, Sacha spent two years as an Investment Assoc
 
 Sacha earned his degree in Communication from the University of California, Santa Barbara, where he founded the Alpha Epsilon Pi fraternity chapter during the COVID-19 pandemic and competed on the UCSB lacrosse team. These experiences shaped his leadership, adaptability, and team-oriented approach to serving clients.`,
     image: '/team/sacha-boroumand.png',
+    imagePosition: 'center 28%',
+    imageScale: 'scale-[1.08]',
   },
   {
     id: 5,
@@ -69,6 +77,8 @@ Sacha earned his degree in Communication from the University of California, Sant
 
 Tiffany holds a Bachelor of Arts from the University of California, Los Angeles and a Master's degree from California State University, Northridge.`,
     image: '/team/tiffany-tehrani.png',
+    imagePosition: 'center 32%',
+    imageScale: 'scale-[1.06]',
   },
   {
     id: 6,
@@ -79,6 +89,8 @@ Tiffany holds a Bachelor of Arts from the University of California, Los Angeles 
 Michael holds a Bachelor of Science from the University of California, Berkeley.`,
     linkedin: 'https://www.linkedin.com/in/michael-larian/',
     image: '/team/michael-larian.png',
+    imagePosition: 'center 18%',
+    imageScale: 'scale-[1.04]',
   },
 ];
 
@@ -255,11 +267,12 @@ function Team({ onModalStateChange }: TeamProps) {
                         src={member.image}
                         alt={`${member.name} - ${member.title}`}
                         fill
-                        className={`object-contain object-center transition-transform transition-standard group-hover:scale-105 ${
+                        className={`object-cover transition-transform transition-standard group-hover:scale-105 ${
                           isLoading ? 'opacity-0' : 'opacity-100'
-                        } ${member.name === 'Yaron Samuha' ? 'translate-y-3 scale-110' : ''}`}
+                        } ${member.imageScale ?? 'scale-100'}`}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         style={{
+                          objectPosition: member.imagePosition ?? 'center 20%',
                           filter: 'grayscale(100%) contrast(1.15)',
                           WebkitFilter: 'grayscale(100%) contrast(1.15)',
                         }}
