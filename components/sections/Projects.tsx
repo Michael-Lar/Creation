@@ -84,7 +84,7 @@ function Projects() {
     <section 
       ref={sectionRef} 
       id="projects" 
-      className="section-spacing relative bg-texture-paper"
+      className="section-spacing pb-10 sm:pb-12 md:pb-14 lg:pb-16 relative bg-texture-paper"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
       {/* Section top divider - with spacing from content */}
