@@ -21,8 +21,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://creation-partners.com'),
-  title: "Creation Partners | Commercial Real Estate Investment & Management",
-  description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform. We work across acquisitions, advisory, capital formation, and asset management.",
+  title: "Creation Partners | Yoav Sarraf | Commercial Real Estate Investment & Management",
+  description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based, vertically integrated real estate investment and operating platform. We work across acquisitions, advisory, capital formation, and asset management.",
   keywords: ["real estate", "commercial real estate", "investment", "Los Angeles", "property management", "advisory", "Yoav Sarraf"],
   authors: [{ name: "Creation Partners" }, { name: "Yoav Sarraf" }],
   creator: "Creation Partners",
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Creation Partners | Commercial Real Estate Investment & Management",
-    description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    title: "Creation Partners | Yoav Sarraf | Commercial Real Estate Investment & Management",
+    description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
     url: "https://creation-partners.com",
     siteName: "Creation Partners",
     type: "website",
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Creation Partners | Commercial Real Estate Investment & Management",
-    description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    title: "Creation Partners | Yoav Sarraf | Commercial Real Estate Investment & Management",
+    description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
     // Images are automatically generated via app/twitter-image.tsx
   },
   alternates: {

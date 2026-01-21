@@ -265,7 +265,9 @@ function Team({ onModalStateChange }: TeamProps) {
                       
                       <Image
                         src={member.image}
-                        alt={`${member.name} - ${member.title}`}
+                        alt={member.name === 'Yoav Sarraf' 
+                          ? `Yoav Sarraf, Founder & CEO of Creation Partners - Commercial Real Estate Investment & Management`
+                          : `${member.name} - ${member.title} at Creation Partners`}
                         fill
                         className={`object-cover transition-transform transition-standard group-hover:scale-105 ${
                           isLoading ? 'opacity-0' : 'opacity-100'
