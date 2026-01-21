@@ -23,8 +23,8 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://creation-partners.com'),
   title: "Creation Partners | Commercial Real Estate Investment & Management",
   description: "Creation Partners is a Los Angeles-based, vertically integrated real estate investment and operating platform. We work across acquisitions, advisory, capital formation, and asset management.",
-  keywords: ["real estate", "commercial real estate", "investment", "Los Angeles", "property management", "advisory"],
-  authors: [{ name: "Creation Partners" }],
+  keywords: ["real estate", "commercial real estate", "investment", "Los Angeles", "property management", "advisory", "Yoav Sarraf"],
+  authors: [{ name: "Creation Partners" }, { name: "Yoav Sarraf" }],
   creator: "Creation Partners",
   publisher: "Creation Partners",
   robots: {
@@ -93,6 +93,12 @@ export default function RootLayout({
       "addressCountry": "US"
     },
     "url": "https://creation-partners.com",
+    "founder": {
+      "@type": "Person",
+      "name": "Yoav Sarraf",
+      "jobTitle": "Founder & CEO",
+      "email": "ys@creation-partners.com"
+    },
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+1-310-749-9628",
@@ -103,6 +109,31 @@ export default function RootLayout({
       "https://www.linkedin.com/company/creationpartners",
       "https://www.instagram.com/creation_partners"
     ]
+  };
+
+  const yoavSarrafStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Yoav Sarraf",
+    "jobTitle": "Founder & CEO",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Creation Partners",
+      "url": "https://creation-partners.com"
+    },
+    "url": "https://creation-partners.com",
+    "email": "ys@creation-partners.com",
+    "description": "Yoav Sarraf is the Founder and CEO of Creation Partners, a commercial real estate investment, advisory, and management platform. With over 15 years of experience at Concord Companies and involvement in over $1 billion in real estate transactions, Yoav brings expertise in acquisitions, advisory, capital formation, and asset management across retail, multifamily, creative office, mixed-use, and development-oriented assets.",
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "University of California, Los Angeles"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Los Angeles",
+      "addressRegion": "CA",
+      "addressCountry": "US"
+    }
   };
 
   const websiteStructuredData = {
@@ -158,6 +189,11 @@ export default function RootLayout({
           id="breadcrumb-structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+        />
+        <Script
+          id="yoav-sarraf-structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(yoavSarrafStructuredData) }}
         />
       </head>
       <body className={inter.className}>
