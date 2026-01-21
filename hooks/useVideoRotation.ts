@@ -73,6 +73,10 @@ export function useVideoRotation(
   const preloaderCompleteRef = useRef(false);
   const firstVideoLoadedRef = useRef(false);
 
+  useEffect(() => {
+    preloaderCompleteRef.current = preloaderComplete;
+  }, [preloaderComplete]);
+
   const handleVideoError = useCallback((videoIndex: number, videoElement: HTMLVideoElement) => {
     ErrorHandler.handleVideoError(
       new Error(`Failed to load video at index ${videoIndex}`),
@@ -279,9 +283,13 @@ export function useVideoRotation(
     
     const handleCanPlay = () => {
       setIsLoading(false);
-      firstVideo.play().catch(() => {
-        handleVideoError(0, firstVideo);
-      });
+      if (preloaderCompleteRef.current) {
+        firstVideo.play().catch(() => {
+          handleVideoError(0, firstVideo);
+        });
+      } else {
+        firstVideo.pause();
+      }
     };
 
     const handleError = (e: Event) => {

@@ -236,7 +236,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload={isHeroInView ? 'auto' : 'none'}
+        preload="auto"
         poster="/images/hero-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"

@@ -184,7 +184,7 @@ export default function Preloader({
         ref={forwardVideoRef}
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
         className="absolute w-64 sm:w-72 md:w-80 lg:w-96 h-auto z-10"
         style={videoStyles}
       >
@@ -196,7 +196,7 @@ export default function Preloader({
         ref={reverseVideoRef}
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
         className="absolute w-64 sm:w-72 md:w-80 lg:w-96 h-auto z-10"
         style={videoStyles}
       >
