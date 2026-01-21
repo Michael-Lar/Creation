@@ -173,7 +173,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="preload" as="image" href="/images/hero-poster.jpg" fetchpriority="high" />
+        <link rel="preload" as="image" href="/images/hero-poster.jpg" fetchPriority="high" />
         <Script
           id="organization-structured-data"
           type="application/ld+json"

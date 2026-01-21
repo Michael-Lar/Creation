@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import Image from 'next/image';
 import { gsap } from '@/utils/gsap';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { useScrollListener } from '@/hooks/useScrollPosition';
@@ -231,14 +232,14 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       {/* Video Elements */}
       {/* Note: poster image provides fallback if video fails to load. 
           Create /public/images/hero-poster.jpg for production use. */}
-      <img
+      <Image
         src="/images/hero-poster.jpg"
         alt=""
         aria-hidden="true"
+        fill
+        priority
+        sizes="100vw"
         className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        decoding="async"
-        fetchpriority="high"
         style={{ zIndex: 0, pointerEvents: 'none' }}
       />
       <video
