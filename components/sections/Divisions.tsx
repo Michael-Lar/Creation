@@ -10,16 +10,22 @@ const divisions: Division[] = [
     name: 'Creation Realty Corporation',
     description: 'Full-service brokerage and advisory.',
     image: '/images/webp/realty.webp',
+    imagePosition: 'center 45%',
+    imageScale: 'scale-[1.03]',
   },
   {
     name: 'Creation Equities',
     description: 'Equity partnerships across asset classes.',
     image: '/images/webp/equities.webp',
+    imagePosition: 'center 40%',
+    imageScale: 'scale-[1.03]',
   },
   {
     name: 'Creation Asset Management',
     description: 'Operations and value optimization.',
     image: '/images/webp/asset-management.webp',
+    imagePosition: 'center 50%',
+    imageScale: 'scale-[1.03]',
   },
 ];
 
@@ -31,7 +37,7 @@ export default function Divisions() {
   return (
     <section 
       id="divisions" 
-      className="section-spacing-sm relative bg-texture-paper"
+      className="section-spacing-sm pb-3 md:pb-4 lg:pb-5 relative bg-texture-paper"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
       {/* Section top divider - with spacing from content */}
@@ -39,7 +45,7 @@ export default function Divisions() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Label */}
-        <div className="section-label mb-6 md:mb-8 lg:mb-10">
+        <div className="section-label mb-4 md:mb-5 lg:mb-6">
           <div className="section-label-line" />
           <span className="section-label-text">Divisions</span>
         </div>
@@ -54,7 +60,7 @@ export default function Divisions() {
             return (
             <article
               key={index}
-              className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden border border-ink-100/40 bg-white/50 shadow-premium transition-all duration-slow hover:scale-[1.03] hover:shadow-premium-hover hover:border-accent/30 hover:z-10 w-full max-w-md md:max-w-none"
+              className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden border border-ink-100/40 bg-white/50 shadow-premium transition-all duration-slow hover:shadow-premium-hover hover:border-accent/30 hover:z-10 w-full max-w-md md:max-w-none"
             >
               {/* Loading Skeleton */}
               {isLoading && (
@@ -72,19 +78,26 @@ export default function Divisions() {
                 fill
                 className={`object-cover transition-opacity duration-500 ${
                   isLoading ? 'opacity-0' : 'opacity-100'
-                }`}
+                } ${division.imageScale ?? ''}`}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 priority={index < 2}
+                style={
+                  division.imagePosition
+                    ? { objectPosition: division.imagePosition }
+                    : undefined
+                }
                 onLoad={() => handleImageLoad(index)}
                 onError={() => handleImageLoad(index)}
               />
 
               {/* Dark overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+              {/* Subtle vignette to anchor titles */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_60%),radial-gradient(ellipse_at_bottom_right,rgba(0,0,0,0.35),transparent_60%)] opacity-90" />
 
               {/* Text Content at bottom */}
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 lg:p-8 z-10 transition-transform duration-slow group-hover:translate-y-[-8px]">
-                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white mb-1.5 sm:mb-2 leading-tight transition-all duration-slow group-hover:text-accent group-hover:scale-105 origin-bottom-left">
+                <h3 className="text-[clamp(1.5rem,4vw,2rem)] sm:text-2xl md:text-3xl lg:text-2xl font-serif text-white text-shadow-subtle mb-1.5 sm:mb-2 leading-tight transition-all duration-slow group-hover:text-accent group-hover:scale-[1.02] origin-bottom-left">
                   {division.name}
                 </h3>
                 <p className="text-[clamp(1rem,2.5vw,1.125rem)] sm:text-base md:text-lg lg:text-base text-white/80 font-light leading-relaxed transition-all duration-slow group-hover:text-white">
@@ -96,6 +109,8 @@ export default function Divisions() {
               <div className="absolute inset-0 bg-accent/15 opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-[5]" />
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-[6]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-slow z-[5]" />
+              {/* Inner bronze stroke */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl border-[5px] border-accent/70 transition-[border-color,box-shadow] duration-slow group-hover:border-accent/90 group-hover:shadow-[0_0_0_2px_rgba(184,160,104,0.25)] z-[7]" />
             </article>
             );
           })}

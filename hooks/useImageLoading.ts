@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export function useImageLoading(itemIds: number[]) {
   const [loadingImages, setLoadingImages] = useState<Set<number>>(
     () => new Set(itemIds)
   );
+  const loadedImagesRef = useRef<Set<number>>(new Set());
 
   const handleImageLoad = useCallback((id: number) => {
     setLoadingImages((prev) => {
@@ -11,10 +12,19 @@ export function useImageLoading(itemIds: number[]) {
       next.delete(id);
       return next;
     });
+    loadedImagesRef.current.add(id);
   }, []);
 
   const resetLoading = useCallback((ids: number[]) => {
-    setLoadingImages(new Set(ids));
+    setLoadingImages(() => {
+      const next = new Set<number>();
+      ids.forEach((id) => {
+        if (!loadedImagesRef.current.has(id)) {
+          next.add(id);
+        }
+      });
+      return next;
+    });
   }, []);
 
   return { loadingImages, handleImageLoad, resetLoading };

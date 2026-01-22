@@ -30,4 +30,6 @@ export interface Division {
   description: string;
   image: string; // Path to division image
   icon?: string; // Emoji or icon identifier
+  imagePosition?: string; // CSS object-position value
+  imageScale?: string; // Tailwind scale utility (e.g., "scale-[1.05]")
 }
