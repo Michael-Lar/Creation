@@ -12,6 +12,7 @@ const divisions: Division[] = [
     image: '/images/webp/realty.webp',
     imagePosition: 'center 45%',
     imageScale: 'scale-[1.03]',
+    blurDataURL: 'data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADQBACdASoUABsAP3GowFi0raYjsBgMApAuCWYAxnwQN7ztLagyRBZ4Ahc13GMAAAD+jO/1PzjW6p+CHHDw7mcF8SIcU2Z/nQiOBFckKtd3is3RnND/K7BMtdLiHT43e2tkx6wN1r0StNu36537VWH3db74VYiNluwHbWx9V6WK44AA',
   },
   {
     name: 'Creation Equities',
@@ -19,6 +20,7 @@ const divisions: Division[] = [
     image: '/images/webp/equities.webp',
     imagePosition: 'center 40%',
     imageScale: 'scale-[1.03]',
+    blurDataURL: 'data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAADQBACdASoUABsAP3Gsyl20rSgkqAqqkC4JbADCkf/gG6HZTxqLMSQc/nw5rfEtMAD6MUhCovEpKZzMl6qDvQ+lt+gksyWNwz4s8YMcQiiDwQKWSJhzao5quipjWdN4hVdhbWFJLM0RcO8XsXW25EzMsf37LEjWJvyNPOF6/UaWWXb63SxwZ5xR0kAAAA==',
   },
   {
     name: 'Creation Asset Management',
@@ -26,6 +28,7 @@ const divisions: Division[] = [
     image: '/images/webp/asset-management.webp',
     imagePosition: 'center 50%',
     imageScale: 'scale-[1.03]',
+    blurDataURL: 'data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwBACdASoUAB4AP3Gkx1i0rCgjsAgCkC4JQBdgBDoYcJ7PWW5dW3vsti0PDgwAAP3MlPmm0eZSir8zUReE69Pk2Lp4tW1WxqOa/ETREyOIqciRUAJ5MGuaT9JG6VIe3zXStAyWu3oUIWFG8jcYgjaH2vhOWzqevrhtQyqZ+ngAAA==',
   },
 ];
 
@@ -80,7 +83,9 @@ export default function Divisions() {
                   isLoading ? 'opacity-0' : 'opacity-100'
                 } ${division.imageScale ?? ''}`}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                priority={index < 2}
+                loading="lazy"
+                placeholder={division.blurDataURL ? 'blur' : 'empty'}
+                blurDataURL={division.blurDataURL}
                 style={
                   division.imagePosition
                     ? { objectPosition: division.imagePosition }

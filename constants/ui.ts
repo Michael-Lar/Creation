@@ -26,7 +26,7 @@ export const TIMING = {
   VIDEO_READY_CHECK: 100,       // Video ready state check delay
   LENIS_POLL_INTERVAL: 100,     // Lenis polling interval
   LENIS_POLL_TIMEOUT: 5000,     // Lenis polling timeout
-  PRELOADER_FALLBACK: 2000,     // Preloader fallback timer
+  PRELOADER_FALLBACK: 1500,     // Preloader fallback timer (reduced for better LCP)
   HEADER_FADE_DELAY: 2500,      // Header fade-in delay
 } as const;
 

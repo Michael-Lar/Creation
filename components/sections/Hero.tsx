@@ -230,15 +230,16 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       )}
 
       {/* Video Elements */}
-      {/* Note: poster image provides fallback if video fails to load. 
-          Create /public/images/hero-poster.jpg for production use. */}
+      {/* Hero poster image - optimized WebP with blur placeholder for fast LCP */}
       <Image
-        src="/images/hero-poster.jpg"
+        src="/images/webp/hero-poster.webp"
         alt=""
         aria-hidden="true"
         fill
         priority
         sizes="100vw"
+        placeholder="blur"
+        blurDataURL="data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAwCdASoUAA4AP3Gixli0rCejsAgCkC4JZwAAW8Oo4tavmW3SfvQAAP3iT7rFBfX8n2cJ2jBSlnp0ey2rEs3/L/MIVZQPZCGeSFlAAAA="
         className="absolute inset-0 h-full w-full object-cover"
         style={{ zIndex: 0, pointerEvents: 'none' }}
       />
@@ -248,7 +249,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         playsInline
         loop={false}
         preload="metadata"
-        poster="/images/hero-poster.jpg"
+        poster="/images/webp/hero-poster.webp"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
@@ -273,7 +274,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         playsInline
         loop={false}
         preload={isHeroInView ? 'metadata' : 'none'}
-        poster="/images/hero-poster.jpg"
+        poster="/images/webp/hero-poster.webp"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 

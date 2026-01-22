@@ -27,11 +27,15 @@ export default function Preloader({
   useEffect(() => {
     setMounted(true);
     
-    // Only check shouldSkip prop, not sessionStorage
-    // Hash-based navigation is handled in app/page.tsx
-    if (shouldSkip) {
+    // Skip preloader for returning visitors in the same session (better LCP)
+    const hasSeenPreloader = typeof window !== 'undefined' && sessionStorage.getItem('preloader_seen');
+    
+    if (shouldSkip || hasSeenPreloader) {
       setShouldShow(false);
       onComplete?.();
+    } else if (typeof window !== 'undefined') {
+      // Mark as seen for this session
+      sessionStorage.setItem('preloader_seen', 'true');
     }
   }, [onComplete, shouldSkip]);
 
@@ -65,8 +69,8 @@ export default function Preloader({
     
     videoPlayedRef.current = true;
 
-    // Speed up videos for snappier feel
-    const playbackSpeed = 1.3;
+    // Speed up videos for snappier feel and better LCP
+    const playbackSpeed = 1.5;
     forwardVideo.playbackRate = playbackSpeed;
     reverseVideo.playbackRate = playbackSpeed;
     
@@ -138,16 +142,17 @@ export default function Preloader({
       forwardVideo.load();
     }
 
-    // Fallback timeout
+    // Fallback timeout - reduced for better LCP
     const fallbackTimeout = setTimeout(() => {
       if (!animationCompleteRef.current) {
         if (forwardVideo.readyState >= 2) {
           playForward();
         } else {
+          // Skip animation entirely if video isn't ready
           finishAnimation();
         }
       }
-    }, 500);
+    }, 300);
 
     return () => {
       forwardVideo.removeEventListener('canplay', playForward);

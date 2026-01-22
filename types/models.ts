@@ -32,4 +32,5 @@ export interface Division {
   icon?: string; // Emoji or icon identifier
   imagePosition?: string; // CSS object-position value
   imageScale?: string; // Tailwind scale utility (e.g., "scale-[1.05]")
+  blurDataURL?: string; // Base64 blur placeholder for faster perceived loading
 }
