@@ -12,7 +12,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import Preloader from "@/components/Preloader";
 import { getLenisInstance, waitForLenis } from '@/utils/lenis';
-import { SCROLL, TIMING, VISUAL } from '@/constants/ui';
+import { SCROLL, VISUAL } from '@/constants/ui';
 import { useScrollConfiguration } from '@/hooks/useScrollConfiguration';
 import gsap from 'gsap';
 
