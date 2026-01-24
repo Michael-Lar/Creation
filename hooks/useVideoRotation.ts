@@ -127,6 +127,7 @@ export function useVideoRotation(
     if (showingVideoIndex !== currentIndex) {
       const showingVideoPath = getVideoPath(showingVideo.src);
       if (showingVideoPath !== currentVideoSrc) {
+        // Only set loading if video actually needs to change
         setIsLoading(true);
         showingVideo.src = currentVideoSrc;
         showingVideo.load();
@@ -142,14 +143,37 @@ export function useVideoRotation(
           setIsLoading(false);
           handleVideoError(currentIndex, showingVideo);
         }, { once: true });
+        
+        // Update index refs
+        if (activeVideoRef.current === 0) {
+          video1IndexRef.current = currentIndex;
+        } else {
+          video2IndexRef.current = currentIndex;
+        }
       } else {
-        showingVideo.currentTime = 0;
+        // Video source matches but index doesn't - just update index, don't reload
+        if (activeVideoRef.current === 0) {
+          video1IndexRef.current = currentIndex;
+        } else {
+          video2IndexRef.current = currentIndex;
+        }
+        // Ensure video is playing if it's paused
+        if (showingVideo.paused) {
+          showingVideo.currentTime = 0;
+          showingVideo.play().catch(() => {});
+        }
+        // Don't set loading state if video is already ready
+        if (showingVideo.readyState >= 3) {
+          setIsLoading(false);
+        }
+      }
+    } else {
+      // Video index already matches - ensure it's playing and not loading
+      if (showingVideo.readyState >= 3 && showingVideo.paused) {
         showingVideo.play().catch(() => {});
       }
-      if (activeVideoRef.current === 0) {
-        video1IndexRef.current = currentIndex;
-      } else {
-        video2IndexRef.current = currentIndex;
+      if (showingVideo.readyState >= 3) {
+        setIsLoading(false);
       }
     }
 
@@ -241,21 +265,44 @@ export function useVideoRotation(
       setCurrentVideoIndex(0);
       setActiveVideo(0);
       activeVideoRef.current = 0;
-      video1IndexRef.current = null;
-      video2IndexRef.current = null;
       
       // Reset video1 to first video if needed
       if (video1Ref.current) {
         const currentPath = getVideoPath(video1Ref.current.src);
         if (currentPath !== videoUrls[0]) {
+          // Video needs to be changed - reset indices
+          video1IndexRef.current = null;
+          video2IndexRef.current = null;
           video1Ref.current.src = videoUrls[0];
           video1Ref.current.load();
           video1Ref.current.currentTime = 0;
           video1Ref.current.play().catch(() => {});
-        } else if (video1Ref.current.paused) {
-          // Video is already loaded, just play it
-          video1Ref.current.currentTime = 0;
-          video1Ref.current.play().catch(() => {});
+        } else {
+          // Video is already loaded with correct source - set index to prevent reload
+          video1IndexRef.current = 0;
+          video2IndexRef.current = null;
+          // If video is already ready, ensure loading state is false and it's ready
+          if (video1Ref.current.readyState >= 3) {
+            setIsLoading(false);
+            setIsInitialVideoReady(true);
+            // Ensure video is playing
+            if (video1Ref.current.paused) {
+              video1Ref.current.currentTime = 0;
+              video1Ref.current.play().catch(() => {});
+            }
+          } else {
+            // Video not fully ready yet, wait for it
+            const handleReady = () => {
+              setIsLoading(false);
+              setIsInitialVideoReady(true);
+              if (video1Ref.current && video1Ref.current.paused) {
+                video1Ref.current.currentTime = 0;
+                video1Ref.current.play().catch(() => {});
+              }
+            };
+            video1Ref.current.addEventListener('canplay', handleReady, { once: true });
+            video1Ref.current.addEventListener('canplaythrough', handleReady, { once: true });
+          }
         }
       }
     }

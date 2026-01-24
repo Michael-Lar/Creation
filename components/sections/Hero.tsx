@@ -30,6 +30,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
     video1Ref,
     video2Ref,
     isHeroInView,
+    isInitialVideoReady,
   } = useVideoRotation({
     preloaderComplete,
     // Don't pass onError - errors are already handled by the hook
@@ -238,10 +239,11 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
-          opacity: activeVideo === 0 && !isLoading && !hasError ? 1 : 0, 
+          opacity: activeVideo === 0 && !isLoading && !hasError && (!preloaderComplete || isInitialVideoReady) ? 1 : 0, 
           zIndex: activeVideo === 0 ? 1 : 0,
-          transition: 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)',
-          pointerEvents: 'none'
+          transition: preloaderComplete && isInitialVideoReady ? 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' : 'opacity 0s',
+          pointerEvents: 'none',
+          willChange: 'opacity'
         }}
         // Mobile optimizations - prevent fullscreen on iOS/Android
         {...({
