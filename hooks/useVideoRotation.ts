@@ -42,6 +42,7 @@ interface UseVideoRotationReturn {
   video1Ref: React.RefObject<HTMLVideoElement>;
   video2Ref: React.RefObject<HTMLVideoElement>;
   isHeroInView: boolean;
+  isInitialVideoReady: boolean;
 }
 
 /**
@@ -55,10 +56,11 @@ export function useVideoRotation(
   
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [activeVideo, setActiveVideo] = useState(0);
-  const [isLoading, setIsLoading] = useState(false); // Start as false - only show loading when actually loading
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isHeroInView, setIsHeroInView] = useState(false);
+  const [isInitialVideoReady, setIsInitialVideoReady] = useState(false);
   const [, setFailedVideos] = useState<Set<number>>(new Set());
   
   const video1Ref = useRef<HTMLVideoElement>(null);
@@ -72,10 +74,6 @@ export function useVideoRotation(
   const pauseListenerRef = useRef<((e: Event) => void) | null>(null);
   const preloaderCompleteRef = useRef(false);
   const firstVideoLoadedRef = useRef(false);
-
-  useEffect(() => {
-    preloaderCompleteRef.current = preloaderComplete;
-  }, [preloaderComplete]);
 
   const handleVideoError = useCallback((videoIndex: number, videoElement: HTMLVideoElement) => {
     ErrorHandler.handleVideoError(
@@ -112,6 +110,7 @@ export function useVideoRotation(
     if (!video1Ref.current || !video2Ref.current) {
       return;
     }
+    // Don't start rotation until preloader completes and hero is in view
     if (!preloaderComplete || !isHeroInView) {
       return;
     }
@@ -253,6 +252,10 @@ export function useVideoRotation(
           video1Ref.current.load();
           video1Ref.current.currentTime = 0;
           video1Ref.current.play().catch(() => {});
+        } else if (video1Ref.current.paused) {
+          // Video is already loaded, just play it
+          video1Ref.current.currentTime = 0;
+          video1Ref.current.play().catch(() => {});
         }
       }
     }
@@ -268,21 +271,30 @@ export function useVideoRotation(
     const firstVideo = video1Ref.current;
     const currentPath = getVideoPath(firstVideo.src);
     if (currentPath === videoUrls[0]) {
-      // Video already has correct src, just trigger play if needed
       firstVideoLoadedRef.current = true;
+      if (firstVideo.readyState >= 3) {
+        setIsLoading(false);
+        setIsInitialVideoReady(true);
+      } else {
+        const handleReady = () => {
+          setIsLoading(false);
+          setIsInitialVideoReady(true);
+        };
+        firstVideo.addEventListener('canplay', handleReady, { once: true });
+        firstVideo.addEventListener('canplaythrough', handleReady, { once: true });
+      }
       return;
     }
     
     firstVideoLoadedRef.current = true;
     // Set loading state only if preloader is complete (videos start after preloader)
-    if (preloaderComplete) {
-      setIsLoading(true);
-    }
+    setIsLoading(true);
     firstVideo.src = videoUrls[0];
     firstVideo.preload = 'auto';
     
     const handleCanPlay = () => {
       setIsLoading(false);
+      setIsInitialVideoReady(true);
       if (preloaderCompleteRef.current) {
         firstVideo.play().catch(() => {
           handleVideoError(0, firstVideo);
@@ -294,6 +306,7 @@ export function useVideoRotation(
 
     const handleError = (e: Event) => {
       setIsLoading(false);
+      setIsInitialVideoReady(false);
       // Type guard: safely extract error information from event
       let errorMessage = 'Video loading failed';
       if (e instanceof ErrorEvent) {
@@ -336,11 +349,27 @@ export function useVideoRotation(
       firstVideo.removeEventListener('canplaythrough', handleCanPlay);
       firstVideo.removeEventListener('error', handleError);
     };
-  }, [preloaderComplete]); // Include preloaderComplete to set loading state correctly
+  }, []); // Run once on mount to load video
+
+  // Play first video when preloader completes and video is ready
+  useEffect(() => {
+    if (preloaderComplete && isInitialVideoReady && video1Ref.current) {
+      const firstVideo = video1Ref.current;
+      const currentPath = getVideoPath(firstVideo.src);
+      if (currentPath === videoUrls[0] && firstVideo.paused) {
+        firstVideo.currentTime = 0;
+        firstVideo.play().catch(() => {
+          handleVideoError(0, firstVideo);
+        });
+      }
+    }
+  }, [preloaderComplete, isInitialVideoReady]);
 
   // Preload next video in background for faster transitions
   useEffect(() => {
-    if (!preloaderComplete || !isHeroInView || !video1Ref.current || !video2Ref.current) return;
+    if (!preloaderComplete || !isHeroInView || !isInitialVideoReady || !video1Ref.current || !video2Ref.current) {
+      return;
+    }
     
     const nextIndex = (currentVideoIndex + 1) % videoUrls.length;
     const hiddenVideo = activeVideoRef.current === 0 ? video2Ref.current : video1Ref.current;
@@ -365,7 +394,7 @@ export function useVideoRotation(
         }
       }
     }
-  }, [currentVideoIndex, preloaderComplete, isHeroInView]);
+  }, [currentVideoIndex, preloaderComplete, isHeroInView, isInitialVideoReady]);
 
   // Keyboard controls
   useEffect(() => {
@@ -409,7 +438,11 @@ export function useVideoRotation(
     );
 
     const section = video1Ref.current?.parentElement;
-    if (section) observer.observe(section);
+    if (section) {
+      // Hero section is always in view on initial page load
+      setIsHeroInView(true);
+      observer.observe(section);
+    }
 
     return () => {
       if (section) observer.unobserve(section);
@@ -425,5 +458,6 @@ export function useVideoRotation(
     video1Ref,
     video2Ref,
     isHeroInView,
+    isInitialVideoReady,
   };
 }

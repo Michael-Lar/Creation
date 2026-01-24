@@ -40,3 +40,6 @@ next-env.d.ts
 # debug logs
 .cursor/debug.log
 
+# video backups
+public/videos/backups/
+

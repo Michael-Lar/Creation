@@ -58,17 +58,56 @@ All components should follow the standard structure defined in [`components/COMP
 
 ## Video Optimization
 
-The hero section uses 6 video files that loop continuously. For optimal performance:
+The hero section uses 6 video files (`video1.mp4` through `video6.mp4`) that loop continuously. For optimal performance and fast loading:
 
-- **Video Format**: Use MP4 (H.264 codec) for maximum browser compatibility
-- **Video Size**: Keep individual video files under 5MB when possible
-- **Resolution**: 1920x1080 (1080p) is recommended for balance between quality and file size
-- **Duration**: Each video should be approximately 3 seconds
-- **Compression**: Use tools like HandBrake or FFmpeg to compress videos:
-  ```bash
-  # Example FFmpeg command for compression
-  ffmpeg -i input.mp4 -vcodec h264 -acodec aac -crf 23 -preset medium output.mp4
-  ```
+### Quick Start
 
-Videos are preloaded on mount to ensure smooth transitions. The component uses a two-video element approach with crossfade transitions for seamless looping.
+Encode all hero videos with optimized settings:
+
+```bash
+# Simple single-pass encoding (recommended for most cases)
+npm run encode:videos
+
+# Two-pass encoding (better quality, slower)
+npm run encode:videos:2pass
+```
+
+### Video Specifications
+
+- **Format**: MP4 (H.264 codec, High profile)
+- **Resolution**: 1920x1080 (1080p)
+- **Bitrate**: 4 Mbps (max 6 Mbps)
+- **Fast-start**: Enabled (moov atom at front for instant playback)
+- **Audio**: Removed (background videos don't need audio)
+- **Target Size**: Under 2-3 MB per video for fast loading
+
+### Manual Encoding
+
+If you need to encode videos manually or adjust settings:
+
+```bash
+# Edit scripts/encode-hero-videos-simple.sh to adjust:
+# - BITRATE (default: 4M)
+# - CRF (default: 23, lower = better quality)
+# - PRESET (default: medium, faster = larger files)
+
+./scripts/encode-hero-videos-simple.sh
+```
+
+### Why These Settings?
+
+- **4 Mbps bitrate**: Optimal balance for hero backgrounds - high enough quality, small enough to load in ~4 seconds
+- **Fast-start**: Allows browser to begin playback before entire file downloads
+- **No audio**: Reduces file size by 10-20% without affecting visual quality
+- **1080p resolution**: Matches typical display size, no need for 4K
+
+### Performance Goals
+
+Videos should load and be ready to play **within the preloader duration** (~4 seconds) on average connections. If videos take longer:
+
+1. Reduce bitrate to `3M` in the script
+2. Increase CRF to `24` or `25` (slightly lower quality, smaller files)
+3. Check video file sizes - should be under 3MB each
+
+Videos are preloaded on mount via `<link rel="preload">` in the HTML head to ensure smooth transitions. The component uses a two-video element approach with crossfade transitions for seamless looping.
 

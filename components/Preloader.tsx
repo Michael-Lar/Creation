@@ -27,15 +27,10 @@ export default function Preloader({
   useEffect(() => {
     setMounted(true);
     
-    // Skip preloader for returning visitors in the same session (better LCP)
-    const hasSeenPreloader = typeof window !== 'undefined' && sessionStorage.getItem('preloader_seen');
-    
-    if (shouldSkip || hasSeenPreloader) {
+    // Skip preloader only if explicitly requested (e.g., hash navigation)
+    if (shouldSkip) {
       setShouldShow(false);
       onComplete?.();
-    } else if (typeof window !== 'undefined') {
-      // Mark as seen for this session
-      sessionStorage.setItem('preloader_seen', 'true');
     }
   }, [onComplete, shouldSkip]);
 
@@ -69,8 +64,8 @@ export default function Preloader({
     
     videoPlayedRef.current = true;
 
-    // Speed up videos for snappier feel and better LCP
-    const playbackSpeed = 1.5;
+    // Speed up videos for snappier feel
+    const playbackSpeed = 1.3;
     forwardVideo.playbackRate = playbackSpeed;
     reverseVideo.playbackRate = playbackSpeed;
     
@@ -142,21 +137,17 @@ export default function Preloader({
       forwardVideo.load();
     }
 
-    // Fallback timeout - reduced for better LCP
-    const fallbackTimeout = setTimeout(() => {
-      if (!animationCompleteRef.current) {
-        if (forwardVideo.readyState >= 2) {
-          playForward();
-        } else {
-          // Skip animation entirely if video isn't ready
-          finishAnimation();
-        }
-      }
-    }, 300);
+    const handleVideoError = () => {
+      finishAnimation();
+    };
+
+    forwardVideo.addEventListener('error', handleVideoError, { once: true });
+    reverseVideo.addEventListener('error', handleVideoError, { once: true });
 
     return () => {
       forwardVideo.removeEventListener('canplay', playForward);
-      clearTimeout(fallbackTimeout);
+      forwardVideo.removeEventListener('error', handleVideoError);
+      reverseVideo.removeEventListener('error', handleVideoError);
     };
   }, [onComplete, prefersReducedMotion, mounted, shouldShow]);
 
@@ -189,7 +180,7 @@ export default function Preloader({
         ref={forwardVideoRef}
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
         className="absolute w-64 sm:w-72 md:w-80 lg:w-96 h-auto z-10"
         style={videoStyles}
       >
@@ -201,7 +192,7 @@ export default function Preloader({
         ref={reverseVideoRef}
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
         className="absolute w-64 sm:w-72 md:w-80 lg:w-96 h-auto z-10"
         style={videoStyles}
       >

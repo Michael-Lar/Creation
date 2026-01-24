@@ -11,7 +11,9 @@
     "clean:all": "rm -rf .next node_modules/.cache && echo 'Cleared all build caches'",
     "dev:clean": "npm run clean && npm run dev",
     "dev:fresh": "npm run clean:all && npm run dev",
-    "generate-favicons": "node scripts/generate-favicons.js"
+    "generate-favicons": "node scripts/generate-favicons.js",
+    "encode:videos": "./scripts/encode-hero-videos-simple.sh",
+    "encode:videos:2pass": "./scripts/encode-hero-videos.sh"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

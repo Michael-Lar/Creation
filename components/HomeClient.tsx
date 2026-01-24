@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Fragment } from 'react';
 import dynamic from 'next/dynamic';
 import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
@@ -10,17 +10,11 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import Preloader from "@/components/Preloader";
 import { getLenisInstance, waitForLenis } from '@/utils/lenis';
 import { SCROLL, TIMING, VISUAL } from '@/constants/ui';
 import { useScrollConfiguration } from '@/hooks/useScrollConfiguration';
 import gsap from 'gsap';
-
-// Dynamically import Preloader to reduce initial bundle size
-// SSR disabled since it uses client-side video elements
-const Preloader = dynamic(() => import("@/components/Preloader"), {
-  ssr: false,
-  loading: () => null, // No loading state needed - preloader handles its own appearance
-});
 
 // Lazy-load below-the-fold sections to reduce initial bundle size
 // These sections are not visible on initial page load
@@ -64,6 +58,7 @@ export default function HomeClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const showMainContent = preloaderComplete || shouldSkipPreloader;
 
   const fadeInContent = useCallback(() => {
     // Keep content visible; only transition background
@@ -97,7 +92,6 @@ export default function HomeClient() {
 
   const handlePreloaderComplete = () => {
     setPreloaderComplete(true);
-    fadeInContent();
   };
 
   // Set initial body and html background to match preloader
@@ -129,11 +123,12 @@ export default function HomeClient() {
   }, []);
 
   useEffect(() => {
-    if (shouldSkipPreloader) {
-      // Content should already be visible since preloaderComplete starts as true
-      fadeInContent();
+    if (showMainContent) {
+      requestAnimationFrame(() => {
+        fadeInContent();
+      });
     }
-  }, [shouldSkipPreloader, fadeInContent]);
+  }, [showMainContent, fadeInContent]);
 
   // Handle hash navigation (e.g., /#projects) - both initial load and hash changes
   useEffect(() => {
@@ -189,7 +184,8 @@ export default function HomeClient() {
     };
   }, [preloaderComplete]);
 
-  // Fallback: ensure content is visible after 4 seconds even if preloader doesn't complete
+  // Fallback: ensure content is visible after reasonable time even if preloader doesn't complete
+  // Lengthened to avoid revealing hero before videos are ready
   useEffect(() => {
     if (shouldSkipPreloader) return; // Skip fallback if we're returning from project page
     
@@ -198,7 +194,7 @@ export default function HomeClient() {
         setPreloaderComplete(true);
         fadeInContent();
       }
-    }, TIMING.PRELOADER_FALLBACK);
+    }, 4000); // Increased from 1500ms to allow preloader animation to complete
 
     return () => clearTimeout(fallbackTimer);
   }, [preloaderComplete, shouldSkipPreloader, fadeInContent]);
@@ -253,41 +249,47 @@ export default function HomeClient() {
         />
         
         <ScrollProgress />
-        {!shouldSkipPreloader && <Preloader onComplete={handlePreloaderComplete} shouldSkip={shouldSkipPreloader} />}
-        <Header isModalOpen={isModalOpen} />
-        <main 
-          ref={mainContentRef} 
-          className="main-content" 
-          style={{ 
-            backgroundColor: '#0F0E0D',
-            opacity: 1,
-            minHeight: '100vh',
-            position: 'relative',
-            zIndex: 1
-          }}
-        >
-          <ErrorBoundary sectionName="Hero">
-            <Hero preloaderComplete={preloaderComplete} />
-          </ErrorBoundary>
-          <ErrorBoundary sectionName="About">
-            <About />
-          </ErrorBoundary>
-          <ErrorBoundary sectionName="Divisions">
-            <Divisions />
-          </ErrorBoundary>
-          <ErrorBoundary sectionName="Team">
-            <Team onModalStateChange={setIsModalOpen} />
-          </ErrorBoundary>
-          <ErrorBoundary sectionName="Projects">
-            <Projects />
-          </ErrorBoundary>
-          <ErrorBoundary sectionName="Contact Form">
-            <ContactForm />
-          </ErrorBoundary>
-          <ErrorBoundary sectionName="Footer">
-            <Footer />
-          </ErrorBoundary>
-        </main>
+        {!shouldSkipPreloader && !preloaderComplete && (
+          <Preloader onComplete={handlePreloaderComplete} shouldSkip={shouldSkipPreloader} />
+        )}
+        {showMainContent && (
+          <Fragment>
+            <Header isModalOpen={isModalOpen} />
+            <main 
+              ref={mainContentRef} 
+              className="main-content" 
+              style={{ 
+                backgroundColor: '#0F0E0D',
+                opacity: 1,
+                minHeight: '100vh',
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              <ErrorBoundary sectionName="Hero">
+                <Hero preloaderComplete={preloaderComplete} />
+              </ErrorBoundary>
+              <ErrorBoundary sectionName="About">
+                <About />
+              </ErrorBoundary>
+              <ErrorBoundary sectionName="Divisions">
+                <Divisions />
+              </ErrorBoundary>
+              <ErrorBoundary sectionName="Team">
+                <Team onModalStateChange={setIsModalOpen} />
+              </ErrorBoundary>
+              <ErrorBoundary sectionName="Projects">
+                <Projects />
+              </ErrorBoundary>
+              <ErrorBoundary sectionName="Contact Form">
+                <ContactForm />
+              </ErrorBoundary>
+              <ErrorBoundary sectionName="Footer">
+                <Footer />
+              </ErrorBoundary>
+            </main>
+          </Fragment>
+        )}
       </div>
     </SmoothScroll>
   );

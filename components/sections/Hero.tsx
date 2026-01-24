@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
-import Image from 'next/image';
 import { gsap } from '@/utils/gsap';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { useScrollListener } from '@/hooks/useScrollPosition';
@@ -230,26 +229,12 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       )}
 
       {/* Video Elements */}
-      {/* Hero poster image - optimized WebP with blur placeholder for fast LCP */}
-      <Image
-        src="/images/webp/hero-poster.webp"
-        alt=""
-        aria-hidden="true"
-        fill
-        priority
-        sizes="100vw"
-        placeholder="blur"
-        blurDataURL="data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAwCdASoUAA4AP3Gixli0rCejsAgCkC4JZwAAW8Oo4tavmW3SfvQAAP3iT7rFBfX8n2cJ2jBSlnp0ey2rEs3/L/MIVZQPZCGeSFlAAAA="
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ zIndex: 0, pointerEvents: 'none' }}
-      />
       <video
         ref={video1Ref}
         muted
         playsInline
         loop={false}
-        preload="metadata"
-        poster="/images/webp/hero-poster.webp"
+        preload="auto"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
@@ -273,8 +258,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload={isHeroInView ? 'metadata' : 'none'}
-        poster="/images/webp/hero-poster.webp"
+        preload={isHeroInView ? 'auto' : 'none'}
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
