@@ -110,8 +110,8 @@ export function useVideoRotation(
     if (!video1Ref.current || !video2Ref.current) {
       return;
     }
-    // Don't start rotation until preloader completes and hero is in view
-    if (!preloaderComplete || !isHeroInView) {
+    // Don't start rotation until preloader completes, hero is in view, and first video is ready
+    if (!preloaderComplete || !isHeroInView || !isInitialVideoReady) {
       return;
     }
 
@@ -255,7 +255,7 @@ export function useVideoRotation(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentVideoIndex, preloaderComplete, isHeroInView]); // Remove handleVideoError from dependencies
+  }, [currentVideoIndex, preloaderComplete, isHeroInView, isInitialVideoReady]); // Remove handleVideoError from dependencies
 
   // Reset video to index 0 when preloader completes (only once)
   useEffect(() => {
@@ -300,6 +300,7 @@ export function useVideoRotation(
                 video1Ref.current.play().catch(() => {});
               }
             };
+            video1Ref.current.addEventListener('loadeddata', handleReady, { once: true });
             video1Ref.current.addEventListener('canplay', handleReady, { once: true });
             video1Ref.current.addEventListener('canplaythrough', handleReady, { once: true });
           }
@@ -319,7 +320,7 @@ export function useVideoRotation(
     const currentPath = getVideoPath(firstVideo.src);
     if (currentPath === videoUrls[0]) {
       firstVideoLoadedRef.current = true;
-      if (firstVideo.readyState >= 3) {
+      if (firstVideo.readyState >= 2) {
         setIsLoading(false);
         setIsInitialVideoReady(true);
       } else {
@@ -327,6 +328,7 @@ export function useVideoRotation(
           setIsLoading(false);
           setIsInitialVideoReady(true);
         };
+        firstVideo.addEventListener('loadeddata', handleReady, { once: true });
         firstVideo.addEventListener('canplay', handleReady, { once: true });
         firstVideo.addEventListener('canplaythrough', handleReady, { once: true });
       }
@@ -381,17 +383,19 @@ export function useVideoRotation(
       handleVideoError(0, firstVideo);
     };
 
+    firstVideo.addEventListener('loadeddata', handleCanPlay, { once: true });
     firstVideo.addEventListener('canplay', handleCanPlay, { once: true });
     firstVideo.addEventListener('canplaythrough', handleCanPlay, { once: true });
     firstVideo.addEventListener('error', handleError, { once: true });
     firstVideo.load();
     
     // Check if video is already ready (race condition: video loaded before event listener attached)
-    if (firstVideo.readyState >= 3) {
+    if (firstVideo.readyState >= 2) {
       setTimeout(() => handleCanPlay(), TIMING.VIDEO_READY_CHECK);
     }
 
     return () => {
+      firstVideo.removeEventListener('loadeddata', handleCanPlay);
       firstVideo.removeEventListener('canplay', handleCanPlay);
       firstVideo.removeEventListener('canplaythrough', handleCanPlay);
       firstVideo.removeEventListener('error', handleError);

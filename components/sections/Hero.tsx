@@ -204,15 +204,16 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       aria-label="Hero section with video background"
       tabIndex={0}
     >
-      {/* Loading State */}
-      {isLoading && !hasError && (
-        <div className="absolute inset-0 bg-ink-800 z-[2] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-10 h-10 border border-white/20 border-t-white/60 rounded-full animate-spin" />
-            <p className="text-white/60 text-caption font-light tracking-wide">Loading</p>
-          </div>
-        </div>
-      )}
+      {/* Poster Layer (visible until video is drawable) */}
+      <div
+        className="absolute inset-0 z-[0] bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/images/hero-poster.png')",
+          opacity: isLoading || !isInitialVideoReady || hasError ? 1 : 0,
+          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+        aria-hidden="true"
+      />
 
       {/* Error State */}
       {hasError && (
@@ -239,9 +240,9 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 
-          opacity: activeVideo === 0 && !isLoading && !hasError && (!preloaderComplete || isInitialVideoReady) ? 1 : 0, 
+          opacity: activeVideo === 0 && !isLoading && !hasError && isInitialVideoReady ? 1 : 0, 
           zIndex: activeVideo === 0 ? 1 : 0,
-          transition: preloaderComplete && isInitialVideoReady ? 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' : 'opacity 0s',
+          transition: isInitialVideoReady ? 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' : 'opacity 0s',
           pointerEvents: 'none',
           willChange: 'opacity'
         }}
