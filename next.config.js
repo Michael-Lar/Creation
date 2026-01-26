@@ -48,6 +48,16 @@ const nextConfig = {
     }
     return config;
   },
+  // Redirects for SEO - handle old URLs that may have been indexed
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/#about',
+        permanent: true, // 301 redirect
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig
