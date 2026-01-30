@@ -84,9 +84,11 @@ Tiffany holds a Bachelor of Arts from the University of California, Los Angeles 
     id: 6,
     name: 'Michael Larian',
     title: 'Creative & Technology Director',
-    bio: `Michael Larian is the Creative & Technology Director at Creation Partners, where he leads the firm's creative direction, digital presence, and technology-forward initiatives, including development of the website. His work spans brand development, visual storytelling, platform design, and the integration of creative and technical tools that enhance how the firm communicates and operates. Michael is studying Data Science at the University of California, Berkeley.`,
+    bio: `Michael Larian is the Creative & Technology Director at Creation Partners, where he leads the firm's creative direction, digital presence, and technology-forward initiatives. His work spans brand development, visual storytelling, platform design, and the integration of creative and technical tools that enhance how the firm communicates and operates.
+
+Michael holds a Bachelor of Science from the University of California, Berkeley.`,
     linkedin: 'https://www.linkedin.com/in/michael-larian/',
-    image: '/team/michael-larian.png?v=2',
+    image: '/team/michael-larian.png',
     imagePosition: 'center 18%',
     imageScale: 'scale-[1.04]',
   },
