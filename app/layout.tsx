@@ -175,6 +175,8 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         {/* Preconnect to Google Fonts for faster font loading */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Preload hero poster for faster LCP when hero appears */}
+        <link rel="preload" as="image" href="/images/hero-poster.png" />
         {/* Preload hero video for faster first frame */}
         <link rel="preload" as="video" href="/videos/video1.mp4" />
         <Script
