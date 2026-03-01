@@ -208,9 +208,10 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       <div
         className="absolute inset-0 z-[0] bg-cover bg-center"
         style={{
-          backgroundImage: "url('/images/hero-poster.png')",
+          backgroundImage: "url('/images/hero-poster.webp')",
           opacity: isLoading || !isInitialVideoReady || hasError ? 1 : 0,
           transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          willChange: 'opacity',
         }}
         aria-hidden="true"
       />
@@ -264,11 +265,12 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         preload={isHeroInView ? 'auto' : 'none'}
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
-        style={{ 
-          opacity: activeVideo === 1 && !isLoading && !hasError ? 1 : 0, 
+        style={{
+          opacity: activeVideo === 1 && !isLoading && !hasError ? 1 : 0,
           zIndex: activeVideo === 1 ? 1 : 0,
           transition: 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          willChange: 'opacity',
         }}
         // Mobile optimizations - prevent fullscreen on iOS/Android
         {...({

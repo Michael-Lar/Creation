@@ -175,10 +175,10 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         {/* Preconnect to Google Fonts for faster font loading */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Preload hero poster for faster LCP when hero appears */}
-        <link rel="preload" as="image" href="/images/hero-poster.png" />
-        {/* Preload hero video for faster first frame */}
-        <link rel="preload" as="video" href="/videos/video1.mp4" />
+        {/* Preload hero poster for faster LCP - WebP for 90% smaller file */}
+        <link rel="preload" as="image" href="/images/hero-poster.webp" fetchPriority="high" />
+        {/* Preload preloader animation so it plays immediately without black-screen delay */}
+        <link rel="preload" as="video" href="/logos/animation.mp4" />
         <Script
           id="organization-structured-data"
           type="application/ld+json"
