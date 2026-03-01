@@ -26,7 +26,7 @@ Yoav was also instrumental in helping build and scale Concord Capital Partners, 
 In parallel with his real estate work, Yoav is actively involved as an investor, advisor, and operator in technology, media, and other ancillary industries connected to the built environment. He is a graduate of the University of California, Los Angeles.
 
 Yoav is deeply engaged in philanthropic and community leadership. He currently serves as Chair of the House & Grounds Committee at Sinai Temple, is actively involved with Sinai Akiba Academy, and previously served as Real Estate Chair for the Young Adults division of the Jewish Federation of Greater Los Angeles. Above all, Yoav enjoys nothing more than spending time with his wife and children.`,
-    image: '/team/yoav-sarraf.png',
+    image: '/team/yoav-sarraf.webp',
     imagePosition: 'center 20%',
     imageScale: 'scale-[1.15]',
   },
@@ -39,7 +39,7 @@ Yoav is deeply engaged in philanthropic and community leadership. He currently s
 Yaron began his real estate career in Israel following his military service, where he developed a strong foundation in real estate fundamentals before relocating to Los Angeles. Since then, he has played a key role in numerous redevelopment projects and works closely with many of the region's most prominent developers, with particular expertise in West Los Angeles and the San Fernando Valley.
 
 Over time, Yaron expanded his role beyond advisory work and became an active investor, aligning his interests directly with those of his clients. Outside of work, he is a devoted husband and father, and brings a disciplined, relationship-driven, and long-term mindset to every transaction.`,
-    image: '/team/yaron-samuha.png',
+    image: '/team/yaron-samuha.webp',
     imagePosition: 'center 16%',
     imageScale: 'scale-[1.02]',
   },
@@ -52,7 +52,7 @@ Over time, Yaron expanded his role beyond advisory work and became an active inv
 Prior to joining Creation Partners, Avi served for several years as an advisor and investment associate at Concord Companies, working closely with clients on acquisitions, underwriting, and transaction execution across a range of asset classes. In parallel, he is the Principal of Blackstone Remodeling, a local construction and design firm, giving him hands-on insight into renovation costs, construction strategy, and value creation on the ground.
 
 Avi is a graduate of the University of California, Los Angeles. He lives in Los Angeles with his wife and children and brings a grounded, detail-oriented approach to every engagement.`,
-    image: '/team/avi-khoshnood.png',
+    image: '/team/avi-khoshnood.webp',
     imagePosition: 'center 12%',
     imageScale: 'scale-[1.02]',
   },
@@ -65,7 +65,7 @@ Avi is a graduate of the University of California, Los Angeles. He lives in Los 
 Prior to joining Creation Partners, Sacha spent two years as an Investment Associate at Matthews Real Estate, where he focused on underwriting, deal execution, and client advisory across income-producing assets.
 
 Sacha earned his degree in Communication from the University of California, Santa Barbara, where he founded the Alpha Epsilon Pi fraternity chapter during the COVID-19 pandemic and competed on the UCSB lacrosse team. These experiences shaped his leadership, adaptability, and team-oriented approach to serving clients.`,
-    image: '/team/sacha-boroumand.png',
+    image: '/team/sacha-boroumand.webp',
     imagePosition: 'center 28%',
     imageScale: 'scale-[1.08]',
   },
@@ -76,7 +76,7 @@ Sacha earned his degree in Communication from the University of California, Sant
     bio: `Tiffany Tehrani serves as Director of Operations at Creation Partners, where she oversees internal operations, organizational systems, and day-to-day execution across the platform. She plays a central role in ensuring operational continuity, process efficiency, and coordination across investment, advisory, and management activities.
 
 Tiffany holds a Bachelor of Arts from the University of California, Los Angeles and a Master's degree from California State University, Northridge.`,
-    image: '/team/tiffany-tehrani.png',
+    image: '/team/tiffany-tehrani.webp',
     imagePosition: 'center 32%',
     imageScale: 'scale-[1.06]',
   },
@@ -88,7 +88,7 @@ Tiffany holds a Bachelor of Arts from the University of California, Los Angeles 
 
 Michael holds a Bachelor of Science from the University of California, Berkeley.`,
     linkedin: 'https://www.linkedin.com/in/michael-larian/',
-    image: '/team/michael-larian.png',
+    image: '/team/michael-larian.webp',
     imagePosition: 'center 18%',
     imageScale: 'scale-[1.04]',
   },

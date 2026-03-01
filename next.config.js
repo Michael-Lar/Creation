@@ -19,7 +19,7 @@ const nextConfig = {
       // Use simpler module IDs in development to prevent chunk loading errors
       config.optimization = {
         ...config.optimization,
-        moduleIds: 'named', // More stable than 'deterministic' in dev
+        moduleIds: 'named', // Readable names in dev (deterministic is used in prod)
         chunkIds: 'named',
       };
     }
