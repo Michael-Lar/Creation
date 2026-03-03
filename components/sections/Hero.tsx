@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import Image from 'next/image';
 import { gsap } from '@/utils/gsap';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { useScrollListener } from '@/hooks/useScrollPosition';
@@ -206,15 +207,23 @@ function Hero({ preloaderComplete = false }: HeroProps) {
     >
       {/* Poster Layer (visible until video is drawable) */}
       <div
-        className="absolute inset-0 z-[0] bg-cover bg-center"
+        className="absolute inset-0 z-[0] overflow-hidden"
         style={{
-          backgroundImage: "url('/images/hero-poster.webp')",
           opacity: isLoading || !isInitialVideoReady || hasError ? 1 : 0,
           transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           willChange: 'opacity',
         }}
         aria-hidden="true"
-      />
+      >
+        <Image
+          src="/images/hero-poster.webp"
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+      </div>
 
       {/* Error State */}
       {hasError && (

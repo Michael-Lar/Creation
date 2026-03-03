@@ -175,9 +175,8 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         {/* Preconnect to Google Fonts for faster font loading */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Preload hero poster for faster LCP - WebP for 90% smaller file */}
-        <link rel="preload" as="image" href="/images/hero-poster.webp" fetchPriority="high" />
         {/* Preload preloader animation so it plays immediately without black-screen delay */}
+        {/* Hero poster preload is handled automatically by next/image priority prop */}
         <link rel="preload" as="video" href="/logos/animation.mp4" />
         <Script
           id="organization-structured-data"
