@@ -32,14 +32,14 @@ export default function ImageSkeleton({
       {/* Base gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-ink-50 via-ink-100 to-ink-50" />
       
-      {/* Shimmer effect */}
+      {/* Shimmer effect — uses transform (GPU-compositable) instead of background-position */}
       {showShimmer && mounted && (
-        <div 
+        <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-            backgroundSize: '200% 100%',
-            animation: 'shimmer 2s ease-in-out infinite',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)',
+            animation: 'shimmer-slide 2s ease-in-out infinite',
+            willChange: 'transform',
           }}
         />
       )}

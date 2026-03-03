@@ -859,6 +859,13 @@
   }
 }
 
+/* GPU-compositable shimmer for skeleton loaders — uses transform instead of
+   background-position so the browser can animate on the compositor thread */
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 .shimmer-text {
   display: inline-block;
   background: linear-gradient(90deg, 

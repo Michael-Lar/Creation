@@ -246,7 +246,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         muted
         playsInline
         loop={false}
-        preload="auto"
+        preload="metadata"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
         style={{ 

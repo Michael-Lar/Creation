@@ -173,8 +173,6 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
-        {/* Preconnect to Google Fonts for faster font loading */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Preload preloader animation so it plays immediately without black-screen delay */}
         {/* Hero poster preload is handled automatically by next/image priority prop */}
         <link rel="preload" as="video" href="/logos/animation.mp4" />
