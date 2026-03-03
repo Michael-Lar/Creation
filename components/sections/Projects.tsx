@@ -171,7 +171,7 @@ function Projects() {
                         className={`object-cover object-center transition-all duration-slow group-hover:scale-105 ${
                           isLoading ? 'opacity-0' : 'opacity-100'
                         }`}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
                         onLoad={() => handleImageLoad(project.id)}
                         onError={() => handleImageLoad(project.id)}
                       />

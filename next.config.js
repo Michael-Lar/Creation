@@ -5,7 +5,7 @@ const nextConfig = {
     // Enable image optimization for better performance
     // SVGs are automatically served as-is (Next.js handles them without optimization by default)
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512],
     formats: ['image/avif', 'image/webp'],
   },
   // Performance optimizations
