@@ -56,6 +56,7 @@ export default function HomeClient() {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [scrollToProjects, setScrollToProjects] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const showMainContent = preloaderComplete || shouldSkipPreloader;
@@ -103,18 +104,22 @@ export default function HomeClient() {
     }
   }, []);
 
-  // Check if URL has #projects hash on initial load - skip preloader and scroll
+  // Check if URL has #projects hash OR sessionStorage flag on initial load
+  // sessionStorage is set by ProjectDetailClient when navigating back via "View All Projects"
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
-    // Check if URL has #projects hash on initial load
+
     const hash = window.location.hash;
     const hasProjectsHash = hash === '#projects';
-    
-    if (hasProjectsHash) {
+    const hasSessionFlag = sessionStorage.getItem('scrollToProjects') === '1';
+
+    if (hasProjectsHash || hasSessionFlag) {
+      if (hasSessionFlag) {
+        sessionStorage.removeItem('scrollToProjects');
+      }
       setShouldSkipPreloader(true);
       setPreloaderComplete(true);
-      // Immediately set body and html background to cream when skipping preloader
+      setScrollToProjects(true);
       if (typeof document !== 'undefined') {
         document.body.style.backgroundColor = 'var(--color-cream)';
         document.documentElement.style.backgroundColor = 'var(--color-cream)';
@@ -130,73 +135,68 @@ export default function HomeClient() {
     }
   }, [showMainContent, fadeInContent]);
 
-  // Handle hash navigation (e.g., /#projects) - both initial load and hash changes
+  // Scroll to Projects section when scrollToProjects state is set
   useEffect(() => {
-    if (typeof window === 'undefined' || !preloaderComplete) return;
-    
-    const scrollToProjectsSection = async () => {
-      const hash = window.location.hash;
-      if (hash === '#projects') {
-        // Wait for the projects section to appear in the DOM.
-        // It's a dynamic import so on client-side navigation it may not be
-        // mounted yet when this runs — poll until it is (or 3s timeout).
-        let projectsSection = document.getElementById('projects');
-        if (!projectsSection) {
-          await new Promise<void>((resolve) => {
-            const interval = setInterval(() => {
-              if (document.getElementById('projects')) {
-                clearInterval(interval);
-                resolve();
-              }
-            }, 50);
-            setTimeout(() => { clearInterval(interval); resolve(); }, 3000);
-          });
-          projectsSection = document.getElementById('projects');
-          if (!projectsSection) return;
-        }
+    if (typeof window === 'undefined' || !preloaderComplete || !scrollToProjects) return;
 
-        await waitForLenis();
-        
-        const lenis = getLenisInstance();
-        if (lenis) {
-          lenis.scrollTo(projectsSection, { 
-            offset: SCROLL.SECTION_OFFSET,
-            immediate: false,
-            duration: 0.8,
-            onComplete: () => {
-              // Remove hash from URL after scroll animation completes
-              if (window.location.hash === '#projects') {
-                window.history.replaceState(null, '', window.location.pathname);
-              }
+    const scrollToProjectsSection = async () => {
+      // Projects is a dynamic import — poll until the element is in the DOM (max 3s)
+      let projectsSection = document.getElementById('projects');
+      if (!projectsSection) {
+        await new Promise<void>((resolve) => {
+          const interval = setInterval(() => {
+            if (document.getElementById('projects')) {
+              clearInterval(interval);
+              resolve();
             }
-          });
-        } else {
-          projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          // Fallback: Remove hash after native scroll completes
-          setTimeout(() => {
-            if (window.location.hash === '#projects') {
+          }, 50);
+          setTimeout(() => { clearInterval(interval); resolve(); }, 3000);
+        });
+        projectsSection = document.getElementById('projects');
+        if (!projectsSection) return;
+      }
+
+      await waitForLenis();
+
+      const lenis = getLenisInstance();
+      if (lenis) {
+        lenis.scrollTo(projectsSection, {
+          offset: SCROLL.SECTION_OFFSET,
+          immediate: false,
+          duration: 0.8,
+          onComplete: () => {
+            setScrollToProjects(false);
+            if (window.location.hash) {
               window.history.replaceState(null, '', window.location.pathname);
             }
-          }, 1000); // Standard smooth scroll duration
-        }
+          },
+        });
+      } else {
+        projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => {
+          setScrollToProjects(false);
+          if (window.location.hash) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+        }, 1000);
       }
     };
-    
-    // Check hash on mount (for initial navigation from project detail page)
+
     scrollToProjectsSection();
-    
-    // Also listen for hash changes (for user navigation with hash links)
+  }, [preloaderComplete, scrollToProjects]);
+
+  // Listen for hash changes (handles /#projects links from external sources)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !preloaderComplete) return;
+
     const handleHashChange = () => {
-      scrollToProjectsSection().then(() => {
-        // Hash removal happens inside scrollToProjectsSection
-      });
+      if (window.location.hash === '#projects') {
+        setScrollToProjects(true);
+      }
     };
-    
+
     window.addEventListener('hashchange', handleHashChange);
-    
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, [preloaderComplete]);
 
   // Fallback: ensure content is visible after reasonable time even if preloader doesn't complete

@@ -66,9 +66,12 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
   const handleBackToProjects = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    // Navigate to home page with projects hash
-    // The hash will be checked on page load to skip preloader and scroll
-    router.push('/#projects');
+    // Signal the home page to skip the preloader and scroll to Projects
+    // Using sessionStorage avoids hash-timing race conditions with dynamic imports
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('scrollToProjects', '1');
+    }
+    router.push('/');
   };
 
   // Handle missing project
