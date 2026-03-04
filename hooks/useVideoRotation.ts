@@ -224,7 +224,7 @@ export function useVideoRotation(
       }, ANIMATION_TIMING.VIDEO_PREPARE_DELAY);
 
       fadeTimeoutRef.current = setTimeout(() => {
-        if (hiddenVideo && hiddenVideo.readyState >= 4 && !hiddenVideo.paused) {
+        if (hiddenVideo && hiddenVideo.readyState >= 3 && !hiddenVideo.paused) {
           const newActiveVideo = activeVideoRef.current === 0 ? 1 : 0;
           activeVideoRef.current = newActiveVideo;
           setActiveVideo(newActiveVideo);

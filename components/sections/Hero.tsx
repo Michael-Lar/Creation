@@ -252,7 +252,7 @@ function Hero({ preloaderComplete = false }: HeroProps) {
         style={{ 
           opacity: activeVideo === 0 && !isLoading && !hasError && isInitialVideoReady ? 1 : 0, 
           zIndex: activeVideo === 0 ? 1 : 0,
-          transition: isInitialVideoReady ? 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' : 'opacity 0s',
+          transition: isInitialVideoReady ? 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)' : 'opacity 0s',
           pointerEvents: 'none',
           willChange: 'opacity'
         }}
