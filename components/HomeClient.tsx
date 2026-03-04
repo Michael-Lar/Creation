@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, Fragment } from 'react';
+import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
@@ -52,7 +53,9 @@ function SectionSkeleton({ height = "min-h-[400px]" }: { height?: string }) {
 export default function HomeClient() {
   // Configure scroll restoration once at app level
   useScrollConfiguration();
-  
+
+  const searchParams = useSearchParams();
+
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,19 +107,30 @@ export default function HomeClient() {
     }
   }, []);
 
-  // Check if URL has #projects hash OR sessionStorage flag on initial load
-  // sessionStorage is set by ProjectDetailClient when navigating back via "View All Projects"
+  // Detect ?back=projects query param set by ProjectDetailClient when navigating back.
+  // useSearchParams updates even when HomeClient is reconciled (not remounted) by
+  // Next.js App Router's client-side cache, so this fires on every SPA navigation
+  // to /?back=projects — unlike a [] effect which only runs on component mount.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (searchParams.get('back') !== 'projects') return;
+
+    setShouldSkipPreloader(true);
+    setPreloaderComplete(true);
+    setScrollToProjects(true);
+    if (typeof document !== 'undefined') {
+      document.body.style.backgroundColor = 'var(--color-cream)';
+      document.documentElement.style.backgroundColor = 'var(--color-cream)';
+    }
+    // Remove the query param from the URL without a re-render
+    window.history.replaceState(null, '', '/');
+  }, [searchParams]);
+
+  // Check if URL has #projects hash on initial full-page load
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const hash = window.location.hash;
-    const hasProjectsHash = hash === '#projects';
-    const hasSessionFlag = sessionStorage.getItem('scrollToProjects') === '1';
-
-    if (hasProjectsHash || hasSessionFlag) {
-      if (hasSessionFlag) {
-        sessionStorage.removeItem('scrollToProjects');
-      }
+    if (window.location.hash === '#projects') {
       setShouldSkipPreloader(true);
       setPreloaderComplete(true);
       setScrollToProjects(true);

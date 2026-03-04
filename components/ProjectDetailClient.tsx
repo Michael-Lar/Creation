@@ -66,14 +66,11 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
   const handleBackToProjects = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    // Signal the home page to skip the preloader and scroll to Projects
-    // Using sessionStorage avoids hash-timing race conditions with dynamic imports
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('scrollToProjects', '1');
-    }
-    // scroll: false prevents Next.js from calling window.scrollTo(0,0) after navigation,
-    // which would cancel our lenis.scrollTo(projectsSection) animation
-    router.push('/', { scroll: false });
+    // Navigate with ?back=projects so HomeClient can detect it via useSearchParams.
+    // useSearchParams updates even when the component is reconciled (not remounted),
+    // which is the case with Next.js App Router's client-side cache.
+    // scroll: false prevents Next.js from calling window.scrollTo(0,0) after navigation.
+    router.push('/?back=projects', { scroll: false });
   };
 
   // Handle missing project
