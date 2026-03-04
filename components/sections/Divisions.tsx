@@ -82,7 +82,7 @@ export default function Divisions() {
                 className={`object-cover transition-opacity duration-500 ${
                   isLoading ? 'opacity-0' : 'opacity-100'
                 } ${division.imageScale ?? ''}`}
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 375px"
                 loading="lazy"
                 placeholder={division.blurDataURL ? 'blur' : 'empty'}
                 blurDataURL={division.blurDataURL}
