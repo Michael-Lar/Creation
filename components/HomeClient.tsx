@@ -137,9 +137,24 @@ export default function HomeClient() {
     const scrollToProjectsSection = async () => {
       const hash = window.location.hash;
       if (hash === '#projects') {
-        const projectsSection = document.getElementById('projects');
-        if (!projectsSection) return;
-        
+        // Wait for the projects section to appear in the DOM.
+        // It's a dynamic import so on client-side navigation it may not be
+        // mounted yet when this runs — poll until it is (or 3s timeout).
+        let projectsSection = document.getElementById('projects');
+        if (!projectsSection) {
+          await new Promise<void>((resolve) => {
+            const interval = setInterval(() => {
+              if (document.getElementById('projects')) {
+                clearInterval(interval);
+                resolve();
+              }
+            }, 50);
+            setTimeout(() => { clearInterval(interval); resolve(); }, 3000);
+          });
+          projectsSection = document.getElementById('projects');
+          if (!projectsSection) return;
+        }
+
         await waitForLenis();
         
         const lenis = getLenisInstance();
