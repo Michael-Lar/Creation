@@ -43,3 +43,7 @@ next-env.d.ts
 # video backups
 public/videos/backups/
 
+# uncompressed source files — keep out of git/deployment
+public/logos/*-original.mp4
+public/team/michael-larian2.png
+

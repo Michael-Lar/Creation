@@ -141,14 +141,6 @@ export default function RootLayout({
     "@type": "WebSite",
     "name": "Creation Partners",
     "url": "https://creation-partners.com",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://creation-partners.com/?s={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
-    }
   };
 
   const breadcrumbStructuredData = {

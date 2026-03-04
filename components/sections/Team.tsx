@@ -220,7 +220,7 @@ function Team({ onModalStateChange }: TeamProps) {
         {/* Team Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
           {teamMembers.map((member) => (
-            <article
+            <div
               key={member.id}
               className="group relative bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all transition-standard hover:bg-white hover:border-accent/40 hover:shadow-premium-lg hover:-translate-y-1 cursor-pointer active:translate-y-0 active:shadow-premium"
               onClick={() => handleMemberClick(member)}
@@ -317,7 +317,7 @@ function Team({ onModalStateChange }: TeamProps) {
                   </svg>
                 </div>
               </div>
-            </article>
+            </div>
           ))}
         </div>
       </div>

@@ -203,7 +203,6 @@ function Hero({ preloaderComplete = false }: HeroProps) {
       className="relative h-screen min-h-[100svh] w-full overflow-hidden"
       role="region"
       aria-label="Hero section with video background"
-      tabIndex={0}
     >
       {/* Poster Layer (visible until video is drawable) */}
       <div

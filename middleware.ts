@@ -15,10 +15,11 @@ export function middleware(_request: NextRequest) {
   
   // Strict Transport Security (HSTS) - Force HTTPS for 1 year including subdomains
   // Only set in production to avoid breaking local development (especially Safari)
+  // preload: signals intent for HSTS preload list inclusion (submit at hstspreload.org)
   if (!isDevelopment) {
     response.headers.set(
       'Strict-Transport-Security',
-      'max-age=31536000; includeSubDomains'
+      'max-age=31536000; includeSubDomains; preload'
     );
   }
   
@@ -53,9 +54,10 @@ export function middleware(_request: NextRequest) {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
-    isDevelopment 
-      ? "connect-src 'self' http://localhost:* http://127.0.0.1:* https://www.google-analytics.com https://analytics.google.com"
-      : "connect-src 'self' https://www.google-analytics.com https://analytics.google.com",
+    // Vercel Analytics sends to va.vercel-analytics.com; Speed Insights to vitals.vercel-insights.com
+    isDevelopment
+      ? "connect-src 'self' http://localhost:* http://127.0.0.1:* https://www.google-analytics.com https://analytics.google.com https://va.vercel-analytics.com https://vitals.vercel-insights.com"
+      : "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://va.vercel-analytics.com https://vitals.vercel-insights.com",
     "media-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",

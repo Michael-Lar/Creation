@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
-import { getProjectBySlug } from '@/data/projects';
+import { projects, getProjectBySlug } from '@/data/projects';
 import ProjectDetailClient from '@/components/ProjectDetailClient';
+
+export async function generateStaticParams() {
+  return projects.map((project) => ({
+    slug: project.slug,
+  }));
+}
 
 interface PageProps {
   params: { slug: string };
