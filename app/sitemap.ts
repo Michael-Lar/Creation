@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Dynamic project pages
   const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
-    url: `${baseUrl}/projects/${project.id}`,
+    url: `${baseUrl}/projects/${project.slug}`,
     lastModified,
     changeFrequency: 'monthly' as const,
     priority: 0.7,

@@ -140,7 +140,7 @@ function Projects() {
               return (
               <Link 
                 key={project.id}
-                href={`/projects/${project.id}`}
+                href={`/projects/${project.slug}`}
                 className="group block"
                 onClick={() => {
                   // Prevent any scroll behavior during navigation

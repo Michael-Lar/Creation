@@ -54,8 +54,21 @@ const nextConfig = {
       {
         source: '/about',
         destination: '/#about',
-        permanent: true, // 301 redirect
+        permanent: true,
       },
+      // Project ID → slug redirects (permanent 301)
+      { source: '/projects/1',  destination: '/projects/10773-10775-ashton-ave',      permanent: true },
+      { source: '/projects/2',  destination: '/projects/11047-11103-hartsook-st',     permanent: true },
+      { source: '/projects/3',  destination: '/projects/152-n-la-brea-blvd',          permanent: true },
+      { source: '/projects/4',  destination: '/projects/153-155-s-robertson-blvd',    permanent: true },
+      { source: '/projects/5',  destination: '/projects/1601-1611-s-robertson-blvd',  permanent: true },
+      { source: '/projects/6',  destination: '/projects/421-n-beverly-drive',         permanent: true },
+      { source: '/projects/7',  destination: '/projects/431-n-fairfax-ave',           permanent: true },
+      { source: '/projects/8',  destination: '/projects/4651-4661-w-pico-blvd',       permanent: true },
+      { source: '/projects/9',  destination: '/projects/6801-n-figueroa-st',          permanent: true },
+      { source: '/projects/10', destination: '/projects/7174-melrose-ave',            permanent: true },
+      { source: '/projects/11', destination: '/projects/7801-7807-beverly-blvd',      permanent: true },
+      { source: '/projects/12', destination: '/projects/7910-7928-w-3rd-st',          permanent: true },
     ];
   },
 }

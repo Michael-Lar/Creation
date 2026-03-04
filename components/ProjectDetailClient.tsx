@@ -5,21 +5,18 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/sections/Footer';
-import { getProjectById } from '@/data/projects';
+import { getProjectBySlug } from '@/data/projects';
 import { useLenis } from '@/utils/lenis';
 import ImageSkeleton from '@/components/ImageSkeleton';
 
 interface ProjectDetailClientProps {
-  projectId: string;
+  projectSlug: string;
 }
 
-export default function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
+export default function ProjectDetailClient({ projectSlug }: ProjectDetailClientProps) {
   const router = useRouter();
 
-  // Robust ID parsing with validation
-  const parsedId = parseInt(projectId, 10);
-  const isValidId = !isNaN(parsedId) && parsedId > 0;
-  const project = isValidId ? getProjectById(parsedId) : undefined;
+  const project = getProjectBySlug(projectSlug);
 
   const lenis = useLenis();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -74,8 +71,8 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
     router.push('/#projects');
   };
 
-  // Handle invalid or missing project
-  if (!isValidId || !project) {
+  // Handle missing project
+  if (!project) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -83,9 +80,7 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
             Project Not Found
           </h1>
           <p className="text-body text-ink-600 mb-8">
-            {!isValidId
-              ? 'The project ID is invalid.'
-              : "The project you're looking for doesn't exist or has been removed."}
+            The project you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <button
             onClick={handleBackToProjects}
