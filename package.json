@@ -24,12 +24,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
-  "browserslist": [
-    "chrome >= 91",
-    "firefox >= 90",
-    "safari >= 15",
-    "edge >= 91"
-  ],
   "devDependencies": {
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
