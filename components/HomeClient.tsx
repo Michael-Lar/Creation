@@ -158,28 +158,27 @@ export default function HomeClient() {
 
       await waitForLenis();
 
+      // Delay so any post-navigation browser/Next.js scroll handling finishes
+      // before we set position (prevents our scroll from being overridden)
+      await new Promise<void>(r => setTimeout(r, 200));
+
+      // Re-fetch element in case DOM changed during delay
+      const targetSection = document.getElementById('projects') ?? projectsSection;
+
       const lenis = getLenisInstance();
       if (lenis) {
-        lenis.start(); // Ensure Lenis is running before programmatic scroll
-        lenis.scrollTo(projectsSection, {
+        lenis.start();
+        lenis.scrollTo(targetSection, {
           offset: SCROLL.SECTION_OFFSET,
-          immediate: false,
-          duration: 0.8,
-          onComplete: () => {
-            setScrollToProjects(false);
-            if (window.location.hash) {
-              window.history.replaceState(null, '', window.location.pathname);
-            }
-          },
+          immediate: true, // Instant jump — animation is unreliable across navigations
         });
       } else {
-        projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setTimeout(() => {
-          setScrollToProjects(false);
-          if (window.location.hash) {
-            window.history.replaceState(null, '', window.location.pathname);
-          }
-        }, 1000);
+        const y = targetSection.getBoundingClientRect().top + window.scrollY + SCROLL.SECTION_OFFSET;
+        window.scrollTo({ top: Math.max(0, y) });
+      }
+      setScrollToProjects(false);
+      if (window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname);
       }
     };
 
