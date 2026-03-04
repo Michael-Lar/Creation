@@ -160,6 +160,7 @@ export default function HomeClient() {
 
       const lenis = getLenisInstance();
       if (lenis) {
+        lenis.start(); // Ensure Lenis is running before programmatic scroll
         lenis.scrollTo(projectsSection, {
           offset: SCROLL.SECTION_OFFSET,
           immediate: false,

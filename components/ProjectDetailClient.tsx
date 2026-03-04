@@ -71,7 +71,9 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem('scrollToProjects', '1');
     }
-    router.push('/');
+    // scroll: false prevents Next.js from calling window.scrollTo(0,0) after navigation,
+    // which would cancel our lenis.scrollTo(projectsSection) animation
+    router.push('/', { scroll: false });
   };
 
   // Handle missing project
