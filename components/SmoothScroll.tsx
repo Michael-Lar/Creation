@@ -88,7 +88,9 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       };
     } catch (error) {
       // Lenis failed to initialize (can happen in Safari or with certain browser settings)
-      console.warn('Lenis initialization failed, falling back to native scroll:', error);
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('Lenis initialization failed, falling back to native scroll:', error);
+      }
       markLenisReady(); // Mark ready anyway so dependent code doesn't hang
       return;
     }

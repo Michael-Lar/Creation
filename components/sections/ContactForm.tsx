@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
+import { CONTACT } from '@/constants/contact';
 
 export default function ContactForm() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -32,7 +33,7 @@ export default function ContactForm() {
           {/* Primary Contact */}
           <div className="mb-5 sm:mb-6 md:mb-8">
             <a 
-              href="mailto:hello@creation-partners.com"
+              href={`mailto:${CONTACT.EMAIL}`}
               className="inline-flex items-center gap-2"
             >
               <svg
@@ -63,7 +64,7 @@ export default function ContactForm() {
                 />
               </svg>
               <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-playfair text-ink tracking-wide break-words sm:break-normal">
-                hello@creation-partners.com
+                {CONTACT.EMAIL}
               </span>
             </a>
           </div>
@@ -71,7 +72,7 @@ export default function ContactForm() {
           {/* Phone */}
           <div className="mb-5 sm:mb-6 md:mb-8">
             <a 
-              href="tel:+13102732846"
+              href={CONTACT.PHONE_HREF}
               className="inline-flex flex-col items-center"
             >
               <span className="inline-flex items-center gap-2">
@@ -91,7 +92,7 @@ export default function ContactForm() {
                 </span>
               </span>
               <span className="block text-xs sm:text-sm text-ink-500 mt-1 tracking-wider">
-                (310) 273-2846
+                {CONTACT.PHONE_DISPLAY}
               </span>
             </a>
           </div>

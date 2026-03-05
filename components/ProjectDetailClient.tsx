@@ -39,17 +39,12 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
       }
     };
 
-    // Reset immediately
     resetScroll();
 
-    // Also reset after a brief delay to catch any delayed scrolls
-    const timeoutId = setTimeout(resetScroll, 50);
-    const rafId = requestAnimationFrame(() => {
-      resetScroll();
-    });
+    // RAF catches any scroll restoration that fires after the synchronous reset
+    const rafId = requestAnimationFrame(resetScroll);
 
     return () => {
-      clearTimeout(timeoutId);
       cancelAnimationFrame(rafId);
     };
   }, [lenis]);

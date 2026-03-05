@@ -30,9 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url: `https://creation-partners.com/projects/${params.slug}`,
+      url: `/projects/${params.slug}`,
       images: project.images?.[0]
-        ? [{ url: `https://creation-partners.com${project.images[0]}`, width: 1200, height: 800 }]
+        ? [{ url: project.images[0], width: 1200, height: 800 }]
         : [],
     },
     twitter: {
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
     },
     alternates: {
-      canonical: `https://creation-partners.com/projects/${params.slug}`,
+      canonical: `/projects/${params.slug}`,
     },
   };
 }

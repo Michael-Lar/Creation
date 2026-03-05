@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
+import { CONTACT } from '@/constants/contact';
 
 // Constants
 const quickLinks = [
@@ -134,16 +135,16 @@ export default function Footer() {
                 <p>Los Angeles, CA 90025</p>
               </div>
               <a 
-                href="mailto:hello@creation-partners.com" 
+                href={`mailto:${CONTACT.EMAIL}`}
                 className="block text-cream-100/70 hover:text-accent transition-colors"
               >
-                hello@creation-partners.com
+                {CONTACT.EMAIL}
               </a>
               <a 
-                href="tel:+13102732846"
+                href={CONTACT.PHONE_HREF}
                 className="block text-cream-100/70 hover:text-accent transition-colors"
               >
-                (310) 273-2846
+                {CONTACT.PHONE_DISPLAY}
               </a>
             </address>
           </div>

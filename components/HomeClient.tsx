@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, Fragment } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Header from "@/components/Header";
@@ -287,7 +287,7 @@ export default function HomeClient() {
           <Preloader onComplete={handlePreloaderComplete} shouldSkip={shouldSkipPreloader} />
         )}
         {showMainContent && (
-          <Fragment>
+          <>
             <Header isModalOpen={isModalOpen} />
             <main 
               ref={mainContentRef} 
@@ -322,7 +322,7 @@ export default function HomeClient() {
                 <Footer />
               </ErrorBoundary>
             </main>
-          </Fragment>
+          </>
         )}
       </div>
     </SmoothScroll>
