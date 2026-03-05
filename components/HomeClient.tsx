@@ -181,10 +181,15 @@ export default function HomeClient() {
 
       const lenis = getLenisInstance();
       if (lenis) {
+        // Force Lenis to recalculate scrollHeight/limit from the current DOM.
+        // Lenis initializes when showMainContent=false (no content), so limit=0.
+        // Its ResizeObserver debounce is 250ms — longer than our 200ms delay —
+        // so without this call, clamp(0, target, 0) = 0 → silent no-op.
+        lenis.resize();
         lenis.start();
         lenis.scrollTo(targetSection, {
           offset: SCROLL.SECTION_OFFSET,
-          immediate: true, // Instant jump — animation is unreliable across navigations
+          immediate: true,
         });
       } else {
         const y = targetSection.getBoundingClientRect().top + window.scrollY + SCROLL.SECTION_OFFSET;
