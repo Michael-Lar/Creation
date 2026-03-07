@@ -60,6 +60,7 @@ export default function HomeClient() {
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scrollToProjects, setScrollToProjects] = useState(false);
+  const [scrollToDivisions, setScrollToDivisions] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const showMainContent = preloaderComplete || shouldSkipPreloader;
@@ -96,28 +97,39 @@ export default function HomeClient() {
 
   const handlePreloaderComplete = () => {
     setPreloaderComplete(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('preloaderShown', '1');
+    }
   };
 
-  // Set initial body and html background to match preloader
+  // On mount: set initial background and skip preloader if already shown this session
+  // (handles browser back button navigation where the Next.js router cache may have expired)
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      // Set body and html background to preloader color initially to prevent white flash
+    if (typeof window === 'undefined') return;
+    if (sessionStorage.getItem('preloaderShown')) {
+      setShouldSkipPreloader(true);
+      setPreloaderComplete(true);
+      document.body.style.backgroundColor = 'var(--color-cream)';
+      document.documentElement.style.backgroundColor = 'var(--color-cream)';
+    } else {
       document.body.style.backgroundColor = '#0F0E0D';
       document.documentElement.style.backgroundColor = '#0F0E0D';
     }
   }, []);
 
-  // Detect ?back=projects query param set by ProjectDetailClient when navigating back.
+  // Detect ?back= query param set when navigating back from sub-pages.
   // useSearchParams updates even when HomeClient is reconciled (not remounted) by
   // Next.js App Router's client-side cache, so this fires on every SPA navigation
-  // to /?back=projects — unlike a [] effect which only runs on component mount.
+  // unlike a [] effect which only runs on component mount.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (searchParams.get('back') !== 'projects') return;
+    const back = searchParams.get('back');
+    if (!back) return;
 
     setShouldSkipPreloader(true);
     setPreloaderComplete(true);
-    setScrollToProjects(true);
+    if (back === 'projects') setScrollToProjects(true);
+    if (back === 'divisions') setScrollToDivisions(true);
     if (typeof document !== 'undefined') {
       document.body.style.backgroundColor = 'var(--color-cream)';
       document.documentElement.style.backgroundColor = 'var(--color-cream)';
@@ -203,6 +215,49 @@ export default function HomeClient() {
 
     scrollToProjectsSection();
   }, [preloaderComplete, scrollToProjects]);
+
+  // Scroll to Divisions section when scrollToDivisions state is set
+  useEffect(() => {
+    if (typeof window === 'undefined' || !preloaderComplete || !scrollToDivisions) return;
+
+    const scrollToDivisionsSection = async () => {
+      let divisionsSection = document.getElementById('divisions');
+      if (!divisionsSection) {
+        await new Promise<void>((resolve) => {
+          const interval = setInterval(() => {
+            if (document.getElementById('divisions')) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 50);
+          setTimeout(() => { clearInterval(interval); resolve(); }, 3000);
+        });
+        divisionsSection = document.getElementById('divisions');
+        if (!divisionsSection) return;
+      }
+
+      await waitForLenis();
+      await new Promise<void>(r => setTimeout(r, 200));
+
+      const targetSection = document.getElementById('divisions') ?? divisionsSection;
+
+      const lenis = getLenisInstance();
+      if (lenis) {
+        lenis.resize();
+        lenis.start();
+        lenis.scrollTo(targetSection, {
+          offset: SCROLL.SECTION_OFFSET,
+          immediate: true,
+        });
+      } else {
+        const y = targetSection.getBoundingClientRect().top + window.scrollY + SCROLL.SECTION_OFFSET;
+        window.scrollTo({ top: Math.max(0, y) });
+      }
+      setScrollToDivisions(false);
+    };
+
+    scrollToDivisionsSection();
+  }, [preloaderComplete, scrollToDivisions]);
 
   // Listen for hash changes (handles /#projects links from external sources)
   useEffect(() => {

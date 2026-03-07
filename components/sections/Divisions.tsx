@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Division } from '@/types/models';
 import ImageSkeleton from '@/components/ImageSkeleton';
 import { useImageLoading } from '@/hooks/useImageLoading';
@@ -40,7 +41,7 @@ export default function Divisions() {
   return (
     <section 
       id="divisions" 
-      className="section-spacing-sm pb-3 md:pb-4 lg:pb-5 relative bg-texture-paper"
+      className="section-spacing pb-10 sm:pb-12 md:pb-14 lg:pb-16 relative bg-texture-paper"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
       {/* Section top divider - with spacing from content */}
@@ -61,9 +62,9 @@ export default function Divisions() {
             const isLoading = loadingImages.has(index);
             
             return (
+            <Link key={index} href="/divisions" className="block">
             <article
-              key={index}
-              className="group relative aspect-[3/5] sm:aspect-[3/4] rounded-2xl overflow-hidden border border-ink-100/40 bg-white/50 shadow-premium transition-all duration-slow hover:shadow-premium-hover hover:border-accent/30 hover:z-10 w-full max-w-md md:max-w-none"
+              className="group relative aspect-[4/3] sm:aspect-[3/4] rounded-2xl overflow-hidden border border-ink-100/40 bg-white/50 shadow-premium transition-all duration-slow hover:shadow-premium-hover hover:border-accent/30 hover:z-10 w-full max-w-md md:max-w-none"
             >
               {/* Loading Skeleton */}
               {isLoading && (
@@ -117,6 +118,7 @@ export default function Divisions() {
               {/* Inner bronze stroke */}
               <div className="pointer-events-none absolute inset-0 rounded-2xl border-[5px] border-accent/70 transition-[border-color,box-shadow] duration-slow group-hover:border-accent/90 group-hover:shadow-[0_0_0_2px_rgba(184,160,104,0.25)] z-[7]" />
             </article>
+            </Link>
             );
           })}
         </div>

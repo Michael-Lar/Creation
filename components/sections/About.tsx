@@ -13,8 +13,8 @@ export default function About() {
       className="relative overflow-hidden bg-luxury-gradient py-10 sm:py-12 md:py-14 lg:py-16"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
-      {/* Subtle decorative elements */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-ink-100 to-transparent" aria-hidden="true" />
+      {/* Section top divider */}
+      <div className="absolute top-0 left-0 right-0 divider-bronze" aria-hidden="true" />
       
       <div className="container-main relative">
         {/* Section Label */}
@@ -28,7 +28,7 @@ export default function About() {
           {/* Heading */}
           <div className="md:col-span-9">
             <h2 className="text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.15] text-ink-800 tracking-tight-luxury">
-              Creation Partners is a Los Angeles–based real estate investment and operating platform with an integrated approach across the full lifecycle of an asset.
+              Creation Partners is a Los Angeles-based commercial real estate platform focused on investment, advisory, and asset management across dynamic urban corridors and neighborhoods.
             </h2>
           </div>
           
@@ -69,7 +69,7 @@ export default function About() {
               <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">What We Do</span>
             </div>
             <p className="text-[1.05rem] sm:text-lg md:text-body-lg text-ink-600 font-light leading-relaxed">
-              We focus on acquisitions, advisory, and asset management, partnering closely with owners, investors, and operators to identify opportunities and create long-term value.
+              The firm works with property owners, investors, institutions, and partners to identify opportunities, unlock value, and shape environments that contribute to the long-term vitality of the communities they serve.
             </p>
           </div>
           
@@ -79,7 +79,7 @@ export default function About() {
               <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">How We Work</span>
             </div>
             <p className="text-[1.05rem] sm:text-lg md:text-body-lg text-ink-600 font-light leading-relaxed">
-              Our approach is grounded in deep market knowledge, creative problem-solving, and hands-on execution across a range of asset types, with an emphasis on thoughtful growth and long-term alignment.
+              Creation Partners participates in select projects both as investor and strategic advisor, with a particular focus on street-oriented retail, institutional partnerships, and urban redevelopment opportunities across Los Angeles.
             </p>
           </div>
         </div>

@@ -239,9 +239,18 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
             {/* Divider */}
             <div className="divider-bronze my-12 md:my-16" aria-hidden="true" />
 
+            {/* Description — context first, before metadata */}
+            {project.description && (
+              <div className="mb-12 md:mb-16">
+                <p className="text-title text-ink-700 font-light leading-relaxed max-w-3xl font-serif">
+                  {project.description}
+                </p>
+              </div>
+            )}
+
             {/* Project Details Grid */}
             <div className="grid md:grid-cols-2 gap-12 md:gap-16 mb-16 md:mb-20">
-              {project.size && (
+              {project.size && project.size !== 'TBD' && (
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
@@ -265,15 +274,6 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
                 </div>
               )}
             </div>
-
-            {/* Description */}
-            {project.description && (
-              <div className="mb-12 md:mb-16">
-                <p className="text-title text-ink-700 font-light leading-relaxed max-w-3xl font-serif">
-                  {project.description}
-                </p>
-              </div>
-            )}
 
             {/* Details */}
             {project.details && (

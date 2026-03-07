@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { CONTACT } from '@/constants/contact';
 
 // Constants
@@ -20,11 +21,6 @@ const divisions = [
 
 export default function Footer() {
   const sectionRef = useRef<HTMLElement>(null);
-
-  // Event handlers
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   return (
     <footer 
@@ -114,13 +110,13 @@ export default function Footer() {
             <h3 className="text-label text-cream-100/40 mb-6">Navigation</h3>
             <nav className="space-y-3">
               {quickLinks.map((link) => (
-                <button
+                <Link
                   key={link.id}
-                  onClick={() => scrollToSection(link.id)}
-                  className="block text-body text-cream-100/70 hover:text-cream-100 transition-colors font-light text-left"
+                  href={`/#${link.id}`}
+                  className="block text-body text-cream-100/70 hover:text-cream-100 transition-colors font-light"
                 >
                   {link.label}
-                </button>
+                </Link>
               ))}
             </nav>
           </div>
@@ -155,12 +151,13 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
             <span className="text-label text-cream-100/30">Divisions</span>
             {divisions.map((division, index) => (
-              <span 
+              <Link
                 key={index}
-                className="text-caption text-cream-100/50 font-light"
+                href="/divisions"
+                className="text-caption text-cream-100/50 hover:text-cream-100/80 transition-colors font-light"
               >
                 {division}
-              </span>
+              </Link>
             ))}
           </div>
         </div>

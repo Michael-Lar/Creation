@@ -92,17 +92,21 @@ function Projects() {
       
       <div className="container-main pt-2 md:pt-4">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8 lg:mb-10">
-          {/* Section Label */}
-          <div>
-            <div className="section-label mb-0">
-              <div className="section-label-line" />
-              <span className="section-label-text">Recent Projects</span>
+        <div className="mb-6 md:mb-8 lg:mb-10">
+          {/* Label + intro */}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-8 mb-4 md:mb-5">
+            <div>
+              <div className="section-label mb-2">
+                <div className="section-label-line" />
+                <span className="section-label-text">Selected Projects</span>
+              </div>
+              <p className="text-sm text-ink-400 font-light tracking-wide max-w-sm">
+                Acquisitions, developments, and advisory engagements across Los Angeles.
+              </p>
             </div>
-          </div>
 
-          {/* Filter Pills */}
-          <nav 
+            {/* Filter Pills */}
+            <nav
             className="flex flex-wrap gap-2.5 sm:gap-3" 
             role="tablist" 
             aria-label="Filter projects by type"
@@ -125,6 +129,7 @@ function Projects() {
               </button>
             ))}
           </nav>
+          </div>
         </div>
 
         {/* Projects Grid */}
@@ -207,36 +212,38 @@ function Projects() {
                 </div>
                 
                 {/* Project Info */}
-                <div className="flex items-start justify-between gap-3 sm:gap-4">
-                  <div>
-                    <h3 className="text-base sm:text-body-lg text-ink-800 font-medium mb-0.5 sm:mb-1 group-hover:text-ink-900 transition-colors">
-                      {project.name}
-                      {project.year && (
-                        <span className="text-ink-400 font-light ml-1.5 sm:ml-2 text-[0.65rem] sm:text-caption">
-                          {project.year}
-                        </span>
-                      )}
-                    </h3>
-                    <p className="text-[0.65rem] sm:text-caption text-ink-500 font-light tracking-wide">
+                <div>
+                  {/* Dateline row: location · year + arrow */}
+                  <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-2">
+                    <p className="text-[0.6rem] sm:text-label text-ink-400 font-light tracking-wider uppercase">
                       {project.location}
+                      {project.year && (
+                        <>
+                          <span className="mx-1.5 opacity-40" aria-hidden="true">·</span>
+                          {project.year}
+                        </>
+                      )}
                     </p>
-                  </div>
-                  
-                  {/* Arrow indicator with bronze hover */}
-                  <div 
-                    className="mt-1.5 text-ink-300 group-hover:text-accent transition-colors"
-                    aria-hidden="true"
-                  >
-                    <svg 
-                      className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor"
-                      strokeWidth={1.5}
+                    {/* Arrow indicator with bronze hover */}
+                    <div
+                      className="flex-shrink-0 text-ink-300 group-hover:text-accent transition-colors"
+                      aria-hidden="true"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                    </svg>
+                      <svg
+                        className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                      </svg>
+                    </div>
                   </div>
+                  {/* Name as primary headline */}
+                  <h3 className="text-base sm:text-body-lg text-ink-800 font-medium leading-snug group-hover:text-ink-900 transition-colors">
+                    {project.name}
+                  </h3>
                 </div>
               </article>
             </Link>

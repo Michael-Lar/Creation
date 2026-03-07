@@ -222,7 +222,7 @@ function Team({ onModalStateChange }: TeamProps) {
           {teamMembers.map((member) => (
             <div
               key={member.id}
-              className="group relative bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-sm overflow-hidden transition-all transition-standard hover:bg-white hover:border-accent/40 hover:shadow-premium-lg hover:-translate-y-1 cursor-pointer active:translate-y-0 active:shadow-premium"
+              className="group relative bg-white/80 backdrop-blur-sm border border-ink-100/40 rounded-card overflow-hidden transition-all transition-standard hover:bg-white hover:border-accent/40 hover:shadow-premium-lg hover:-translate-y-1 cursor-pointer active:translate-y-0 active:shadow-premium"
               onClick={() => handleMemberClick(member)}
               onMouseEnter={preloadModal}
               role="button"
@@ -238,17 +238,12 @@ function Team({ onModalStateChange }: TeamProps) {
               {/* Hover indicator - subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-accent/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-standard pointer-events-none z-[1]" aria-hidden="true" />
               
-              {/* "View Profile" indicator - positioned above content */}
-              <div className="absolute bottom-20 left-4 right-4 sm:bottom-24 sm:left-5 sm:right-5 md:bottom-28 md:left-6 md:right-6 opacity-0 group-hover:opacity-100 transition-opacity transition-standard pointer-events-none z-[2]">
-                <div className="bg-accent/95 backdrop-blur-sm text-white px-3 py-1.5 rounded-sm border border-white/20 shadow-soft inline-flex items-center gap-2">
-                  <span className="text-caption uppercase tracking-wider font-medium">View Profile</span>
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </div>
-              </div>
               {/* Photo Container - Clean B&W Cutout */}
               <div className="aspect-[4/5] relative flex items-center justify-center bg-gradient-to-b from-gray-50 to-white overflow-hidden group-hover:from-white group-hover:to-gray-50 transition-all transition-standard z-0">
+                {/* "View Profile" overlay — matches project card "View Project" pattern */}
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-900/35 via-ink-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transition-standard flex items-end justify-center pb-4 z-10 pointer-events-none">
+                  <span className="text-white text-[0.6rem] tracking-[0.15em] uppercase font-medium">View Profile</span>
+                </div>
                 {(() => {
                   const isLoading = loadingImages.has(member.id);
                   
