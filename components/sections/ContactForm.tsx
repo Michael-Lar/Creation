@@ -25,6 +25,11 @@ export default function ContactForm() {
 
         {/* Contact Content */}
         <div className="text-center">
+          {/* Inquiry preamble */}
+          <p className="text-[0.7rem] sm:text-caption text-ink-400 tracking-wider font-light mb-6 sm:mb-7 md:mb-8 uppercase">
+            For inquiries regarding investment, advisory, or partnership opportunities:
+          </p>
+
           {/* Primary Contact */}
           <div className="mb-5 sm:mb-6 md:mb-8">
             <a 
@@ -68,8 +73,9 @@ export default function ContactForm() {
           <div className="mb-5 sm:mb-6 md:mb-8">
             <a
               href={CONTACT.PHONE_HREF}
-              className="inline-flex items-center gap-2"
+              className="inline-flex flex-col items-center"
             >
+              <span className="inline-flex items-center gap-2">
                 <svg
                   viewBox="0 0 256 256"
                   aria-hidden="true"
@@ -84,6 +90,10 @@ export default function ContactForm() {
                 <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-playfair text-ink-600 tracking-wide">
                   (310) CREATION
                 </span>
+              </span>
+              <span className="block text-xs sm:text-sm text-ink-500 mt-1 tracking-wider">
+                {CONTACT.PHONE_DISPLAY}
+              </span>
             </a>
           </div>
 

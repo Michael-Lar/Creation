@@ -75,6 +75,8 @@ Sacha earned his degree in Communication from the University of California, Sant
     title: 'Director of Operations',
     bio: `Tiffany Tehrani serves as Director of Operations at Creation Partners, where she oversees internal operations, organizational systems, and day-to-day execution across the platform. She plays a central role in ensuring operational continuity, process efficiency, and coordination across investment, advisory, and management activities.
 
+Prior to joining Creation Partners, Tiffany served as President of a prominent and established construction company, where she oversaw operations and project execution across a range of residential and commercial developments. Her experience leading complex projects and managing multidisciplinary teams brings valuable operational insight to the firm's activities.
+
 Tiffany holds a Bachelor of Arts from the University of California, Los Angeles and a Master's degree from California State University, Northridge.`,
     image: '/team/tiffany-tehrani.webp',
     imagePosition: 'center 32%',

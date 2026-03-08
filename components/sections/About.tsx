@@ -64,22 +64,20 @@ export default function About() {
         {/* Two Column Grid */}
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16 pb-4 md:pb-6 lg:pb-8">
           <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
+            <div className="mb-4">
               <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">What We Do</span>
             </div>
-            <p className="text-[1.05rem] sm:text-lg md:text-body-lg text-ink-600 font-light leading-relaxed">
-              The firm works with property owners, investors, institutions, and partners to identify opportunities, unlock value, and shape environments that contribute to the long-term vitality of the communities they serve.
+            <p className="text-lg sm:text-xl text-ink-600 font-light leading-relaxed">
+              We work with property owners, investors, institutions, and partners to identify opportunities, unlock value, and shape environments that contribute to the long-term vitality of the communities they serve.
             </p>
           </div>
-          
+
           <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-6 sm:w-8 h-px bg-accent/70" aria-hidden="true" />
+            <div className="mb-4">
               <span className="text-[0.65rem] sm:text-label text-ink-400 tracking-luxury">How We Work</span>
             </div>
-            <p className="text-[1.05rem] sm:text-lg md:text-body-lg text-ink-600 font-light leading-relaxed">
-              Creation Partners participates in select projects both as investor and strategic advisor, with a particular focus on street-oriented retail, institutional partnerships, and urban redevelopment opportunities across Los Angeles.
+            <p className="text-lg sm:text-xl text-ink-600 font-light leading-relaxed">
+              We participate in select projects both as investor and strategic advisor, with a particular focus on street-oriented retail, institutional partnerships, and urban redevelopment opportunities across Los Angeles.
             </p>
           </div>
         </div>

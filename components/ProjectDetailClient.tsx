@@ -248,33 +248,6 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
               </div>
             )}
 
-            {/* Project Details Grid */}
-            <div className="grid md:grid-cols-2 gap-12 md:gap-16 mb-16 md:mb-20">
-              {project.size && project.size !== 'TBD' && (
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
-                    <span className="text-label text-ink-400 tracking-luxury">Size</span>
-                  </div>
-                  <p className="text-body-lg text-ink-800 font-light">
-                    {project.size}
-                  </p>
-                </div>
-              )}
-
-              {project.role && (
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="w-8 h-px bg-accent/70" aria-hidden="true" />
-                    <span className="text-label text-ink-400 tracking-luxury">Role</span>
-                  </div>
-                  <p className="text-body-lg text-ink-800 font-light">
-                    {project.role}
-                  </p>
-                </div>
-              )}
-            </div>
-
             {/* Details */}
             {project.details && (
               <div className="mb-16 md:mb-20">

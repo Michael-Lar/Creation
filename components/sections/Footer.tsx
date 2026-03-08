@@ -126,9 +126,9 @@ export default function Footer() {
             <h3 className="text-label text-cream-100/40 mb-6">Contact</h3>
             <address className="not-italic space-y-4 text-body font-light">
               <div className="text-cream-100/70">
-                <p>10700 Santa Monica Blvd</p>
-                <p>Suite 205</p>
-                <p>Los Angeles, CA 90025</p>
+                <p>1100 Glendon Avenue</p>
+                <p>Suite 1700</p>
+                <p>Los Angeles, CA 90024</p>
               </div>
               <a 
                 href={`mailto:${CONTACT.EMAIL}`}
