@@ -12,7 +12,6 @@ export interface Project {
   images?: string[];
   status?: string;
   size?: string;
-  role?: string;
 }
 
 export const projects: Project[] = [
