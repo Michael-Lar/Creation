@@ -22,7 +22,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL('https://creation-partners.com'),
   title: "Creation Partners | Commercial Real Estate Investment, Advisory & Management",
-  description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based, vertically integrated real estate investment and operating platform. We work across acquisitions, advisory, capital formation, and asset management.",
+  description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based commercial real estate platform focused on investment, advisory, and asset management across dynamic urban corridors and neighborhoods.",
   keywords: ["real estate", "commercial real estate", "investment", "Los Angeles", "property management", "advisory", "Yoav Sarraf"],
   authors: [{ name: "Creation Partners" }, { name: "Yoav Sarraf" }],
   creator: "Creation Partners",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Creation Partners | Commercial Real Estate Investment, Advisory & Management",
-    description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based commercial real estate platform focused on investment, advisory, and asset management.",
     url: "https://creation-partners.com",
     siteName: "Creation Partners",
     type: "website",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Creation Partners | Commercial Real Estate Investment, Advisory & Management",
-    description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    description: "Creation Partners, founded by Yoav Sarraf, is a Los Angeles-based commercial real estate platform focused on investment, advisory, and asset management.",
     // Images are automatically generated via app/twitter-image.tsx
   },
   alternates: {
@@ -83,13 +83,13 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Creation Partners",
-    "description": "A Los Angeles-based, vertically integrated real estate investment and operating platform.",
+    "description": "A Los Angeles-based commercial real estate platform focused on investment, advisory, and asset management across dynamic urban corridors and neighborhoods.",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "10700 Santa Monica Blvd, Suite 205",
+      "streetAddress": "1100 Glendon Avenue, Suite 1700",
       "addressLocality": "Los Angeles",
       "addressRegion": "CA",
-      "postalCode": "90025",
+      "postalCode": "90024",
       "addressCountry": "US"
     },
     "url": "https://creation-partners.com",
@@ -101,9 +101,9 @@ export default function RootLayout({
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+1-310-749-9628",
-      "contactType": "Sales",
-      "email": "ys@creation-partners.com"
+      "telephone": "+1-310-273-2846",
+      "contactType": "customer service",
+      "email": "hello@creation-partners.com"
     },
     "sameAs": [
       "https://www.linkedin.com/company/creationpartners",
