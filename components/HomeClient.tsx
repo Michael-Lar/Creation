@@ -50,20 +50,20 @@ function SectionSkeleton({ height = "min-h-[400px]" }: { height?: string }) {
   );
 }
 
-export default function HomeClient() {
+interface HomeClientProps {
+  initialPreloaderShown?: boolean;
+}
+
+export default function HomeClient({ initialPreloaderShown = false }: HomeClientProps) {
   // Configure scroll restoration once at app level
   useScrollConfiguration();
 
   const searchParams = useSearchParams();
 
-  const [preloaderComplete, setPreloaderComplete] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return !!sessionStorage.getItem('preloaderShown');
-  });
-  const [shouldSkipPreloader, setShouldSkipPreloader] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return !!sessionStorage.getItem('preloaderShown');
-  });
+  // Initialized from server-resolved cookie prop so the server HTML is correct from the start.
+  // This prevents the hydration mismatch that caused the preloader to replay on back navigation.
+  const [preloaderComplete, setPreloaderComplete] = useState(initialPreloaderShown);
+  const [shouldSkipPreloader, setShouldSkipPreloader] = useState(initialPreloaderShown);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scrollToProjects, setScrollToProjects] = useState(false);
   const [scrollToDivisions, setScrollToDivisions] = useState(false);
@@ -105,6 +105,8 @@ export default function HomeClient() {
     setPreloaderComplete(true);
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('preloaderShown', '1');
+      // Cookie lets the server omit the Preloader on subsequent full-page loads (back button, refresh)
+      document.cookie = 'preloaderShown=1; path=/; SameSite=Lax';
     }
   };
 
