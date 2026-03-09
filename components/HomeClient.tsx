@@ -75,6 +75,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   const preloaderRanThisSession = useRef(false);
 
   const fadeInContent = useCallback(() => {
+    console.log('[fadeInContent] CALLED — stack:', new Error().stack?.split('\n').slice(1,4).join(' | '));
     // Keep content visible; only transition background
     if (mainContentRef.current) {
       // Set background first to prevent white flash
@@ -105,6 +106,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   }, []);
 
   const handlePreloaderComplete = () => {
+    console.log('[handlePreloaderComplete] preloaderRanThisSession → true');
     preloaderRanThisSession.current = true;
     setPreloaderComplete(true);
     if (typeof window !== 'undefined') {
@@ -119,11 +121,13 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (initialPreloaderShown || sessionStorage.getItem('preloaderShown')) {
+      console.log('[skip:sessionStorage/cookie] initialPreloaderShown=' + initialPreloaderShown + ' sessionStorage=' + sessionStorage.getItem('preloaderShown'));
       setShouldSkipPreloader(true);
       setPreloaderComplete(true);
       document.body.style.backgroundColor = 'var(--color-cream)';
       document.documentElement.style.backgroundColor = 'var(--color-cream)';
     } else {
+      console.log('[NO SKIP] initialPreloaderShown=' + initialPreloaderShown + ' sessionStorage=' + sessionStorage.getItem('preloaderShown') + ' — setting body DARK');
       document.body.style.backgroundColor = '#0F0E0D';
       document.documentElement.style.backgroundColor = '#0F0E0D';
     }
@@ -138,6 +142,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
     const back = searchParams.get('back');
     if (!back) return;
 
+    console.log('[skip:back-param] ?back=' + back);
     setShouldSkipPreloader(true);
     setPreloaderComplete(true);
     if (back === 'projects') setScrollToProjects(true);
@@ -166,6 +171,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   }, []);
 
   useEffect(() => {
+    console.log('[showMainContent effect] showMainContent=' + showMainContent + ' preloaderRanThisSession=' + preloaderRanThisSession.current);
     // Only run the dark→cream fade-in when the preloader animation actually completed
     // in this render session. Any skip path (cookie, sessionStorage, hash, back-param)
     // leaves preloaderRanThisSession false, so fadeInContent never fires for them.
@@ -295,6 +301,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
     
     const fallbackTimer = setTimeout(() => {
       if (!preloaderComplete) {
+        console.log('[fallback timer FIRED] calling fadeInContent directly — preloaderRanThisSession=' + preloaderRanThisSession.current);
         setPreloaderComplete(true);
         fadeInContent();
       }
