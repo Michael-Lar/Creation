@@ -110,11 +110,11 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
     }
   };
 
-  // On mount: set initial background and skip preloader if already shown this session
-  // (handles browser back button navigation where the Next.js router cache may have expired)
+  // On mount: set initial background and skip preloader if already shown.
+  // Uses the server-resolved cookie prop first, then falls back to sessionStorage.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (sessionStorage.getItem('preloaderShown')) {
+    if (initialPreloaderShown || sessionStorage.getItem('preloaderShown')) {
       setShouldSkipPreloader(true);
       setPreloaderComplete(true);
       document.body.style.backgroundColor = 'var(--color-cream)';
@@ -123,7 +123,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
       document.body.style.backgroundColor = '#0F0E0D';
       document.documentElement.style.backgroundColor = '#0F0E0D';
     }
-  }, []);
+  }, [initialPreloaderShown]);
 
   // Detect ?back= query param set when navigating back from sub-pages.
   // useSearchParams updates even when HomeClient is reconciled (not remounted) by
@@ -162,12 +162,15 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   }, []);
 
   useEffect(() => {
-    if (showMainContent) {
+    // Only run the dark→cream fade-in when the preloader just finished.
+    // Skip for returning visitors where showMainContent starts true from the server prop —
+    // they should see cream immediately with no dark flash.
+    if (showMainContent && !initialPreloaderShown) {
       requestAnimationFrame(() => {
         fadeInContent();
       });
     }
-  }, [showMainContent, fadeInContent]);
+  }, [showMainContent, fadeInContent, initialPreloaderShown]);
 
   // Scroll to Projects section when scrollToProjects state is set
   useEffect(() => {
@@ -355,8 +358,8 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
             <main 
               ref={mainContentRef} 
               className="main-content" 
-              style={{ 
-                backgroundColor: '#0F0E0D',
+              style={{
+                backgroundColor: initialPreloaderShown ? 'var(--color-cream)' : '#0F0E0D',
                 opacity: 1,
                 minHeight: '100vh',
                 position: 'relative',
