@@ -110,7 +110,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('preloaderShown', '1');
       // Cookie lets the server omit the Preloader on subsequent full-page loads (back button, refresh)
-      document.cookie = 'preloaderShown=1; path=/; SameSite=Lax';
+      document.cookie = 'preloaderShown=1; path=/; max-age=604800; SameSite=Lax';
     }
   }, []);
 
