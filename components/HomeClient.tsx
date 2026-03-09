@@ -70,6 +70,9 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   const mainContentRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const showMainContent = preloaderComplete || shouldSkipPreloader;
+  // Only true when the preloader animation actually ran and completed in this render session.
+  // Used to gate fadeInContent so the dark→cream transition never fires for skip scenarios.
+  const preloaderRanThisSession = useRef(false);
 
   const fadeInContent = useCallback(() => {
     // Keep content visible; only transition background
@@ -102,6 +105,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   }, []);
 
   const handlePreloaderComplete = () => {
+    preloaderRanThisSession.current = true;
     setPreloaderComplete(true);
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('preloaderShown', '1');
@@ -162,15 +166,15 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   }, []);
 
   useEffect(() => {
-    // Only run the dark→cream fade-in when the preloader just finished.
-    // Skip for returning visitors where showMainContent starts true from the server prop —
-    // they should see cream immediately with no dark flash.
-    if (showMainContent && !initialPreloaderShown) {
+    // Only run the dark→cream fade-in when the preloader animation actually completed
+    // in this render session. Any skip path (cookie, sessionStorage, hash, back-param)
+    // leaves preloaderRanThisSession false, so fadeInContent never fires for them.
+    if (showMainContent && preloaderRanThisSession.current) {
       requestAnimationFrame(() => {
         fadeInContent();
       });
     }
-  }, [showMainContent, fadeInContent, initialPreloaderShown]);
+  }, [showMainContent, fadeInContent]);
 
   // Scroll to Projects section when scrollToProjects state is set
   useEffect(() => {
@@ -359,7 +363,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
               ref={mainContentRef} 
               className="main-content" 
               style={{
-                backgroundColor: initialPreloaderShown ? 'var(--color-cream)' : '#0F0E0D',
+                backgroundColor: (shouldSkipPreloader || initialPreloaderShown) ? 'var(--color-cream)' : '#0F0E0D',
                 opacity: 1,
                 minHeight: '100vh',
                 position: 'relative',
