@@ -26,6 +26,7 @@ Yoav was also instrumental in helping build and scale Concord Capital Partners, 
 In parallel with his real estate work, Yoav is actively involved as an investor, advisor, and operator in technology, media, and other ancillary industries connected to the built environment. He is a graduate of the University of California, Los Angeles.
 
 Yoav is deeply engaged in philanthropic and community leadership. He currently serves as Chair of the House & Grounds Committee at Sinai Temple, is actively involved with Sinai Akiba Academy, and previously served as Real Estate Chair for the Young Adults division of the Jewish Federation of Greater Los Angeles. Above all, Yoav enjoys nothing more than spending time with his wife and children.`,
+    linkedin: 'https://www.linkedin.com/in/yoavsarraf/',
     image: '/team/yoav-sarraf.webp',
     imagePosition: 'center 20%',
     imageScale: 'scale-[1.15]',
