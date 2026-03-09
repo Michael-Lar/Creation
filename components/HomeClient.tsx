@@ -56,8 +56,14 @@ export default function HomeClient() {
 
   const searchParams = useSearchParams();
 
-  const [preloaderComplete, setPreloaderComplete] = useState(false);
-  const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
+  const [preloaderComplete, setPreloaderComplete] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !!sessionStorage.getItem('preloaderShown');
+  });
+  const [shouldSkipPreloader, setShouldSkipPreloader] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !!sessionStorage.getItem('preloaderShown');
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scrollToProjects, setScrollToProjects] = useState(false);
   const [scrollToDivisions, setScrollToDivisions] = useState(false);
