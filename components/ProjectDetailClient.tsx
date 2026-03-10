@@ -58,6 +58,16 @@ export default function ProjectDetailClient({ projectSlug }: ProjectDetailClient
     setHeroImageLoading(true);
   }, [activeImageIndex]);
 
+  // Safari fix: onLoad doesn't fire for cached images after client-side navigation.
+  // After the hero image src changes, check if it's already complete and clear loading state.
+  useEffect(() => {
+    if (!heroRef.current) return;
+    const img = heroRef.current.querySelector('img');
+    if (img?.complete && img.naturalWidth > 0) {
+      setHeroImageLoading(false);
+    }
+  }, [activeImageIndex]);
+
   const handleBackToProjects = (e: React.MouseEvent) => {
     e.preventDefault();
 

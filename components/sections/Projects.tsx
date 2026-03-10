@@ -157,7 +157,19 @@ function Projects() {
               >
                 <article>
                   {/* Project Image - 4:3 aspect ratio with premium shadow */}
-                  <div className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-3 sm:mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all-standard">
+                  <div
+                    className="aspect-[4/3] bg-gradient-to-br from-ink-50 to-ink-100 rounded-card overflow-hidden relative mb-3 sm:mb-4 border border-ink-100 shadow-premium group-hover:shadow-premium-hover group-hover:border-accent/20 transition-all-standard"
+                    ref={(el) => {
+                      // Safari fix: onLoad doesn't fire for cached images after client-side
+                      // navigation. Check img.complete on mount and mark loaded immediately
+                      // so resetLoading doesn't make the image invisible with no recovery path.
+                      if (!el) return;
+                      const img = el.querySelector('img');
+                      if (img?.complete && img.naturalWidth > 0) {
+                        handleImageLoad(project.id);
+                      }
+                    }}
+                  >
                     {/* Loading Skeleton - shown while image is loading */}
                     {isLoading && (
                       <ImageSkeleton 

@@ -247,7 +247,7 @@ export default function TeamMemberModal({
     >
       <div
         ref={modalRef}
-        className="bg-cream rounded-sm shadow-premium-lg max-w-6xl w-full max-h-[95vh] sm:max-h-[92vh] flex flex-col lg:flex-row relative border border-accent/30 overflow-hidden"
+        className="bg-cream rounded-sm shadow-premium-lg max-w-6xl w-full max-h-[95dvh] sm:max-h-[92dvh] flex flex-col lg:flex-row relative border border-accent/30 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Bronze corner accents */}
@@ -272,7 +272,7 @@ export default function TeamMemberModal({
         </button>
 
         {/* Photo Section - Fixed on left */}
-        <div className="relative w-full lg:w-[42%] xl:w-[40%] flex-shrink-0 bg-cream lg:h-[92vh] border-b lg:border-b-0 lg:border-r border-accent/30 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 overflow-hidden max-h-[40vh] sm:max-h-[45vh] lg:max-h-none">
+        <div className="relative w-full lg:w-[42%] xl:w-[40%] flex-shrink-0 bg-cream lg:h-[92dvh] border-b lg:border-b-0 lg:border-r border-accent/30 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 overflow-hidden max-h-[40dvh] sm:max-h-[45dvh] lg:max-h-none">
           {/* Decorative background pattern */}
           <div 
             className="absolute inset-0 opacity-[0.02]"
@@ -312,7 +312,7 @@ export default function TeamMemberModal({
 
         {/* Content Section - Scrollable on right */}
         <div 
-          className="flex-1 overflow-y-auto max-h-[55vh] sm:max-h-[47vh] lg:max-h-[92vh] relative"
+          className="flex-1 overflow-y-auto max-h-[55dvh] sm:max-h-[47dvh] lg:max-h-[92dvh] relative"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {/* Decorative background pattern */}
