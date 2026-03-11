@@ -26,7 +26,7 @@ export default function ContactForm() {
         {/* Contact Content */}
         <div className="text-center">
           {/* Inquiry preamble */}
-          <p className="text-[0.7rem] sm:text-caption text-ink-400 tracking-wider font-light mb-6 sm:mb-7 md:mb-8 uppercase">
+          <p className="text-xs sm:text-sm text-ink-400 font-light tracking-wide mb-6 sm:mb-7 md:mb-8">
             For inquiries regarding investment, advisory, or partnership opportunities:
           </p>
 
