@@ -11,12 +11,14 @@ interface HeaderProps {
   isModalOpen?: boolean;
   forceScrolledStyle?: boolean; // Force header to use scrolled (black text) styling
   scrolledBlurClass?: string;
+  onLogoClick?: () => void; // When provided, intercepts logo click to replay preloader
 }
 
-export default function Header({ 
-  isModalOpen = false, 
+export default function Header({
+  isModalOpen = false,
   forceScrolledStyle = false,
   scrolledBlurClass = 'backdrop-blur-md',
+  onLogoClick,
 }: HeaderProps) {
   // State hooks
   const [isScrolled, setIsScrolled] = useState(false);
@@ -194,10 +196,11 @@ export default function Header({
         }}
       >
         {/* Logo - Bigger on hero, scales down when scrolled */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="group transition-all duration-500 hover:opacity-80 flex-shrink-0"
           aria-label="Creation Partners - Home"
+          onClick={onLogoClick ? (e) => { e.preventDefault(); onLogoClick(); } : undefined}
         >
           <Image
             src="/logos/logo-with-text.svg"

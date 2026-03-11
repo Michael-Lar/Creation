@@ -108,6 +108,19 @@ export default function HomeClient() {
     }
   }, []);
 
+  const handleLogoClick = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem('preloaderShown');
+    preloaderRanThisSession.current = false;
+    document.body.style.backgroundColor = '#0F0E0D';
+    document.documentElement.style.backgroundColor = '#0F0E0D';
+    const lenis = getLenisInstance();
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    else window.scrollTo(0, 0);
+    setPreloaderComplete(false);
+    setShouldSkipPreloader(false);
+  }, []);
+
   // On mount: set initial background and skip preloader if already shown.
   // Uses the server-resolved cookie prop first, then falls back to sessionStorage.
   useEffect(() => {
@@ -354,7 +367,7 @@ export default function HomeClient() {
         )}
         {showMainContent && (
           <>
-            <Header isModalOpen={isModalOpen} />
+            <Header isModalOpen={isModalOpen} onLogoClick={handleLogoClick} />
             <main 
               ref={mainContentRef} 
               className="main-content" 
