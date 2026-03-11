@@ -50,11 +50,7 @@ function SectionSkeleton({ height = "min-h-[400px]" }: { height?: string }) {
   );
 }
 
-interface HomeClientProps {
-  initialPreloaderShown?: boolean;
-}
-
-export default function HomeClient({ initialPreloaderShown = false }: HomeClientProps) {
+export default function HomeClient() {
   // Configure scroll restoration once at app level
   useScrollConfiguration();
 
@@ -62,8 +58,8 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
 
   // Initialized from server-resolved cookie prop so the server HTML is correct from the start.
   // This prevents the hydration mismatch that caused the preloader to replay on back navigation.
-  const [preloaderComplete, setPreloaderComplete] = useState(initialPreloaderShown);
-  const [shouldSkipPreloader, setShouldSkipPreloader] = useState(initialPreloaderShown);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
+  const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scrollToProjects, setScrollToProjects] = useState(false);
   const [scrollToDivisions, setScrollToDivisions] = useState(false);
@@ -109,8 +105,6 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
     setPreloaderComplete(true);
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('preloaderShown', '1');
-      // Cookie lets the server omit the Preloader on subsequent full-page loads (back button, refresh)
-      document.cookie = 'preloaderShown=1; path=/; max-age=604800; SameSite=Lax';
     }
   }, []);
 
@@ -118,7 +112,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
   // Uses the server-resolved cookie prop first, then falls back to sessionStorage.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (initialPreloaderShown || sessionStorage.getItem('preloaderShown')) {
+    if (sessionStorage.getItem('preloaderShown')) {
       setShouldSkipPreloader(true);
       setPreloaderComplete(true);
       document.body.style.backgroundColor = 'var(--color-cream)';
@@ -127,7 +121,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
       document.body.style.backgroundColor = '#0F0E0D';
       document.documentElement.style.backgroundColor = '#0F0E0D';
     }
-  }, [initialPreloaderShown]);
+  }, []);
 
   // Detect ?back= query param set when navigating back from sub-pages.
   // useSearchParams updates even when HomeClient is reconciled (not remounted) by
@@ -365,7 +359,7 @@ export default function HomeClient({ initialPreloaderShown = false }: HomeClient
               ref={mainContentRef} 
               className="main-content" 
               style={{
-                backgroundColor: (shouldSkipPreloader || initialPreloaderShown) ? 'var(--color-cream)' : '#0F0E0D',
+                backgroundColor: shouldSkipPreloader ? 'var(--color-cream)' : '#0F0E0D',
                 opacity: 1,
                 minHeight: '100vh',
                 position: 'relative',
