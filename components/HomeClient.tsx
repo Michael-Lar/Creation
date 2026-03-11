@@ -56,8 +56,6 @@ export default function HomeClient() {
 
   const searchParams = useSearchParams();
 
-  // Initialized from server-resolved cookie prop so the server HTML is correct from the start.
-  // This prevents the hydration mismatch that caused the preloader to replay on back navigation.
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [shouldSkipPreloader, setShouldSkipPreloader] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -121,8 +119,7 @@ export default function HomeClient() {
     setShouldSkipPreloader(false);
   }, []);
 
-  // On mount: set initial background and skip preloader if already shown.
-  // Uses the server-resolved cookie prop first, then falls back to sessionStorage.
+  // On mount: set initial background and skip preloader if already shown this session.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (sessionStorage.getItem('preloaderShown')) {
@@ -174,7 +171,7 @@ export default function HomeClient() {
 
   useEffect(() => {
     // Only run the dark→cream fade-in when the preloader animation actually completed
-    // in this render session. Any skip path (cookie, sessionStorage, hash, back-param)
+    // in this render session. Any skip path (sessionStorage, hash, back-param)
     // leaves preloaderRanThisSession false, so fadeInContent never fires for them.
     if (showMainContent && preloaderRanThisSession.current) {
       requestAnimationFrame(() => {
@@ -302,8 +299,8 @@ export default function HomeClient() {
     
     const fallbackTimer = setTimeout(() => {
       if (!preloaderComplete) {
-        // Route through handlePreloaderComplete so the ref, sessionStorage, and cookie
-        // are all set — identical to the normal animation completion path.
+        // Route through handlePreloaderComplete so the ref and sessionStorage
+        // are set — identical to the normal animation completion path.
         // fadeInContent fires via the showMainContent effect once preloaderComplete→true.
         handlePreloaderComplete();
       }
