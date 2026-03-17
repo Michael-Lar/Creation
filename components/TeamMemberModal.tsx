@@ -289,7 +289,7 @@ export default function TeamMemberModal({
                   src={member.image}
                   alt={`${member.name} - ${member.title}`}
                   fill
-                  className="object-contain object-center"
+                  className="object-contain object-bottom"
                   sizes="(max-width: 1024px) 100vw, 400px"
                   style={{
                     filter: 'grayscale(100%) contrast(1.15)',

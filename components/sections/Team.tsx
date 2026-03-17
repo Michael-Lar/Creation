@@ -17,15 +17,15 @@ const teamMembers: TeamMember[] = [
     id: 1,
     name: 'Yoav Sarraf',
     title: 'Founder & CEO',
-    bio: `Yoav Sarraf is the Founder and CEO of Creation Partners, a commercial real estate investment, advisory, and management platform focused on disciplined execution, long-term ownership, and thoughtful value creation across complex asset classes.
+    bio: `Yoav Sarraf is the Founder and CEO of Creation Partners, a commercial real estate investment, advisory, and management platform focused on creative dealmaking, entrepreneurial execution, and long-term ownership.
 
-Prior to founding Creation Partners, Yoav spent 15 years at Concord Companies, where he served as a Managing Partner and senior leader across both advisory and principal investment activities. During his tenure, he oversaw and mentored numerous commercial real estate professionals and helped guide transactional strategy and platform growth across retail, multifamily, creative office, mixed-use, and development-oriented assets.
+Prior to founding Creation Partners, Yoav spent over 15 years at Concord Companies, where he served as a Managing Partner and senior leader across both advisory and principal investment activities. During his tenure, he mentored numerous professionals and helped guide transactional strategy and platform growth across retail, multifamily, creative office, mixed-use, and development-oriented assets.
 
-Yoav was also instrumental in helping build and scale Concord Capital Partners, the firm's investment arm, overseeing the acquisition of more than 1,200 apartment units, along with investments across additional asset classes. Earlier in his career, he began at Brighton Holdings, where he was first exposed to principal-driven investing, underwriting, and asset-level decision making. Over the course of his career, Yoav has been involved in over $1 billion in completed and advised real estate transactions.
+Yoav was also instrumental in helping build and scale Concord Capital Partners, the firm's investment arm, overseeing the acquisition of more than 1,200 apartment units along with investments across additional asset classes. Earlier in his career, he began at Brighton Holdings, where he was first exposed to principal-driven investing, underwriting, and asset-level decision making. Over the course of his career, Yoav has been involved in over $1 billion in completed and advised real estate transactions.
 
-In parallel with his real estate work, Yoav is actively involved as an investor, advisor, and operator in technology, media, and other ancillary industries connected to the built environment. He is a graduate of the University of California, Los Angeles.
+In parallel with his real estate work, Yoav is actively involved as an investor, advisor, and operator in technology, media, and other ventures connected to the built environment. He is a graduate of the University of California, Los Angeles.
 
-Yoav is deeply engaged in philanthropic and community leadership. He currently serves as Chair of the House & Grounds Committee at Sinai Temple, is actively involved with Sinai Akiba Academy, and previously served as Real Estate Chair for the Young Adults division of the Jewish Federation of Greater Los Angeles. Above all, Yoav enjoys nothing more than spending time with his wife and children.`,
+Yoav is deeply engaged in philanthropic and community leadership. He currently serves as Chair of the House & Grounds Committee at Sinai Temple, is actively involved with Sinai Akiba Academy, and previously served as Real Estate Chair for the Young Adults division of the Jewish Federation of Greater Los Angeles. He lives in Los Angeles with his wife and children.`,
     linkedin: 'https://www.linkedin.com/in/yoavsarraf/',
     image: '/team/yoav-sarraf.webp',
     imagePosition: 'center 20%',
@@ -34,15 +34,19 @@ Yoav is deeply engaged in philanthropic and community leadership. He currently s
   {
     id: 2,
     name: 'Yaron Samuha',
-    title: 'Executive Vice President',
-    bio: `Yaron Samuha is an Executive Vice President and Commercial Real Estate Advisor at Creation Partners, with over a decade of experience advising investors, developers, and owner-users throughout Los Angeles County. He has been involved in transactions totaling more than $250 million in sales volume, with a primary focus on redevelopment and value-add opportunities.
+    title: 'Partner',
+    bio: `Yaron Samuha is a Partner at Creation, where he brings more than a decade of experience advising investors, developers, and owner-users across Los Angeles on strategic acquisitions, redevelopment opportunities, and complex commercial real estate transactions.
 
-Yaron began his real estate career in Israel following his military service, where he developed a strong foundation in real estate fundamentals before relocating to Los Angeles. Since then, he has played a key role in numerous redevelopment projects and works closely with many of the region's most prominent developers, with particular expertise in West Los Angeles and the San Fernando Valley.
+Yaron has been involved in transactions totaling more than $250 million in sales volume, with a primary focus on redevelopment and value-add opportunities.
 
-Over time, Yaron expanded his role beyond advisory work and became an active investor, aligning his interests directly with those of his clients. Outside of work, he is a devoted husband and father, and brings a disciplined, relationship-driven, and long-term mindset to every transaction.`,
+He began his real estate career in Israel following his military service, where he developed an early foundation in real estate fundamentals before relocating to Los Angeles. Since then, he has worked closely with many of the region's most active developers, with particular expertise in West Los Angeles and the San Fernando Valley.
+
+Over time, Yaron expanded his role beyond advisory work and became an active investor, aligning his interests directly with those of his clients and bringing a disciplined, relationship-driven, and long-term mindset to every transaction.
+
+Outside of work, Yaron is a devoted husband and father.`,
     image: '/team/yaron-samuha.webp',
-    imagePosition: 'center 16%',
-    imageScale: 'scale-[1.02]',
+    imagePosition: 'center 8%',
+    imageScale: 'scale-[1.0]',
   },
   {
     id: 7,
@@ -120,8 +124,8 @@ Sacha earned his degree in Communication from the University of California, Sant
 
 Jake recently graduated from the University of California, Davis, where he earned a Bachelor of Science in Managerial Economics with a minor in Accounting. He is currently pursuing graduate studies in real estate development.`,
     image: '/team/jake-ross.webp',
-    imagePosition: 'center 20%',
-    imageScale: 'scale-[1.05]',
+    imagePosition: 'center 15%',
+    imageScale: 'scale-[1.0]',
   },
   {
     id: 9,
