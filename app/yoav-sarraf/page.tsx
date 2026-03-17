@@ -106,7 +106,7 @@ export default function YoavSarrafPage() {
                   alt="Yoav Sarraf - Founder & CEO of Creation Partners"
                   fill
                   priority
-                  className="object-contain object-bottom"
+                  className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 400px"
                   style={{
                     filter: 'grayscale(100%) contrast(1.15)',
