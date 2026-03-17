@@ -45,6 +45,23 @@ Over time, Yaron expanded his role beyond advisory work and became an active inv
     imageScale: 'scale-[1.02]',
   },
   {
+    id: 7,
+    name: 'Adam Gleicher',
+    title: 'Partner',
+    bio: `Adam Gleicher is a Partner at Creation, where he brings more than two decades of experience across commercial real estate advisory, development, investment, and entrepreneurial ventures.
+
+He began his career working alongside his grandfather, where he developed an early foundation in commercial real estate and an appreciation for the importance of long-term relationships, trust, and market intuition.
+
+He later served as Director of Development at GBB Development in Boulder, Colorado, where he helped lead acquisitions, development, and management initiatives across a $75 million portfolio throughout the Western United States.
+
+Beyond his real estate experience, Adam is a seasoned entrepreneur, with ventures and investments spanning retail, hospitality, food and beverage, and technology. He is also active in the ownership and management of family investments across industrial, flex, automotive, and retail assets. These experiences have shaped a broader perspective on consumer experience, brand positioning, and the intersection of real estate, retail, and storytelling, allowing him to connect landlords and tenants in thoughtful and compelling ways.
+
+In 2013, Adam founded Gleicher Realty, a boutique advisory firm built on strategic execution and highly personalized client service. Through that platform, he led transactions representing more than $300 million in aggregate deal value and developed a reputation for thoughtful dealmaking and a relationship-driven approach to creating value. Adam is also the founder of Hello My Beautiful World, a publishing platform rooted in creativity, storytelling, and meaningful connection. He proudly supports organizations including the SLK Foundation and Yad Ezra V'Shulamit, and outside of work, is a loving and devoted husband and father.`,
+    image: '/team/adam-gleicher.webp',
+    imagePosition: 'center 20%',
+    imageScale: 'scale-[1.05]',
+  },
+  {
     id: 3,
     name: 'Avi Khoshnood',
     title: 'Vice President',
@@ -56,19 +73,6 @@ Avi is a graduate of the University of California, Los Angeles. He lives in Los 
     image: '/team/avi-khoshnood.webp',
     imagePosition: 'center 12%',
     imageScale: 'scale-[1.02]',
-  },
-  {
-    id: 4,
-    name: 'Sacha Boroumand',
-    title: 'Investment Associate',
-    bio: `Sacha Boroumand is an Investment Associate at Creation Partners, advising clients on multifamily and retail investments throughout Los Angeles. He brings a hands-on, value-driven approach, emphasizing personal relationships and tailored strategies to help clients execute complex transactions with confidence and maximize long-term performance.
-
-Prior to joining Creation Partners, Sacha spent two years as an Investment Associate at Matthews Real Estate, where he focused on underwriting, deal execution, and client advisory across income-producing assets.
-
-Sacha earned his degree in Communication from the University of California, Santa Barbara, where he founded the Alpha Epsilon Pi fraternity chapter during the COVID-19 pandemic and competed on the UCSB lacrosse team. These experiences shaped his leadership, adaptability, and team-oriented approach to serving clients.`,
-    image: '/team/sacha-boroumand.webp',
-    imagePosition: 'center 28%',
-    imageScale: 'scale-[1.08]',
   },
   {
     id: 5,
@@ -94,6 +98,41 @@ Michael holds a Bachelor of Science from the University of California, Berkeley.
     image: '/team/michael-larian.webp',
     imagePosition: 'center 18%',
     imageScale: 'scale-[1.04]',
+  },
+  {
+    id: 4,
+    name: 'Sacha Boroumand',
+    title: 'Investment Associate',
+    bio: `Sacha Boroumand is an Investment Associate at Creation Partners, advising clients on multifamily and retail investments throughout Los Angeles. He brings a hands-on, value-driven approach, emphasizing personal relationships and tailored strategies to help clients execute complex transactions with confidence and maximize long-term performance.
+
+Prior to joining Creation Partners, Sacha spent two years as an Investment Associate at Matthews Real Estate, where he focused on underwriting, deal execution, and client advisory across income-producing assets.
+
+Sacha earned his degree in Communication from the University of California, Santa Barbara, where he founded the Alpha Epsilon Pi fraternity chapter during the COVID-19 pandemic and competed on the UCSB lacrosse team. These experiences shaped his leadership, adaptability, and team-oriented approach to serving clients.`,
+    image: '/team/sacha-boroumand.webp',
+    imagePosition: 'center 28%',
+    imageScale: 'scale-[1.08]',
+  },
+  {
+    id: 8,
+    name: 'Jake Ross',
+    title: 'Investment Analyst',
+    bio: `Jake Ross is an Investment Analyst at Creation Partners, where he supports financial analysis, market research, and investment evaluation across commercial real estate opportunities. His work includes underwriting, site analysis, and assisting with advisory and transaction processes throughout the Los Angeles market.
+
+Jake recently graduated from the University of California, Davis, where he earned a Bachelor of Science in Managerial Economics with a minor in Accounting. He is currently pursuing graduate studies in real estate development.`,
+    image: '/team/jake-ross.webp',
+    imagePosition: 'center 20%',
+    imageScale: 'scale-[1.05]',
+  },
+  {
+    id: 9,
+    name: 'Jaden Bahmanyar',
+    title: 'Investment Analyst',
+    bio: `Jaden Bahmanyar is an Investment Analyst at Creation Partners, where he supports financial analysis, market research, and investment evaluation across commercial real estate opportunities. His work includes underwriting, site analysis, and assisting with advisory and transaction processes throughout the Los Angeles market.
+
+Jaden recently graduated from the University of California, Los Angeles, where he earned a degree in History. He will be pursuing a Master's degree in Real Estate Development at UCLA.`,
+    image: '/team/jaden-bahmanyar.webp',
+    imagePosition: 'center 20%',
+    imageScale: 'scale-[1.05]',
   },
 ];
 
