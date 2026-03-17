@@ -171,6 +171,10 @@ export default function Footer() {
             <p className="text-caption text-cream-100/40 font-light">
               Creation Realty Corporation: CA DRE Corporation License # 02240668
             </p>
+            <p className="text-caption text-cream-100/40 font-light">
+              Select images may include artistic or stylized representations&nbsp;&nbsp;|&nbsp;&nbsp;For accessibility assistance, please contact us at{' '}
+              <a href="mailto:hello@creation-partners.com" className="hover:text-cream-100/70 transition-colors">hello@creation-partners.com</a>
+            </p>
             
             {/* Social Links */}
             <div className="flex items-center gap-6">
