@@ -163,18 +163,18 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-cream-100/10 space-y-3">
+        <div className="pt-8 border-t border-cream-100/10 space-y-4">
           {/* Row 1: Copyright + Social */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <p className="text-caption text-cream-100/40 font-light">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <p className="text-caption text-cream-100/50 font-light tracking-wide">
               © 2026 Creation Partners. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-8">
               <a
                 href="https://www.linkedin.com/company/creationpartners"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
+                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light tracking-wide"
                 aria-label="LinkedIn (opens in new tab)"
               >
                 LinkedIn
@@ -183,23 +183,18 @@ export default function Footer() {
                 href="https://www.instagram.com/creation_partners"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
+                className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light tracking-wide"
                 aria-label="Instagram (opens in new tab)"
               >
                 Instagram
               </a>
             </div>
           </div>
-          {/* Row 2: Legal / Compliance */}
-          <div className="flex flex-col gap-1">
-            <p className="text-caption text-cream-100/30 font-light">
-              Creation Realty Corporation: CA DRE Corporation License # 02240668
-            </p>
-            <p className="text-caption text-cream-100/30 font-light pl-4">
-              Select images may include artistic or stylized representations&nbsp;&nbsp;|&nbsp;&nbsp;For accessibility assistance, please contact us at{' '}
-              <a href="mailto:hello@creation-partners.com" className="hover:text-cream-100/50 transition-colors">hello@creation-partners.com</a>
-            </p>
-          </div>
+          {/* Row 2: Legal — single flowing line */}
+          <p className="text-[11px] text-cream-100/25 font-light leading-relaxed">
+            Creation Realty Corporation &mdash; CA DRE Corporation License #&nbsp;02240668&ensp;&middot;&ensp;Select images may include artistic or stylized representations&ensp;&middot;&ensp;For accessibility assistance contact{' '}
+            <a href="mailto:hello@creation-partners.com" className="hover:text-cream-100/50 transition-colors">hello@creation-partners.com</a>
+          </p>
         </div>
       </div>
     </footer>

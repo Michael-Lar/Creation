@@ -7,12 +7,12 @@ import { ErrorHandler } from '@/utils/errorHandler';
 
 // Video file paths
 const videoUrls = [
-  '/videos/video1.mp4',
-  '/videos/video2.mp4',
-  '/videos/video3.mp4',
-  '/videos/video4.mp4',
-  '/videos/video5.mp4',
-  '/videos/video6.mp4',
+  '/videos/New%20Videos/V1.mp4',
+  '/videos/New%20Videos/V2.mp4',
+  '/videos/New%20Videos/V3.mp4',
+  '/videos/New%20Videos/V4.mp4',
+  '/videos/New%20Videos/V5.mp4',
+  '/videos/New%20Videos/V6.mp4',
 ];
 
 // Helper function to extract pathname from video src for comparison
