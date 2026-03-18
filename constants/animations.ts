@@ -4,7 +4,7 @@
  */
 export const ANIMATION_TIMING = {
   // Video rotation timings (Hero component)
-  VIDEO_PREPARE_DELAY: 3500,
+  VIDEO_PREPARE_DELAY: 2000,
   VIDEO_FADE_DELAY: 4500,
   VIDEO_ROTATION_DELAY: 5000,
   

@@ -210,7 +210,7 @@ export function useVideoRotation(
           if (playPromise !== undefined) {
             playPromise.then(() => {
               const handlePause = () => {
-                if (!hiddenVideo.paused) return;
+                if (!hiddenVideo.paused || hiddenVideo.ended) return;
                 hiddenVideo.play().catch(() => {});
               };
               if (pauseListenerRef.current) {
