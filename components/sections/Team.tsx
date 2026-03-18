@@ -113,8 +113,8 @@ Prior to joining Creation Partners, Sacha spent two years as an Investment Assoc
 
 Sacha earned his degree in Communication from the University of California, Santa Barbara, where he founded the Alpha Epsilon Pi fraternity chapter during the COVID-19 pandemic and competed on the UCSB lacrosse team. These experiences shaped his leadership, adaptability, and team-oriented approach to serving clients.`,
     image: '/team/sacha-boroumand.webp',
-    imagePosition: 'center 28%',
-    imageScale: 'scale-[1.04]',
+    imagePosition: 'center bottom',
+    imageScale: 'scale-[1.12]',
   },
   {
     id: 8,
@@ -125,7 +125,7 @@ Sacha earned his degree in Communication from the University of California, Sant
 Jake recently graduated from the University of California, Davis, where he earned a Bachelor of Science in Managerial Economics with a minor in Accounting. He is currently pursuing graduate studies in real estate development.`,
     image: '/team/jake-ross.webp',
     imagePosition: 'center 15%',
-    imageScale: 'scale-[1.04]',
+    imageScale: 'scale-[1.08]',
   },
   {
     id: 9,

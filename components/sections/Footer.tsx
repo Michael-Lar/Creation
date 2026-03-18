@@ -163,33 +163,25 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-cream-100/10">
+        <div className="pt-8 border-t border-cream-100/10 space-y-3">
+          {/* Row 1: Copyright + Social */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <p className="text-caption text-cream-100/40 font-light">
               © 2026 Creation Partners. All rights reserved.
             </p>
-            <p className="text-caption text-cream-100/40 font-light">
-              Creation Realty Corporation: CA DRE Corporation License # 02240668
-            </p>
-            <p className="text-caption text-cream-100/40 font-light">
-              Select images may include artistic or stylized representations&nbsp;&nbsp;|&nbsp;&nbsp;For accessibility assistance, please contact us at{' '}
-              <a href="mailto:hello@creation-partners.com" className="hover:text-cream-100/70 transition-colors">hello@creation-partners.com</a>
-            </p>
-            
-            {/* Social Links */}
             <div className="flex items-center gap-6">
-              <a 
-                href="https://www.linkedin.com/company/creationpartners" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/company/creationpartners"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
                 aria-label="LinkedIn (opens in new tab)"
               >
                 LinkedIn
               </a>
-              <a 
-                href="https://www.instagram.com/creation_partners" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com/creation_partners"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-caption text-cream-100/50 hover:text-cream-100 transition-colors font-light"
                 aria-label="Instagram (opens in new tab)"
@@ -197,6 +189,17 @@ export default function Footer() {
                 Instagram
               </a>
             </div>
+          </div>
+          {/* Row 2: Legal / Compliance */}
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+            <p className="text-caption text-cream-100/30 font-light">
+              Creation Realty Corporation: CA DRE Corporation License # 02240668
+            </p>
+            <span className="hidden md:inline text-cream-100/20">|</span>
+            <p className="text-caption text-cream-100/30 font-light">
+              Select images may include artistic or stylized representations&nbsp;&nbsp;|&nbsp;&nbsp;For accessibility assistance, please contact us at{' '}
+              <a href="mailto:hello@creation-partners.com" className="hover:text-cream-100/50 transition-colors">hello@creation-partners.com</a>
+            </p>
           </div>
         </div>
       </div>
