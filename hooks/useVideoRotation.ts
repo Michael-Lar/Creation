@@ -204,6 +204,7 @@ export function useVideoRotation(
     // Only start video rotation timers if preloader is complete
     if (preloaderComplete) {
       prepareTimeoutRef.current = setTimeout(() => {
+        console.log('[VideoRotation] prepare fired - hiddenVideo.readyState:', hiddenVideo.readyState, '| src:', hiddenVideo.src);
         if (hiddenVideo.readyState >= 4) {
           hiddenVideo.currentTime = 0;
           const playPromise = hiddenVideo.play();
@@ -224,6 +225,7 @@ export function useVideoRotation(
       }, ANIMATION_TIMING.VIDEO_PREPARE_DELAY);
 
       fadeTimeoutRef.current = setTimeout(() => {
+        console.log('[VideoRotation] fade fired - hiddenVideo.readyState:', hiddenVideo.readyState, '| paused:', hiddenVideo.paused);
         if (hiddenVideo && hiddenVideo.readyState >= 3 && !hiddenVideo.paused) {
           const newActiveVideo = activeVideoRef.current === 0 ? 1 : 0;
           activeVideoRef.current = newActiveVideo;
