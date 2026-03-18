@@ -191,12 +191,11 @@ export default function Footer() {
             </div>
           </div>
           {/* Row 2: Legal / Compliance */}
-          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+          <div className="flex flex-col gap-1">
             <p className="text-caption text-cream-100/30 font-light">
               Creation Realty Corporation: CA DRE Corporation License # 02240668
             </p>
-            <span className="hidden md:inline text-cream-100/20">|</span>
-            <p className="text-caption text-cream-100/30 font-light">
+            <p className="text-caption text-cream-100/30 font-light pl-4">
               Select images may include artistic or stylized representations&nbsp;&nbsp;|&nbsp;&nbsp;For accessibility assistance, please contact us at{' '}
               <a href="mailto:hello@creation-partners.com" className="hover:text-cream-100/50 transition-colors">hello@creation-partners.com</a>
             </p>
