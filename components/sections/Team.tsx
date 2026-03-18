@@ -125,7 +125,7 @@ Sacha earned his degree in Communication from the University of California, Sant
 Jake recently graduated from the University of California, Davis, where he earned a Bachelor of Science in Managerial Economics with a minor in Accounting. He is currently pursuing graduate studies in real estate development.`,
     image: '/team/jake-ross.webp',
     imagePosition: 'center 15%',
-    imageScale: 'scale-[1.08]',
+    imageScale: 'scale-[1.17]',
   },
   {
     id: 9,
