@@ -7,12 +7,12 @@ import { ErrorHandler } from '@/utils/errorHandler';
 
 // Video file paths
 const videoUrls = [
-  '/videos/new-videos/V1.mp4',
-  '/videos/new-videos/V2.mp4',
-  '/videos/new-videos/V3.mp4',
-  '/videos/new-videos/V4.mp4',
-  '/videos/new-videos/V5.mp4',
-  '/videos/new-videos/V6.mp4',
+  '/videos/video1.mp4',
+  '/videos/video2.mp4',
+  '/videos/video3.mp4',
+  '/videos/video4.mp4',
+  '/videos/video5.mp4',
+  '/videos/video6.mp4',
 ];
 
 // Helper function to extract pathname from video src for comparison
@@ -204,7 +204,6 @@ export function useVideoRotation(
     // Only start video rotation timers if preloader is complete
     if (preloaderComplete) {
       prepareTimeoutRef.current = setTimeout(() => {
-        console.log('[VideoRotation] prepare fired - hiddenVideo.readyState:', hiddenVideo.readyState, '| src:', hiddenVideo.src);
         if (hiddenVideo.readyState >= 4) {
           hiddenVideo.currentTime = 0;
           const playPromise = hiddenVideo.play();
@@ -225,7 +224,6 @@ export function useVideoRotation(
       }, ANIMATION_TIMING.VIDEO_PREPARE_DELAY);
 
       fadeTimeoutRef.current = setTimeout(() => {
-        console.log('[VideoRotation] fade fired - hiddenVideo.readyState:', hiddenVideo.readyState, '| paused:', hiddenVideo.paused);
         if (hiddenVideo && hiddenVideo.readyState >= 3 && !hiddenVideo.paused) {
           const newActiveVideo = activeVideoRef.current === 0 ? 1 : 0;
           activeVideoRef.current = newActiveVideo;
