@@ -203,6 +203,7 @@ export function useVideoRotation(
 
     // Only start video rotation timers if preloader is complete
     if (preloaderComplete) {
+      const activeAtStart = activeVideoRef.current;
       prepareTimeoutRef.current = setTimeout(() => {
         if (hiddenVideo.readyState >= 4) {
           hiddenVideo.currentTime = 0;
@@ -232,7 +233,7 @@ export function useVideoRotation(
       }, ANIMATION_TIMING.VIDEO_FADE_DELAY);
 
       timeoutRef.current = setTimeout(() => {
-        const oldShowingVideo = activeVideoRef.current === 0 ? video1Ref.current : video2Ref.current;
+        const oldShowingVideo = activeAtStart === 0 ? video1Ref.current : video2Ref.current;
         if (oldShowingVideo) {
           oldShowingVideo.pause();
         }
